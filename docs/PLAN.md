@@ -161,7 +161,7 @@ E_{viaje} = \frac{d}{100}\, c_{base}\, f_{vel}\, f_{estilo}\, f_{clima}\, f_{AC}
 ```
 
 - d = distancia en km (ORS); H\_sub y H\_baj = ascenso y descenso acumulados en m (ORS `ascent`/`descent`).
-- c\_base = consumo base en kWh/100 km. Si el usuario no lo da: capacidad útil ÷ autonomía homologada × 100 × factor real (NEDC 1,30; WLTP 1,15; EPA 1,00). Ejemplo con el Deepal S05: 56,12 ÷ 458 × 100 × 1,30 ≈ 15,9 kWh/100 km.
+- c\_base = consumo base en kWh/100 km. Si el usuario no lo da: capacidad útil ÷ autonomía homologada × 100 × factor real (NEDC 1,30; WLTP 1,15; EPA 1,00; CLTC 1,35, por calibrar con datos reales). Ejemplo con el Deepal S05: 56,12 ÷ 458 × 100 × 1,30 ≈ 15,9 kWh/100 km.
 - m = peso vacío + pasajeros (75 kg c/u) + carga; g = 9,81; η\_tren = 0,90; η\_regen = 0,60.
 - f\_vel según velocidad media del tramo (distancia ÷ duración ORS): < 50 km/h → 0,90; 50–80 → 1,00; 80–100 → 1,12; > 100 → 1,25.
 - f\_estilo: eco 0,92, normal 1,00, deportivo 1,15. f\_AC: 1,06 si está encendido. f\_clima: 1,00 entre 15–28 °C, 1,08 entre 5–15 °C, 1,20 bajo 5 °C.
