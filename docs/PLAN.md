@@ -433,11 +433,11 @@ Cómo usarlo: exporta este doc a Markdown como `docs/PLAN.md`, crea `CLAUDE.md` 
 | 7. Endurecimiento | Seguridad, a11y, PWA, deploy | "Aplica la tabla de Seguridad: CSP con nonce, cabeceras, Sentry sin PII, borrar/exportar cuenta, PWA, auditoría Lighthouse y axe; despliega en Vercel." | Lighthouse ≥ 90 en las 4 categorías; 0 issues axe |
 | 8. IA | Importar ficha, recarga por foto, asistente | "Implementa la sección Funcionalidades de IA de docs/PLAN.md: tablas ai\_extractions, ai\_conversations y ai\_usage con RLS; IA1 e IA2 con visión y salida validada por Zod con confirmación del usuario; IA3 como asistente con tool use sobre lib/calc y streaming; límites diarios, bucket privado con borrado a 24 h y evals con respuestas grabadas." | Evals ≥ 90 % de campos correctos; el asistente responde el trayecto de prueba con el mismo número que /trip |
 
-Preguntas abiertas antes de la fase 2:
+Decisiones tomadas antes de la fase 2 (3-nov-2026):
 
-- [ ] Datos de vehículos: ¿se arranca solo con fuentes abiertas y búsqueda con IA, o se contrata EV Database (API de pago, solo para empresas registradas, precio a consulta)?
-- [ ] ¿La app es solo para uso personal o multiusuario público? Cambia el esfuerzo de catálogo y privacidad.
-- [ ] Tarifa de energía por defecto en COP/kWh (casa y estación pública).
+- [x] Datos de vehículos: el catálogo vive en Supabase y se alimenta solo de fuentes abiertas (Open EV Data, EPA, Open Charge Map) y de la búsqueda con IA; no se contrata EV Database. El usuario provee las llaves de Supabase.
+- [x] La app es multiusuario pública: aplica todo lo de privacidad (Ley 1581), aportes al catálogo con revisión de administrador y publicación de la app OAuth en Google antes de producción.
+- [x] Carga en el MVP: solo en casa (wallbox o cargador portátil); la carga en estación pública queda para después del MVP. No hay tarifa por defecto: el usuario ingresa su tarifa en COP/kWh según su comercializador de energía, y la app muestra el costo solo cuando la tarifa existe.
 
 ## Fuentes
 
