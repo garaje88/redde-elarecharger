@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Elacharger · Agregar vehículo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B7A4E}a:hover{color:#075C3A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #111418; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 12px">
+  <header style="display: flex; align-items: center; gap: 12px">
+    <a href="Garage.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E3E6E1; display: flex; align-items: center; justify-content: center; box-sizing: border-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111418" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </a>
+    <div style="display: flex; flex-direction: column">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">Agregar vehículo</h1>
+      <span style="font-size: 13px; color: #5B6470">Paso {{ stepNum }} de 3 · {{ stepName }}</span>
+    </div>
+  </header>
+
+  <ol aria-label="Selección" style="margin: 0; padding: 0; list-style: none; display: flex; gap: 6px; flex-wrap: wrap">
+    <li><button type="button" onClick="{{ goBrand }}" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #111418; background: {{ brandChipBg }}; color: {{ brandChipFg }}; font: inherit; font-size: 13px">{{ brandChip }}</button></li>
+    <li><button type="button" onClick="{{ goModel }}" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D3D8D0; background: {{ modelChipBg }}; color: {{ modelChipFg }}; font: inherit; font-size: 13px">{{ modelChip }}</button></li>
+    <li><span style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D3D8D0; background: {{ variantChipBg }}; color: {{ variantChipFg }}; font-size: 13px; display: inline-flex; align-items: center; box-sizing: border-box">{{ variantChip }}</span></li>
+  </ol>
+
+  <sc-if value="{{ onBrand }}" hint-placeholder-val="{{ true }}">
+    <label for="bq" style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-radius: 14px; border: 1px solid #D3D8D0; background: #FFFFFF">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6470" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="bq" placeholder="Busca tu marca" aria-label="Buscar marca" style="flex: 1; border: 0; font: inherit; font-size: 15px; outline: none; background: transparent">
+    </label>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{ brands }}" as="b" hint-placeholder-count="9">
+        <button type="button" onClick="{{ b.pick }}" style="min-height: 64px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; color: #111418">{{ b.name }}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ onModel }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{ models }}" as="m" hint-placeholder-count="3">
+        <button type="button" onClick="{{ m.pick }}" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; color: #111418">
+          <span style="font-weight: 600; font-size: 15px">{{ m.name }}</span>
+          <span style="font-size: 13px; color: #5B6470">{{ m.note }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ onSpec }}" hint-placeholder-val="{{ false }}">
+    <article style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 600">{{ title }}</span>
+        <span style="font-size: 12px; font-weight: 600; color: #0B7A4E; background: #EAF6EF; padding: 5px 9px; border-radius: 999px">Ficha verificada</span>
+      </div>
+      <dl style="margin: 0; display: flex; flex-direction: column; gap: 0">
+        <sc-for list="{{ spec }}" as="s" hint-placeholder-count="7">
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid #EEF0EC">
+            <dt style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px">{{ s.label }}</span><span style="font-size: 11.5px; color: #5B6470">{{ s.src }}</span></dt>
+            <dd style="margin: 0; font-weight: 600; font-size: 14px; text-align: right; color: {{ s.color }}">{{ s.value }}</dd>
+          </div>
+        </sc-for>
+      </dl>
+    </article>
+    <div style="display: flex; gap: 10px">
+      <button type="button" style="flex: 1; min-height: 48px; border-radius: 14px; border: 1px solid #D3D8D0; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; color: #111418">Corregir un dato</button>
+      <a href="Garage.dc.html" style="flex: 1; min-height: 48px; border-radius: 14px; background: #0B7A4E; color: #FFFFFF; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Agregar a mi garaje</a>
+    </div>
+  </sc-if>
+
+  <button type="button" style="margin-top: auto; margin-bottom: 28px; min-height: 52px; border-radius: 16px; border: 1px dashed #9AA39A; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #111418; display: flex; align-items: center; justify-content: center; gap: 8px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B7A4E" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+    No encuentro mi carro: buscar con IA
+  </button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'brand', brand: null, model: null };
+  }
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var brandNames = ['BYD', 'Chevrolet', 'Deepal', 'Hyundai', 'Kia', 'Renault', 'Tesla', 'Volvo', 'Zeekr'];
+    var brands = brandNames.map(function (n) { return { name: n, pick: function () { self.setState({ step: 'model', brand: n, model: null }); } }; });
+    var modelSets = {
+      Deepal: [{ name: 'S05', note: '2026 · 2 versiones' }, { name: 'S07', note: '2025–2026 · 3 versiones' }]
+    };
+    var list = modelSets[st.brand] || [{ name: '[MODELO 1]', note: 'del catálogo' }, { name: '[MODELO 2]', note: 'del catálogo' }];
+    var models = list.map(function (m) { return { name: m.name, note: m.note, pick: function () { self.setState({ step: 'spec', model: m.name }); } }; });
+    var warn = '#B45309';
+    var ok = '#111418';
+    var spec = [
+      { label: 'Batería', value: '56,12 kWh LFP', src: 'Ficha del fabricante · feb 2026', color: ok },
+      { label: 'Autonomía', value: '458 km NEDC', src: 'Ficha del fabricante · feb 2026', color: ok },
+      { label: 'Consumo base', value: '15,9 kWh/100 km', src: 'Calculado desde autonomía', color: ok },
+      { label: 'Peso vacío', value: '1.777 kg', src: 'Ficha del fabricante · feb 2026', color: ok },
+      { label: 'Carga rápida', value: '30→100 % ~60 min', src: 'Ficha del fabricante · feb 2026', color: ok },
+      { label: 'Cargador a bordo AC', value: 'Por confirmar', src: 'Sin fuente aún', color: warn },
+      { label: 'Conectores', value: 'Por confirmar', src: 'Sin fuente aún', color: warn }
+    ];
+    var on = function (cond) { return cond ? '#111418' : '#FFFFFF'; };
+    var onFg = function (cond) { return cond ? '#FFFFFF' : '#111418'; };
+    var stepNum = st.step === 'brand' ? 1 : (st.step === 'model' ? 2 : 3);
+    return {
+      stepNum: stepNum,
+      stepName: st.step === 'brand' ? 'Marca' : (st.step === 'model' ? 'Modelo' : 'Versión y ficha'),
+      onBrand: st.step === 'brand',
+      onModel: st.step === 'model',
+      onSpec: st.step === 'spec',
+      brandChip: st.brand || 'Marca',
+      modelChip: st.model || 'Modelo',
+      variantChip: st.step === 'spec' ? '2026 · E-Max' : 'Versión',
+      brandChipBg: on(st.step === 'brand'), brandChipFg: onFg(st.step === 'brand'),
+      modelChipBg: on(st.step === 'model'), modelChipFg: onFg(st.step === 'model'),
+      variantChipBg: on(st.step === 'spec'), variantChipFg: onFg(st.step === 'spec'),
+      goBrand: function () { self.setState({ step: 'brand' }); },
+      goModel: function () { if (st.brand) { self.setState({ step: 'model' }); } },
+      brands: brands,
+      models: models,
+      title: (st.brand || '') + ' ' + (st.model || '') + ' E-Max 2026',
+      spec: spec
+    };
+  }
+}
+</script>
+</body>
+</html>

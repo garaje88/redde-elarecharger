@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Elacharger · Tiempo de carga</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B7A4E}a:hover{color:#075C3A}
+input[type=range]{accent-color:#0B7A4E}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #111418; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 14px">
+  <header style="display: flex; align-items: center; gap: 12px">
+    <a href="Main.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E3E6E1; display: flex; align-items: center; justify-content: center; box-sizing: border-box">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111418" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </a>
+    <div style="display: flex; flex-direction: column">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">Tiempo de carga</h1>
+      <span style="font-size: 13px; color: #5B6470">Deepal S05 · 56,12 kWh</span>
+    </div>
+  </header>
+
+  <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+    <legend style="font-size: 13px; font-weight: 600; color: #5B6470; padding: 0; margin-bottom: 8px">Cargador y voltaje de entrada</legend>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <button type="button" onClick="{{ pickL1 }}" aria-pressed="{{ l1Pressed }}" style="{{ l1Style }}">110 V · 12 A</button>
+      <button type="button" onClick="{{ pickL2 }}" aria-pressed="{{ l2Pressed }}" style="{{ l2Style }}">220 V · 32 A</button>
+      <button type="button" onClick="{{ pickDc }}" aria-pressed="{{ dcPressed }}" style="{{ dcStyle }}">DC · 60 kW</button>
+    </div>
+    <span style="font-size: 12px; color: #5B6470">{{ modeNote }}</span>
+  </fieldset>
+
+  <div style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 20px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+    <label for="start" style="display: flex; flex-direction: column; gap: 4px; font-size: 14px">
+      <span style="display: flex; justify-content: space-between"><span>Batería actual</span><span style="font-weight: 600">{{ start }} %</span></span>
+      <input id="start" type="range" min="0" max="99" step="1" value="{{ start }}" onChange="{{ onStart }}" style="width: 100%; height: 28px">
+    </label>
+    <label for="target" style="display: flex; flex-direction: column; gap: 4px; font-size: 14px">
+      <span style="display: flex; justify-content: space-between"><span>Quiero llegar a</span><span style="font-weight: 600">{{ target }} %</span></span>
+      <input id="target" type="range" min="1" max="100" step="1" value="{{ target }}" onChange="{{ onTarget }}" style="width: 100%; height: 28px">
+    </label>
+  </div>
+
+  <section aria-live="polite" aria-label="Resultado" style="background: #111418; color: #FFFFFF; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+    <sc-if value="{{ valid }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 13px; color: #A9B1BA">Necesitas</span>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; font-weight: 700; line-height: 1">{{ timeLabel }}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">{{ pLabel }}</span><span style="font-size: 12px; color: #A9B1BA">potencia efectiva</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">{{ gridLabel }}</span><span style="font-size: 12px; color: #A9B1BA">de la red</span></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">{{ kmLabel }}</span><span style="font-size: 12px; color: #A9B1BA">de autonomía</span></div>
+      </div>
+      <svg width="322" height="96" viewBox="0 0 322 96" role="img" aria-label="Curva de carga: porcentaje contra tiempo">
+        <line x1="0" y1="95" x2="322" y2="95" stroke="#3A424C" stroke-width="1"/>
+        <polyline points="{{ curve }}" fill="none" stroke="#34D399" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <span style="font-size: 12px; color: #A9B1BA">Costo: configura tu tarifa por kWh en Ajustes.</span>
+    </sc-if>
+    <sc-if value="{{ invalid }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size: 15px; color: #FBBF77">El % objetivo debe ser mayor que el actual.</span>
+    </sc-if>
+  </section>
+
+  <button type="button" style="min-height: 52px; border-radius: 16px; border: 0; background: #0B7A4E; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600">Guardar cálculo</button>
+
+  <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: flex; justify-content: space-around; align-items: flex-start; padding: 8px 4px 0 4px; box-sizing: border-box">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
+    <a href="Trip.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Trayecto</a>
+    <a href="Charge.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: #0B7A4E; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Carga</a>
+    <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
+    <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Recargas</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { start: 20, target: 80, mode: 'l2' };
+  }
+  renderVals() {
+    var cap = 56.12;
+    var base = 15.9;
+    var s0 = this.state.start;
+    var s1 = this.state.target;
+    var mode = this.state.mode;
+    var modes = {
+      l1: { dc: false, v: 110, a: 12, onboard: 6.6, eta: 0.85, note: 'Nivel 1 · toma doméstica · 1,32 kW de la red' },
+      l2: { dc: false, v: 220, a: 32, onboard: 6.6, eta: 0.90, note: 'Nivel 2 · 7,04 kW de la red, limitado por el cargador a bordo de 6,6 kW' },
+      dc: { dc: true, kw: 60, eta: 0.93, note: 'Carga rápida DC · la potencia baja después del 80 %' }
+    };
+    var m = modes[mode];
+    var p = m.dc ? m.kw : Math.min(m.v * m.a / 1000, m.onboard);
+    var valid = s1 > s0;
+    var hours = 0;
+    var pts = [];
+    var times = [0];
+    if (valid) {
+      for (var s = s0; s < s1; s++) {
+        var f = m.dc ? (s < 80 ? 1 : (s < 90 ? 0.6 : 0.35)) : (s < 95 ? 1 : 0.5);
+        hours += (cap / 100) / (p * f * m.eta);
+        times.push(hours);
+      }
+      for (var i = 0; i < times.length; i++) {
+        var x = hours > 0 ? (times[i] / hours) * 318 + 2 : 2;
+        var y = 94 - ((s0 + i) / 100) * 90;
+        pts.push(x.toFixed(1) + ',' + y.toFixed(1));
+      }
+    }
+    var h = Math.floor(hours);
+    var min = Math.round((hours - h) * 60);
+    if (min === 60) { h += 1; min = 0; }
+    var timeLabel = h > 0 ? h + ' h ' + min + ' min' : min + ' min';
+    var fmt = function (n) { return n.toFixed(1).replace('.', ','); };
+    var on = 'min-height: 44px; border-radius: 12px; border: 1px solid #111418; background: #111418; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600';
+    var off = 'min-height: 44px; border-radius: 12px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 13px';
+    var self = this;
+    return {
+      start: s0,
+      target: s1,
+      valid: valid,
+      invalid: !valid,
+      timeLabel: timeLabel,
+      pLabel: fmt(p * m.eta) + ' kW',
+      gridLabel: fmt(cap * (s1 - s0) / 100 / m.eta) + ' kWh',
+      kmLabel: '+' + Math.round(cap * (s1 - s0) / 100 / base * 100) + ' km',
+      curve: pts.join(' '),
+      modeNote: m.note,
+      l1Style: mode === 'l1' ? on : off,
+      l2Style: mode === 'l2' ? on : off,
+      dcStyle: mode === 'dc' ? on : off,
+      l1Pressed: mode === 'l1' ? 'true' : 'false',
+      l2Pressed: mode === 'l2' ? 'true' : 'false',
+      dcPressed: mode === 'dc' ? 'true' : 'false',
+      pickL1: function () { self.setState({ mode: 'l1' }); },
+      pickL2: function () { self.setState({ mode: 'l2' }); },
+      pickDc: function () { self.setState({ mode: 'dc' }); },
+      onStart: function (e) { self.setState({ start: Number(e.target.value) }); },
+      onTarget: function (e) { self.setState({ target: Number(e.target.value) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

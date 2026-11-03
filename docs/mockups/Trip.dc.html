@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Elacharger · Trayecto A a B</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B7A4E}a:hover{color:#075C3A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #E9EDE6; font-family: Inter, system-ui, sans-serif; color: #111418; box-sizing: border-box">
+  <svg width="390" height="360" viewBox="0 0 390 360" role="img" aria-label="Mapa con la ruta de Bogotá a Villeta" style="position: absolute; left: 0; top: 0">
+    <rect width="390" height="360" fill="#E9EDE6"/>
+    <path d="M0 80 C90 70 160 120 260 96 S360 60 390 70" stroke="#FFFFFF" stroke-width="10" fill="none"/>
+    <path d="M40 0 C60 90 30 190 70 360" stroke="#FFFFFF" stroke-width="8" fill="none"/>
+    <path d="M200 0 C220 120 180 230 240 360" stroke="#FFFFFF" stroke-width="6" fill="none"/>
+    <path d="M0 250 C120 230 260 290 390 260" stroke="#FFFFFF" stroke-width="6" fill="none"/>
+    <path d="M300 40 C330 120 300 200 340 300" stroke="#D6DDD3" stroke-width="18" fill="none" opacity="0.6"/>
+    <path d="M326 292 C300 240 262 236 236 200 S180 150 150 140 S96 120 70 92" stroke="#0B7A4E" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="326" cy="292" r="13" fill="#111418"/>
+    <text x="326" y="297" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF" font-family="Inter, sans-serif">A</text>
+    <circle cx="70" cy="92" r="13" fill="#0B7A4E"/>
+    <text x="70" y="97" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF" font-family="Inter, sans-serif">B</text>
+  </svg>
+
+  <div style="position: absolute; left: 16px; right: 16px; top: 52px; display: flex; justify-content: space-between">
+    <a href="Main.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(17,20,24,0.12)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111418" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </a>
+    <button type="button" aria-label="Usar mi ubicación" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(17,20,24,0.12)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B7A4E" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+    </button>
+  </div>
+
+  <section aria-label="Planear trayecto" style="position: absolute; left: 0; right: 0; top: 300px; bottom: 80px; background: #FFFFFF; border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(17,20,24,0.10); padding: 10px 16px 0 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+    <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #D3D8D0"></span>
+    <div style="display: flex; flex-direction: column; border: 1px solid #E3E6E1; border-radius: 16px">
+      <label for="from" style="display: flex; align-items: center; gap: 12px; padding: 0 14px; min-height: 48px; font-size: 13px; color: #5B6470">
+        <span style="width: 22px; height: 22px; border-radius: 11px; background: #111418; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">A</span>
+        <input id="from" value="Bogotá · Calle 100" aria-label="Desde" style="flex: 1; border: 0; font: inherit; font-size: 15px; color: #111418; outline: none; background: transparent">
+      </label>
+      <div style="height: 1px; background: #E3E6E1; margin-left: 48px"></div>
+      <label for="to" style="display: flex; align-items: center; gap: 12px; padding: 0 14px; min-height: 48px; font-size: 13px; color: #5B6470">
+        <span style="width: 22px; height: 22px; border-radius: 11px; background: #0B7A4E; color: #FFFFFF; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center">B</span>
+        <input id="to" value="Villeta, Cundinamarca" aria-label="Hasta" style="flex: 1; border: 0; font: inherit; font-size: 15px; color: #111418; outline: none; background: transparent">
+      </label>
+    </div>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #111418; background: #111418; color: #FFFFFF; font: inherit; font-size: 13px">Sale con 80 %</button>
+      <button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 13px">2 personas</button>
+      <button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 13px">A/C encendido</button>
+      <button type="button" style="min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 13px">Normal</button>
+    </div>
+    <div aria-live="polite" style="background: #EAF6EF; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end">
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 13px; color: #35503F">Usa</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 700; line-height: 1">19 %</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end">
+          <span style="font-size: 13px; color: #35503F">Llegas con</span>
+          <span style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 700; line-height: 1; color: #0B7A4E">61 %</span>
+        </div>
+      </div>
+      <div style="position: relative; height: 10px; background: #FFFFFF; border-radius: 999px; overflow: hidden">
+        <div style="position: absolute; left: 0; top: 0; width: 80%; height: 10px; background: #A7DCC2"></div>
+        <div style="position: absolute; left: 0; top: 0; width: 61%; height: 10px; background: #0B7A4E"></div>
+      </div>
+      <span style="font-size: 13px; color: #35503F">Llegas con reserva de sobra (mínimo 10 %)</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-align: center">
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">92 km</span><span style="font-size: 12px; color: #5B6470">distancia</span></div>
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">2 h 15</span><span style="font-size: 12px; color: #5B6470">duración</span></div>
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">10,8 kWh</span><span style="font-size: 12px; color: #5B6470">energía</span></div>
+      <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">−1.760 m</span><span style="font-size: 12px; color: #5B6470">desnivel</span></div>
+    </div>
+    <div style="display: flex; gap: 10px">
+      <button type="button" style="flex: 1; min-height: 48px; border-radius: 14px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 15px; font-weight: 600">¿Cómo se calculó?</button>
+      <button type="button" style="flex: 1; min-height: 48px; border-radius: 14px; border: 0; background: #0B7A4E; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600">Guardar</button>
+    </div>
+  </section>
+
+  <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: flex; justify-content: space-around; align-items: flex-start; padding: 8px 4px 0 4px; box-sizing: border-box">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
+    <a href="Trip.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: #0B7A4E; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Trayecto</a>
+    <a href="Charge.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Carga</a>
+    <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
+    <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Recargas</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

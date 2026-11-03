@@ -1,0 +1,12 @@
+# CLAUDE.md — Elacharger
+- Lee docs/PLAN.md antes de cualquier tarea; es la especificación.
+- Stack: Next.js 16 App Router, TypeScript strict, Tailwind v4, shadcn/ui, Supabase (@supabase/ssr), Zod, MapLibre, OpenRouteService.
+- Toda la lógica de cálculo vive en packages/calc como funciones puras con pruebas Vitest. La UI no calcula.
+- Backend API-first para una futura app móvil: toda operación de negocio vive en server/services y se expone en /api/v1 (auth por cookie o Bearer, errores problem+json, OpenAPI desde Zod). Nada de lógica solo en Server Actions. Los paquetes compartidos no dependen de Next ni del DOM.
+- Toda tabla nueva lleva RLS y prueba pgTAP. Nunca uses service_role en el cliente.
+- Valida con Zod toda entrada del servidor. Sin `any`. Server Components por defecto.
+- Textos de UI en español (es-CO); código en inglés.
+- Antes de terminar: pnpm lint && pnpm typecheck && pnpm test && pnpm build.
+- Commits convencionales, una fase por rama.
+- Mockups de referencia en docs/mockups (HTML con estilos en línea: úsalos como guía visual, no como código a copiar). Diagramas en docs/diagrams.
+- La ficha de docs/reference es solo un ejemplo para pruebas; el catálogo real cubre cualquier marca y modelo (PLAN.md, F3).
