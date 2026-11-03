@@ -1,0 +1,23 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "env": ["NEXT_PUBLIC_*", "SUPABASE_*", "ORS_API_KEY", "UPSTASH_*", "SENTRY_*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "lint": {},
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {
+      "outputs": ["coverage/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
