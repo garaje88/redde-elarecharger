@@ -1,0 +1,29 @@
+node_modules/
+.turbo/
+coverage/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.pem
+
+# env: only the example is committed
+.env*
+!.env.example
+
+# next
+.next/
+out/
+next-env.d.ts
+
+# playwright
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# supabase
+supabase/.branches/
+supabase/.temp/
+
+# vercel
+.vercel
