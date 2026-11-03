@@ -11,6 +11,13 @@
   --font-heading: var(--font-space-grotesk);
   --color-warning: var(--warning);
   --color-success: var(--success);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-inverse-muted: var(--inverse-muted);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-soft: var(--brand-soft);
+  --color-inverse-subtle: var(--inverse-subtle);
+  --color-inverse-danger: var(--inverse-danger);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -68,6 +75,14 @@
   --destructive: #b42318;
   --warning: #b45309;
   --success: #0b7a4e;
+  /* Dark brand surface (login, active vehicle card); identical in both themes. */
+  --inverse: #111418;
+  --inverse-foreground: #ffffff;
+  --inverse-muted: #a9b1ba;
+  --brand-bright: #34d399;
+  --brand-soft: #7fe0b2;
+  --inverse-subtle: #cdd3d9;
+  --inverse-danger: #fca5a5;
   --border: #e3e6e1;
   --input: #d3d8d0;
   --ring: #0b7a4e;

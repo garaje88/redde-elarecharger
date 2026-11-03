@@ -9,7 +9,6 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "gen": "supabase gen types typescript --local > src/database.ts"
+    "typecheck": "tsc --noEmit"
   }
 }

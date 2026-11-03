@@ -1,1 +1,9 @@
-export type { Database, Json } from "./database";
+export type {
+  CompositeTypes,
+  Database,
+  Enums,
+  Json,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "./database";

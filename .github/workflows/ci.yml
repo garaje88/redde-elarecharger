@@ -45,3 +45,23 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      # Only Postgres is needed for migrations, pgTAP and type generation.
+      - run: supabase db start
+      - run: supabase db lint --level warning --fail-on error
+      - run: pnpm db:test
+      - run: pnpm check:db-types

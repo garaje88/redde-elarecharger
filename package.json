@@ -15,7 +15,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "check:api-client": "pnpm --filter @elacharger/api-client gen && git diff --exit-code packages/api-client"
+    "check:api-client": "pnpm --filter @elacharger/api-client gen && git diff --exit-code packages/api-client",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "db:types": "supabase gen types typescript --schema public > packages/types/src/database.ts && prettier --write packages/types/src/database.ts",
+    "check:db-types": "pnpm db:types && git diff --exit-code packages/types"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

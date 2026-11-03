@@ -15,6 +15,17 @@ cp .env.example apps/web/.env.local   # completa las llaves de Supabase
 pnpm dev                               # http://localhost:3000
 ```
 
+## Base de datos (Supabase local)
+
+```bash
+pnpm db:start     # levanta Supabase en Docker y aplica supabase/migrations + seed.sql
+pnpm db:test      # pruebas pgTAP (RLS, CHECKs, triggers)
+pnpm db:reset     # recrea la base desde cero
+pnpm db:types     # regenera packages/types desde el esquema (CI falla si queda desactualizado)
+```
+
+Para iniciar sesión con Google en local, copia `supabase/.env.example` a `supabase/.env` con el Client ID y el Secret de tu cliente OAuth, y agrega `http://127.0.0.1:54321/auth/v1/callback` como URI de redirección autorizada en Google Cloud. Los administradores del catálogo se marcan con `app_metadata.role = "admin"` (solo con la service role).
+
 ## Estructura
 
 | Ruta                  | Contenido                                                   |
@@ -24,6 +35,7 @@ pnpm dev                               # http://localhost:3000
 | `packages/schemas`    | Esquemas Zod compartidos y generación del OpenAPI           |
 | `packages/types`      | Tipos generados de Supabase                                 |
 | `packages/api-client` | Cliente tipado de `/api/v1`, generado desde el OpenAPI      |
+| `supabase`            | Migraciones, seed de desarrollo y pruebas pgTAP             |
 | `tests/e2e`           | Playwright: API solo con Bearer (sin cookies) y UI en móvil |
 
 ## API
