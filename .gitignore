@@ -27,3 +27,6 @@ supabase/.temp/
 
 # vercel
 .vercel
+
+# vitest cache
+.vitest/
