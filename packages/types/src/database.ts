@@ -208,6 +208,8 @@ export type Database = {
           model: string;
           phases: number;
           rated_kw: number;
+          search_text: string | null;
+          source_ref: string | null;
           status: Database["public"]["Enums"]["catalog_status"];
           submitted_by: string | null;
           tethered_cable: boolean;
@@ -228,6 +230,8 @@ export type Database = {
           model: string;
           phases?: number;
           rated_kw: number;
+          search_text?: never;
+          source_ref?: string | null;
           status?: Database["public"]["Enums"]["catalog_status"];
           submitted_by?: string | null;
           tethered_cable?: boolean;
@@ -247,6 +251,8 @@ export type Database = {
           model?: string;
           phases?: number;
           rated_kw?: number;
+          search_text?: never;
+          source_ref?: string | null;
           status?: Database["public"]["Enums"]["catalog_status"];
           submitted_by?: string | null;
           tethered_cable?: boolean;
@@ -470,6 +476,7 @@ export type Database = {
           id: string;
           markets: string[];
           name: string;
+          search_text: string;
           slug: string;
           updated_at: string;
         };
@@ -482,6 +489,7 @@ export type Database = {
           id?: string;
           markets?: string[];
           name: string;
+          search_text?: string;
           slug: string;
           updated_at?: string;
         };
@@ -493,6 +501,7 @@ export type Database = {
           id?: string;
           markets?: string[];
           name?: string;
+          search_text?: string;
           slug?: string;
           updated_at?: string;
         };
@@ -525,6 +534,7 @@ export type Database = {
           model_id: string;
           range_cycle: Database["public"]["Enums"]["range_cycle"] | null;
           range_km: number | null;
+          source_ref: string | null;
           status: Database["public"]["Enums"]["catalog_status"];
           submitted_by: string | null;
           trim: string;
@@ -551,6 +561,7 @@ export type Database = {
           model_id: string;
           range_cycle?: Database["public"]["Enums"]["range_cycle"] | null;
           range_km?: number | null;
+          source_ref?: string | null;
           status?: Database["public"]["Enums"]["catalog_status"];
           submitted_by?: string | null;
           trim?: string;
@@ -576,6 +587,7 @@ export type Database = {
           model_id?: string;
           range_cycle?: Database["public"]["Enums"]["range_cycle"] | null;
           range_km?: number | null;
+          source_ref?: string | null;
           status?: Database["public"]["Enums"]["catalog_status"];
           submitted_by?: string | null;
           trim?: string;
@@ -799,11 +811,70 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      catalog_match_score: { Args: { query: string; target: string }; Returns: number };
+      catalog_normalize: { Args: { value: string }; Returns: string };
+      confirm_charger_submission: { Args: { spec: Json; submission: string }; Returns: string };
+      confirm_vehicle_submission: { Args: { spec: Json; submission: string }; Returns: string };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_valid_charge_curve: { Args: { curve: Json }; Returns: boolean };
       log_audit_event: { Args: { event: string; metadata?: Json }; Returns: undefined };
       owns_charger: { Args: { charger: string }; Returns: boolean };
       owns_vehicle: { Args: { vehicle: string }; Returns: boolean };
+      search_charger_models: {
+        Args: { max_rows?: number; query?: string };
+        Returns: {
+          adjustable_amperage: number[];
+          brand: string;
+          connector_type_id: number | null;
+          created_at: string;
+          field_sources: NonNullable<Json>;
+          id: string;
+          input_voltage_max: number | null;
+          input_voltage_min: number | null;
+          kind: Database["public"]["Enums"]["charger_kind"];
+          max_amperage_a: number | null;
+          model: string;
+          phases: number;
+          rated_kw: number;
+          search_text: string | null;
+          source_ref: string | null;
+          status: Database["public"]["Enums"]["catalog_status"];
+          submitted_by: string | null;
+          tethered_cable: boolean;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "charger_models";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      search_ev_brands: {
+        Args: { max_rows?: number; query?: string };
+        Returns: {
+          country: string;
+          id: string;
+          model_count: number;
+          name: string;
+          slug: string;
+        }[];
+      };
+      search_ev_models: {
+        Args: { brand?: string; max_rows?: number; query?: string };
+        Returns: {
+          body_type: string;
+          brand_id: string;
+          brand_name: string;
+          id: string;
+          name: string;
+          score: number;
+          slug: string;
+          variant_count: number;
+          year_from: number;
+          year_to: number;
+        }[];
+      };
     };
     Enums: {
       catalog_kind: "vehicle" | "charger";
