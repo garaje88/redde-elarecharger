@@ -11,6 +11,13 @@ const serverEnvSchema = z.object({
   UPSTASH_REDIS_REST_URL: optional(z.url()),
   UPSTASH_REDIS_REST_TOKEN: optional(z.string().min(1)),
   SENTRY_DSN: optional(z.url()),
+  // AI lookup of missing catalog models (phase 3) and the phase 8 features.
+  ANTHROPIC_API_KEY: optional(z.string().min(1)),
+  AI_MODEL_EXTRACTION: optional(z.string().min(1)),
+  AI_DAILY_LIMIT_EXTRACTIONS: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.coerce.number().int().min(0).default(20),
+  ),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & ReturnType<typeof getPublicEnv>;

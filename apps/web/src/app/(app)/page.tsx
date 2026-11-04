@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/server/session";
@@ -11,12 +12,26 @@ export default function HomePage() {
       </Suspense>
       <p className="text-muted-foreground">
         Pronto podrás planear trayectos y calcular el tiempo de carga de tu carro eléctrico.
+        Mientras tanto, arma tu{" "}
+        <Link
+          href="/garage"
+          className="font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          garaje
+        </Link>
+        .
       </p>
       <form action={signOut}>
         <Button type="submit" variant="outline" size="lg" className="min-h-11">
           Cerrar sesión
         </Button>
       </form>
+      <Link
+        href="/acerca"
+        className="text-sm text-muted-foreground underline-offset-2 hover:underline"
+      >
+        Acerca de y fuentes de datos
+      </Link>
     </main>
   );
 }

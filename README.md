@@ -26,6 +26,18 @@ pnpm db:types     # regenera packages/types desde el esquema (CI falla si queda 
 
 Para iniciar sesión con Google en local, copia `supabase/.env.example` a `supabase/.env` con el Client ID y el Secret de tu cliente OAuth, y agrega `http://127.0.0.1:54321/auth/v1/callback` como URI de redirección autorizada en Google Cloud. Los administradores del catálogo se marcan con `app_metadata.role = "admin"` (solo con la service role).
 
+## Catálogo de vehículos y cargadores
+
+```bash
+# Importa Open EV Data, EPA y Open Charge Map al Supabase indicado (local o remoto).
+SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=<secret key de `supabase status`> pnpm catalog:import
+pnpm catalog:import open-ev-data   # solo una fuente: open-ev-data, epa u ocm
+```
+
+- Las reimportaciones actualizan por `source_ref` y nunca pisan un campo cuya fuente sea `"manual"`.
+- El workflow `Catalog sync` lo corre cada lunes si existen los secretos `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
+- «No encuentro mi carro» busca la ficha en la web con Claude si `ANTHROPIC_API_KEY` está definida (modelo en `AI_MODEL_EXTRACTION`, límite diario en `AI_DAILY_LIMIT_EXTRACTIONS`). Sin llave, la búsqueda queda registrada y el usuario completa la ficha. Los aportes quedan `pending` hasta que un administrador los verifica.
+
 ## Motor de cálculo
 
 ```bash
@@ -61,5 +73,7 @@ Tras cambiar un esquema, regenera el cliente con `pnpm --filter @elacharger/api-
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 pnpm test:e2e     # levanta `next start` en el puerto 3100; requiere build previo
 ```
+
+Las pruebas E2E con sesión (garaje, API con Bearer) crean un usuario de prueba en Supabase local sin pasar por Google: agrega `E2E_SUPABASE_SECRET_KEY` (la secret key de `supabase status`) a `apps/web/.env.local`. Sin ella se omiten.
 
 Los commits siguen Conventional Commits (validados por commitlint); una fase por rama.

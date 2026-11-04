@@ -68,7 +68,7 @@ select is_empty(
 -- Administrators (app_metadata.role = admin) review every submission.
 select tests.authenticate_as(:'admin', 'admin');
 select is(
-  (select count(*)::int from public.catalog_submissions),
+  (select count(*)::int from public.catalog_submissions where user_id in (:'ana', :'beto')),
   1,
   'admins read all submissions'
 );

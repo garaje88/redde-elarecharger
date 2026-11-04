@@ -22,13 +22,16 @@
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --schema public > packages/types/src/database.ts && prettier --write packages/types/src/database.ts",
     "check:db-types": "pnpm db:types && git diff --exit-code packages/types",
-    "calc:demo": "pnpm --filter @elacharger/calc demo"
+    "calc:demo": "pnpm --filter @elacharger/calc demo",
+    "catalog:import": "pnpm --filter @elacharger/catalog-import sync"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "@types/node": "^24.19.2",
     "eslint": "^9.39.5",
     "globals": "^17.14.0",

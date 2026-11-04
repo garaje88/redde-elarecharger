@@ -20,6 +20,7 @@ playwright-report/
 test-results/
 blob-report/
 playwright/.cache/
+playwright/.auth/
 
 # supabase
 supabase/.branches/

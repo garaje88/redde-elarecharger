@@ -139,6 +139,48 @@ export function acPowerKw(charger: AcChargerInput, onboardKw?: number | null) {
   ]);
 }
 
+export type HomeChargerWarning = "low_voltage_high_amperage" | "amperage_above_charger_max";
+
+export interface HomeChargerInput {
+  voltageV: number;
+  currentA: number;
+  phases: 1 | 3;
+  ratedKw?: number | null;
+  /** Maximum amperage the charger supports, when known. */
+  maxAmperageA?: number | null;
+  /** The vehicle's on-board charger, when a vehicle is selected. */
+  onboardKw?: number | null;
+}
+
+/**
+ * Power of a home setup as the garage shows it while the user picks voltage and amperage,
+ * plus the warnings of PLAN F3 (unusual amperage for 110–120 V, above the charger's maximum).
+ */
+export function homeChargerPower(input: HomeChargerInput, overrides?: Partial<CalcConstants>) {
+  const k = resolveConstants(overrides);
+  assertInRange("voltageV", input.voltageV, 100, 1000);
+  assertInRange("currentA", input.currentA, 1, 500);
+  if (input.ratedKw != null) assertPositive("ratedKw", input.ratedKw);
+
+  const { kw, by } = acPowerKw(
+    {
+      current: "AC",
+      voltageV: input.voltageV,
+      currentA: input.currentA,
+      phases: input.phases,
+      ratedKw: input.ratedKw,
+    },
+    input.onboardKw,
+  );
+  const warnings: HomeChargerWarning[] = [];
+  if (input.voltageV <= k.lowVoltageMaxV && input.currentA > k.lowVoltageTypicalMaxA)
+    warnings.push("low_voltage_high_amperage");
+  if (input.maxAmperageA != null && input.currentA > input.maxAmperageA)
+    warnings.push("amperage_above_charger_max");
+
+  return { kw: Math.round(kw * 100) / 100, limitedBy: by, warnings };
+}
+
 /** Effective DC power: min(charger, vehicle DC max). */
 export function dcPowerKw(charger: DcChargerInput, vehicleDcMaxKw?: number | null) {
   return minLimit([

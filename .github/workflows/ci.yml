@@ -12,15 +12,14 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  # Placeholders so the build and E2E server boot; no secrets are needed for phase 0.
-  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-key
-
 jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Placeholders: the build only needs well-formed values.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-key
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -35,16 +34,6 @@ jobs:
       - run: pnpm test
       - run: pnpm check:api-client
       - run: pnpm build
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm test:e2e
-        env:
-          E2E_BEARER_TOKEN: ${{ secrets.E2E_BEARER_TOKEN }}
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
 
   database:
     runs-on: ubuntu-latest
@@ -65,3 +54,38 @@ jobs:
       - run: supabase db lint --level warning --fail-on error
       - run: pnpm db:test
       - run: pnpm check:db-types
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      # Auth, REST and Postgres are enough: signed-in tests use a test user, not Google.
+      - run: supabase start -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,realtime,storage-api,postgres-meta,mailpit
+      - name: Use the local Supabase keys
+        run: |
+          supabase status -o json | node -e '
+            let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
+              const j = JSON.parse(s.slice(s.indexOf("{")));
+              console.log(`NEXT_PUBLIC_SUPABASE_URL=${j.API_URL}`);
+              console.log(`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${j.PUBLISHABLE_KEY}`);
+              console.log(`E2E_SUPABASE_SECRET_KEY=${j.SECRET_KEY}`);
+            });' >> "$GITHUB_ENV"
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
