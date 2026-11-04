@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { type ChargeInput, acPowerKw, dcPowerKw, estimateCharge, splitDuration } from "./charging";
+import {
+  type ChargeInput,
+  acPowerKw,
+  dcPowerKw,
+  estimateCharge,
+  homeChargerPower,
+  splitDuration,
+} from "./charging";
 import { CalcInputError } from "./errors";
 import { DEEPAL_S05 } from "./test/fixtures";
 
@@ -174,6 +181,37 @@ describe("estimateCharge", () => {
   ])("rejects an invalid %s", (field, patch) => {
     const run = () => estimateCharge({ ...base, ...(patch as Partial<ChargeInput>) });
     expect(run).toThrow(CalcInputError);
+    expect(run).toThrow(expect.objectContaining({ field }));
+  });
+});
+
+describe("homeChargerPower", () => {
+  it("takes the lowest of circuit, charger and on-board charger", () => {
+    expect(homeChargerPower({ voltageV: 220, currentA: 32, phases: 1, ratedKw: 7.4 })).toEqual({
+      kw: 7.04,
+      limitedBy: "circuit",
+      warnings: [],
+    });
+    expect(
+      homeChargerPower({ voltageV: 220, currentA: 32, phases: 1, ratedKw: 7.4, onboardKw: 6.6 }),
+    ).toMatchObject({ kw: 6.6, limitedBy: "onboard_charger" });
+  });
+
+  it("warns about unusual amperage", () => {
+    expect(homeChargerPower({ voltageV: 110, currentA: 20, phases: 1 }).warnings).toEqual([
+      "low_voltage_high_amperage",
+    ]);
+    expect(
+      homeChargerPower({ voltageV: 220, currentA: 40, phases: 1, maxAmperageA: 32 }).warnings,
+    ).toEqual(["amperage_above_charger_max"]);
+  });
+
+  it.each([
+    ["voltageV", { voltageV: 50 }],
+    ["currentA", { currentA: 0 }],
+    ["ratedKw", { ratedKw: 0 }],
+  ])("rejects an invalid %s", (field, patch) => {
+    const run = () => homeChargerPower({ voltageV: 220, currentA: 16, phases: 1, ...patch });
     expect(run).toThrow(expect.objectContaining({ field }));
   });
 });

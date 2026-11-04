@@ -85,6 +85,1106 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/catalog/brands": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Search brands that have visible variants (typo tolerant) */
+    get: {
+      parameters: {
+        query?: {
+          q?: string;
+          limit?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching brands. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["BrandList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/models": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Search models, optionally within a brand ("deepal s05", "Deepal S-05") */
+    get: {
+      parameters: {
+        query?: {
+          q?: string;
+          brand?: string;
+          limit?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching models, best first. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ModelList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/variants": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Years and versions of a model */
+    get: {
+      parameters: {
+        query: {
+          model: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Variants, newest first. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["VariantList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/variants/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Technical sheet of a variant with the source of each field */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The technical sheet. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Variant"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The variant does not exist or is not visible. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/chargers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Search home chargers by brand and model */
+    get: {
+      parameters: {
+        query?: {
+          q?: string;
+          limit?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching chargers. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ChargerModelList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/connectors": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reference connector types (Open Charge Map ids) */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description All connector types. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ConnectorList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/lookup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Look up a missing vehicle or charger with AI
+     * @description Searches the web and extracts a technical sheet for the user to confirm. Without AI configured the request is still recorded for an admin.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["LookupRequest"];
+        };
+      };
+      responses: {
+        /** @description The lookup, pending confirmation. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Submission"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Daily lookup limit reached. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/submissions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** A lookup made by the caller */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The lookup. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Submission"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description No such lookup for this user. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/catalog/submissions/{id}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirm a lookup as a pending catalog contribution */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ConfirmSubmission"];
+        };
+      };
+      responses: {
+        /** @description The pending catalog entry. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ConfirmSubmissionResponse"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description No such lookup for this user. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The lookup was already confirmed. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/vehicles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** The caller's vehicles */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Vehicles, default first. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["VehicleList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /** Add a catalog variant to the garage */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateVehicle"];
+        };
+      };
+      responses: {
+        /** @description The new vehicle. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Vehicle"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The variant does not exist or is not visible. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/vehicles/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** One vehicle */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The vehicle. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Vehicle"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Remove a vehicle from the garage */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Rename, correct data or make default */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateVehicle"];
+        };
+      };
+      responses: {
+        /** @description The vehicle. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Vehicle"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
+  "/chargers": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** The caller's chargers */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Chargers. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ChargerList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /** Add a home charger */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateCharger"];
+        };
+      };
+      responses: {
+        /** @description The new charger. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Charger"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The charger model does not exist or is not visible. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/chargers/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** One charger */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The charger. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Charger"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Remove a charger */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Update a charger */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateCharger"];
+        };
+      };
+      responses: {
+        /** @description The charger. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Charger"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -128,6 +1228,376 @@ export interface components {
        * @example 0.1.0
        */
       min_client_version: string;
+    };
+    BrandList: {
+      items: components["schemas"]["Brand"][];
+    };
+    Brand: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      slug: string;
+      country: string | null;
+      model_count: number;
+    };
+    ModelList: {
+      items: components["schemas"]["ModelSummary"][];
+    };
+    ModelSummary: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      brand_id: string;
+      brand_name: string;
+      name: string;
+      body_type: string | null;
+      year_from: number;
+      year_to: number;
+      variant_count: number;
+    };
+    VariantList: {
+      items: components["schemas"]["VariantSummary"][];
+    };
+    VariantSummary: {
+      /** Format: uuid */
+      id: string;
+      year_from: number;
+      year_to: number | null;
+      trim: string;
+      battery_usable_kwh: number | null;
+      range_km: number | null;
+      range_cycle: components["schemas"]["RangeCycle"];
+      status: components["schemas"]["CatalogStatus"];
+    };
+    /** @enum {string|null} */
+    RangeCycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
+    /**
+     * @description pending = a contribution awaiting admin review.
+     * @enum {string}
+     */
+    CatalogStatus: "verified" | "pending";
+    /** @description Technical sheet of one year and version. */
+    Variant: {
+      /** Format: uuid */
+      id: string;
+      brand: {
+        /** Format: uuid */
+        id: string;
+        name: string;
+      };
+      model: {
+        /** Format: uuid */
+        id: string;
+        name: string;
+        body_type: string | null;
+      };
+      year_from: number;
+      year_to: number | null;
+      trim: string;
+      battery_gross_kwh: number | null;
+      battery_usable_kwh: number | null;
+      chemistry: string | null;
+      range_km: number | null;
+      range_cycle: components["schemas"]["RangeCycle"];
+      consumption_kwh_100km: number | null;
+      curb_weight_kg: number | null;
+      ac_onboard_kw: number | null;
+      ac_phases: components["schemas"]["Phases"];
+      dc_max_kw: number | null;
+      connector_ac: components["schemas"]["ConnectorCode"];
+      connector_dc: components["schemas"]["ConnectorCode"];
+      charge_curve: components["schemas"]["ChargeCurvePoint"][] | null;
+      field_sources: components["schemas"]["FieldSources"];
+      status: components["schemas"]["CatalogStatus"];
+    };
+    Phases: 1 | 3 | null;
+    /** @enum {string|null} */
+    ConnectorCode:
+      "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
+    ChargeCurvePoint: {
+      soc: number;
+      kw: number;
+    };
+    /** @description Provenance per field; missing fields have no source. */
+    FieldSources: {
+      [key: string]: components["schemas"]["FieldSource"];
+    };
+    FieldSource: {
+      /** @example Open EV Data */
+      source: string;
+      /** Format: uri */
+      source_url?: string;
+      /** @description ISO date the value was read. */
+      retrieved_at?: string;
+      confidence: number;
+    };
+    ChargerModelList: {
+      items: components["schemas"]["ChargerModel"][];
+    };
+    ChargerModel: {
+      /** Format: uuid */
+      id: string;
+      brand: string;
+      model: string;
+      kind: components["schemas"]["ChargerKind"];
+      rated_kw: number;
+      phases: components["schemas"]["Phases"];
+      max_amperage_a: number | null;
+      adjustable_amperage: number[];
+      input_voltage_min: number | null;
+      input_voltage_max: number | null;
+      connector: components["schemas"]["ConnectorCode"];
+      tethered_cable: boolean;
+      field_sources: components["schemas"]["FieldSources"];
+      status: components["schemas"]["CatalogStatus"];
+    };
+    /** @enum {string} */
+    ChargerKind: "wallbox" | "portable";
+    ConnectorList: {
+      items: components["schemas"]["Connector"][];
+    };
+    Connector: {
+      code: components["schemas"]["ConnectorCode"];
+      name: string;
+      /** @enum {string} */
+      current: "AC" | "DC";
+      max_kw_typical: number | null;
+      /** @description ConnectionType id in Open Charge Map. */
+      ocm_id: number | null;
+      compatible_adapters: components["schemas"]["ConnectorCode"][];
+    };
+    Submission: {
+      /** Format: uuid */
+      id: string;
+      kind: components["schemas"]["CatalogKind"];
+      query: string;
+      /** @enum {string} */
+      status: "pending" | "approved" | "rejected";
+      extracted: {
+        spec:
+          | components["schemas"]["VehicleSubmissionSpec"]
+          | components["schemas"]["ChargerSubmissionSpec"];
+        confidence: components["schemas"]["FieldConfidence"];
+        /** @description Page each field was read from, when known. */
+        field_urls: {
+          [key: string]: string;
+        };
+      } | null;
+      sources: components["schemas"]["LookupSource"][];
+      /** Format: uuid */
+      created_variant_id: string | null;
+      /** Format: uuid */
+      created_charger_model_id: string | null;
+      /** Format: date-time */
+      created_at: string;
+    };
+    /** @enum {string} */
+    CatalogKind: "vehicle" | "charger";
+    VehicleSubmissionSpec: {
+      brand: string;
+      model: string;
+      year_from: number;
+      /** @default null */
+      year_to: number | null;
+      /** @default  */
+      trim: string;
+      battery_gross_kwh: number | null;
+      battery_usable_kwh: number | null;
+      chemistry: string | null;
+      range_km: number | null;
+      range_cycle: components["schemas"]["RangeCycle"];
+      consumption_kwh_100km: number | null;
+      curb_weight_kg: number | null;
+      ac_onboard_kw: number | null;
+      ac_phases: components["schemas"]["Phases"];
+      dc_max_kw: number | null;
+      connector_ac: components["schemas"]["ConnectorCode"];
+      connector_dc: components["schemas"]["ConnectorCode"];
+    };
+    ChargerSubmissionSpec: {
+      brand: string;
+      model: string;
+      kind: components["schemas"]["ChargerKind"];
+      rated_kw: number;
+      phases?: components["schemas"]["Phases"];
+      max_amperage_a: number | null;
+      /** @default [] */
+      adjustable_amperage: number[];
+      input_voltage_min: number | null;
+      input_voltage_max: number | null;
+      connector: components["schemas"]["ConnectorCode"];
+      /** @default true */
+      tethered_cable: boolean;
+    };
+    /** @description 0–1 confidence per extracted field. */
+    FieldConfidence: {
+      [key: string]: number;
+    };
+    LookupSource: {
+      title: string;
+      /** Format: uri */
+      url: string;
+    };
+    LookupRequest: {
+      kind: components["schemas"]["CatalogKind"];
+      /**
+       * @description Brand and model as the user writes them.
+       * @example Deepal S07 2025
+       */
+      query: string;
+    };
+    ConfirmSubmissionResponse: {
+      /** Format: uuid */
+      variant_id: string | null;
+      /** Format: uuid */
+      charger_model_id: string | null;
+    };
+    ConfirmSubmission:
+      | components["schemas"]["ConfirmVehicleSubmission"]
+      | components["schemas"]["ConfirmChargerSubmission"];
+    ConfirmVehicleSubmission: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      kind: "vehicle";
+      spec: components["schemas"]["VehicleSubmissionSpec"];
+    };
+    ConfirmChargerSubmission: {
+      /**
+       * @description discriminator enum property added by openapi-typescript
+       * @enum {string}
+       */
+      kind: "charger";
+      spec: components["schemas"]["ChargerSubmissionSpec"];
+    };
+    VehicleList: {
+      items: components["schemas"]["Vehicle"][];
+    };
+    Vehicle: {
+      /** Format: uuid */
+      id: string;
+      nickname: string;
+      is_default: boolean;
+      battery_health_pct: number;
+      variant: {
+        /** Format: uuid */
+        id: string;
+        brand: string;
+        model: string;
+        body_type: string | null;
+        trim: string;
+        year_from: number;
+        year_to: number | null;
+        /** @enum {string} */
+        status: "verified" | "pending";
+      } | null;
+      spec: components["schemas"]["VehicleSpec"];
+      overrides: components["schemas"]["VehicleOverrides"];
+      /** @description Catalog provenance; overridden fields carry source "usuario". */
+      field_sources: {
+        [key: string]: components["schemas"]["FieldSource"];
+      };
+      /** Format: date-time */
+      created_at: string;
+    };
+    /** @description Catalog sheet with the user's corrections applied; null = Por confirmar. */
+    VehicleSpec: {
+      battery_gross_kwh: number | null;
+      battery_usable_kwh: number | null;
+      chemistry: string | null;
+      range_km: number | null;
+      range_cycle: components["schemas"]["RangeCycle"];
+      consumption_kwh_100km: number | null;
+      curb_weight_kg: number | null;
+      ac_onboard_kw: number | null;
+      ac_phases: components["schemas"]["Phases"];
+      dc_max_kw: number | null;
+      connector_ac: components["schemas"]["ConnectorCode"];
+      connector_dc: components["schemas"]["ConnectorCode"];
+      charge_curve: components["schemas"]["ChargeCurvePoint"][] | null;
+    };
+    VehicleOverrides: {
+      battery_gross_kwh?: number;
+      battery_usable_kwh?: number;
+      range_km?: number;
+      range_cycle?: components["schemas"]["RangeCycle"];
+      consumption_kwh_100km?: number;
+      curb_weight_kg?: number;
+      ac_onboard_kw?: number;
+      ac_phases?: components["schemas"]["Phases"];
+      dc_max_kw?: number;
+      connector_ac?: components["schemas"]["ConnectorCode"];
+      connector_dc?: components["schemas"]["ConnectorCode"];
+    };
+    CreateVehicle: {
+      /** Format: uuid */
+      variant_id: string;
+      nickname?: string;
+      /** @default 100 */
+      battery_health_pct: number;
+      overrides?: components["schemas"]["VehicleOverrides"];
+    };
+    UpdateVehicle: {
+      nickname?: string;
+      battery_health_pct?: number;
+      overrides?: components["schemas"]["VehicleOverrides"];
+      /**
+       * @description Make this the default vehicle.
+       * @enum {boolean}
+       */
+      is_default?: true;
+    };
+    ChargerList: {
+      items: components["schemas"]["Charger"][];
+    };
+    Charger: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** @enum {string} */
+      use: "home" | "public";
+      charger_model: components["schemas"]["ChargerModel"] & (Record<string, never> | null);
+      voltage_v: number;
+      phases: components["schemas"]["Phases"];
+      circuit_amperage_a: number;
+      connector: components["schemas"]["ConnectorCode"];
+      efficiency: number | null;
+      power: components["schemas"]["ChargerPower"];
+      /** Format: date-time */
+      created_at: string;
+    };
+    /** @description Grid power before the vehicle's on-board limit, which depends on the car. */
+    ChargerPower: {
+      kw: number;
+      /** @enum {string} */
+      limited_by: "circuit" | "charger";
+      warnings: ("low_voltage_high_amperage" | "amperage_above_charger_max")[];
+    };
+    /** @description Home chargers only in the MVP. */
+    CreateCharger: {
+      name: string;
+      /**
+       * Format: uuid
+       * @default null
+       */
+      charger_model_id: string | null;
+      voltage_v: number;
+      phases?: components["schemas"]["Phases"];
+      circuit_amperage_a: number;
+      connector?: components["schemas"]["ConnectorCode"];
+      /** @default null */
+      efficiency: number | null;
+    };
+    UpdateCharger: {
+      name?: string;
+      /** Format: uuid */
+      charger_model_id?: string | null;
+      voltage_v?: number;
+      phases?: components["schemas"]["Phases"];
+      circuit_amperage_a?: number;
+      connector?: components["schemas"]["ConnectorCode"];
+      efficiency?: number | null;
     };
   };
   responses: never;

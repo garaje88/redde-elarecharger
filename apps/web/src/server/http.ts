@@ -96,6 +96,37 @@ export function jsonResponse<S extends z.ZodType>(
   return response;
 }
 
+/** Validates the query string; errors become 422 problems. */
+export function parseQuery<S extends z.ZodType>(request: NextRequest, schema: S): z.output<S> {
+  return schema.parse(Object.fromEntries(request.nextUrl.searchParams));
+}
+
+/** Validates a JSON body; malformed JSON is a 400, schema errors a 422. */
+export async function parseBody<S extends z.ZodType>(
+  request: Request,
+  schema: S,
+): Promise<z.output<S>> {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    throw new ApiError(400, "Bad Request", { detail: "The body must be valid JSON." });
+  }
+  return schema.parse(body);
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** A path id; anything that is not a UUID cannot exist, so it is a 404. */
+export async function idParam(params: Promise<{ id: string }>): Promise<string> {
+  const { id } = await params;
+  if (!UUID.test(id)) throw notFound();
+  return id;
+}
+
+export const noContent = () =>
+  new Response(null, { status: 204, headers: { "Cache-Control": "no-store" } });
+
 /** Wraps a Route Handler so every thrown error becomes application/problem+json. */
 export function apiHandler<Ctx>(
   handler: (request: NextRequest, context: Ctx) => Promise<Response>,

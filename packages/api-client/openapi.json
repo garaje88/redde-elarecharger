@@ -99,6 +99,1252 @@
           }
         },
         "required": ["api_version", "server_version", "min_client_version"]
+      },
+      "BrandList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Brand"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "Brand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "country": {
+            "type": ["string", "null"]
+          },
+          "model_count": {
+            "type": "integer"
+          }
+        },
+        "required": ["id", "name", "slug", "country", "model_count"]
+      },
+      "ModelList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelSummary"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "ModelSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brand_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brand_name": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "body_type": {
+            "type": ["string", "null"]
+          },
+          "year_from": {
+            "type": "integer"
+          },
+          "year_to": {
+            "type": "integer"
+          },
+          "variant_count": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "brand_id",
+          "brand_name",
+          "name",
+          "body_type",
+          "year_from",
+          "year_to",
+          "variant_count"
+        ]
+      },
+      "VariantList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariantSummary"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "VariantSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "year_from": {
+            "type": "integer"
+          },
+          "year_to": {
+            "type": ["integer", "null"]
+          },
+          "trim": {
+            "type": "string"
+          },
+          "battery_usable_kwh": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_km": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_cycle": {
+            "$ref": "#/components/schemas/RangeCycle"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CatalogStatus"
+          }
+        },
+        "required": [
+          "id",
+          "year_from",
+          "year_to",
+          "trim",
+          "battery_usable_kwh",
+          "range_km",
+          "range_cycle",
+          "status"
+        ]
+      },
+      "RangeCycle": {
+        "type": ["string", "null"],
+        "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
+      },
+      "CatalogStatus": {
+        "type": "string",
+        "enum": ["verified", "pending"],
+        "description": "pending = a contribution awaiting admin review."
+      },
+      "Variant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brand": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": ["id", "name"]
+          },
+          "model": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "body_type": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["id", "name", "body_type"]
+          },
+          "year_from": {
+            "type": "integer"
+          },
+          "year_to": {
+            "type": ["integer", "null"]
+          },
+          "trim": {
+            "type": "string"
+          },
+          "battery_gross_kwh": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "battery_usable_kwh": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "chemistry": {
+            "type": ["string", "null"],
+            "maxLength": 40
+          },
+          "range_km": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_cycle": {
+            "$ref": "#/components/schemas/RangeCycle"
+          },
+          "consumption_kwh_100km": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "curb_weight_kg": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 99999
+          },
+          "ac_onboard_kw": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "ac_phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "dc_max_kw": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "connector_ac": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "connector_dc": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "charge_curve": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/ChargeCurvePoint"
+            }
+          },
+          "field_sources": {
+            "$ref": "#/components/schemas/FieldSources"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CatalogStatus"
+          }
+        },
+        "required": [
+          "id",
+          "brand",
+          "model",
+          "year_from",
+          "year_to",
+          "trim",
+          "battery_gross_kwh",
+          "battery_usable_kwh",
+          "chemistry",
+          "range_km",
+          "range_cycle",
+          "consumption_kwh_100km",
+          "curb_weight_kg",
+          "ac_onboard_kw",
+          "ac_phases",
+          "dc_max_kw",
+          "connector_ac",
+          "connector_dc",
+          "charge_curve",
+          "field_sources",
+          "status"
+        ],
+        "description": "Technical sheet of one year and version."
+      },
+      "Phases": {
+        "anyOf": [
+          {
+            "type": "number",
+            "enum": [1]
+          },
+          {
+            "type": "number",
+            "enum": [3]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "ConnectorCode": {
+        "type": ["string", "null"],
+        "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
+      },
+      "ChargeCurvePoint": {
+        "type": "object",
+        "properties": {
+          "soc": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "kw": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": ["soc", "kw"]
+      },
+      "FieldSources": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/FieldSource"
+        },
+        "description": "Provenance per field; missing fields have no source."
+      },
+      "FieldSource": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "example": "Open EV Data"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "description": "ISO date the value was read."
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": ["source", "confidence"]
+      },
+      "ChargerModelList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargerModel"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "ChargerModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ChargerKind"
+          },
+          "rated_kw": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "max_amperage_a": {
+            "type": ["number", "null"]
+          },
+          "adjustable_amperage": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "input_voltage_min": {
+            "type": ["number", "null"]
+          },
+          "input_voltage_max": {
+            "type": ["number", "null"]
+          },
+          "connector": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "tethered_cable": {
+            "type": "boolean"
+          },
+          "field_sources": {
+            "$ref": "#/components/schemas/FieldSources"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CatalogStatus"
+          }
+        },
+        "required": [
+          "id",
+          "brand",
+          "model",
+          "kind",
+          "rated_kw",
+          "phases",
+          "max_amperage_a",
+          "adjustable_amperage",
+          "input_voltage_min",
+          "input_voltage_max",
+          "connector",
+          "tethered_cable",
+          "field_sources",
+          "status"
+        ]
+      },
+      "ChargerKind": {
+        "type": "string",
+        "enum": ["wallbox", "portable"]
+      },
+      "ConnectorList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Connector"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "Connector": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "name": {
+            "type": "string"
+          },
+          "current": {
+            "type": "string",
+            "enum": ["AC", "DC"]
+          },
+          "max_kw_typical": {
+            "type": ["number", "null"]
+          },
+          "ocm_id": {
+            "type": ["integer", "null"],
+            "description": "ConnectionType id in Open Charge Map."
+          },
+          "compatible_adapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConnectorCode"
+            }
+          }
+        },
+        "required": ["code", "name", "current", "max_kw_typical", "ocm_id", "compatible_adapters"]
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/CatalogKind"
+          },
+          "query": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "rejected"]
+          },
+          "extracted": {
+            "type": ["object", "null"],
+            "properties": {
+              "spec": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/VehicleSubmissionSpec"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ChargerSubmissionSpec"
+                  }
+                ]
+              },
+              "confidence": {
+                "$ref": "#/components/schemas/FieldConfidence"
+              },
+              "field_urls": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": "Page each field was read from, when known."
+              }
+            },
+            "required": ["spec", "confidence", "field_urls"]
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LookupSource"
+            }
+          },
+          "created_variant_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "created_charger_model_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "query",
+          "status",
+          "extracted",
+          "sources",
+          "created_variant_id",
+          "created_charger_model_id",
+          "created_at"
+        ]
+      },
+      "CatalogKind": {
+        "type": "string",
+        "enum": ["vehicle", "charger"]
+      },
+      "VehicleSubmissionSpec": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "year_from": {
+            "type": "integer",
+            "minimum": 1990,
+            "maximum": 2100
+          },
+          "year_to": {
+            "type": ["integer", "null"],
+            "minimum": 1990,
+            "maximum": 2100,
+            "default": null
+          },
+          "trim": {
+            "type": "string",
+            "maxLength": 80,
+            "default": ""
+          },
+          "battery_gross_kwh": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "battery_usable_kwh": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "chemistry": {
+            "type": ["string", "null"],
+            "maxLength": 40
+          },
+          "range_km": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_cycle": {
+            "$ref": "#/components/schemas/RangeCycle"
+          },
+          "consumption_kwh_100km": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "curb_weight_kg": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 99999
+          },
+          "ac_onboard_kw": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "ac_phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "dc_max_kw": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "connector_ac": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "connector_dc": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          }
+        },
+        "required": [
+          "brand",
+          "model",
+          "year_from",
+          "battery_gross_kwh",
+          "battery_usable_kwh",
+          "chemistry",
+          "range_km",
+          "range_cycle",
+          "consumption_kwh_100km",
+          "curb_weight_kg",
+          "ac_onboard_kw",
+          "ac_phases",
+          "dc_max_kw",
+          "connector_ac",
+          "connector_dc"
+        ]
+      },
+      "ChargerSubmissionSpec": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ChargerKind"
+          },
+          "rated_kw": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "max_amperage_a": {
+            "type": ["number", "null"],
+            "minimum": 1,
+            "maximum": 500
+          },
+          "adjustable_amperage": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 500
+            },
+            "maxItems": 20,
+            "default": []
+          },
+          "input_voltage_min": {
+            "type": ["number", "null"],
+            "minimum": 100,
+            "maximum": 1000
+          },
+          "input_voltage_max": {
+            "type": ["number", "null"],
+            "minimum": 100,
+            "maximum": 1000
+          },
+          "connector": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "tethered_cable": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "brand",
+          "model",
+          "kind",
+          "rated_kw",
+          "max_amperage_a",
+          "input_voltage_min",
+          "input_voltage_max",
+          "connector"
+        ]
+      },
+      "FieldConfidence": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "description": "0–1 confidence per extracted field."
+      },
+      "LookupSource": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": ["title", "url"]
+      },
+      "LookupRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/CatalogKind"
+          },
+          "query": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 200,
+            "description": "Brand and model as the user writes them.",
+            "example": "Deepal S07 2025"
+          }
+        },
+        "required": ["kind", "query"]
+      },
+      "ConfirmSubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "variant_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "charger_model_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          }
+        },
+        "required": ["variant_id", "charger_model_id"]
+      },
+      "ConfirmSubmission": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ConfirmVehicleSubmission"
+          },
+          {
+            "$ref": "#/components/schemas/ConfirmChargerSubmission"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "vehicle": "#/components/schemas/ConfirmVehicleSubmission",
+            "charger": "#/components/schemas/ConfirmChargerSubmission"
+          }
+        }
+      },
+      "ConfirmVehicleSubmission": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["vehicle"]
+          },
+          "spec": {
+            "$ref": "#/components/schemas/VehicleSubmissionSpec"
+          }
+        },
+        "required": ["kind", "spec"]
+      },
+      "ConfirmChargerSubmission": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["charger"]
+          },
+          "spec": {
+            "$ref": "#/components/schemas/ChargerSubmissionSpec"
+          }
+        },
+        "required": ["kind", "spec"]
+      },
+      "VehicleList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vehicle"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "battery_health_pct": {
+            "type": "number"
+          },
+          "variant": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "brand": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "body_type": {
+                "type": ["string", "null"]
+              },
+              "trim": {
+                "type": "string"
+              },
+              "year_from": {
+                "type": "integer"
+              },
+              "year_to": {
+                "type": ["integer", "null"]
+              },
+              "status": {
+                "type": "string",
+                "enum": ["verified", "pending"]
+              }
+            },
+            "required": [
+              "id",
+              "brand",
+              "model",
+              "body_type",
+              "trim",
+              "year_from",
+              "year_to",
+              "status"
+            ]
+          },
+          "spec": {
+            "$ref": "#/components/schemas/VehicleSpec"
+          },
+          "overrides": {
+            "$ref": "#/components/schemas/VehicleOverrides"
+          },
+          "field_sources": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldSource"
+            },
+            "description": "Catalog provenance; overridden fields carry source \"usuario\"."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "nickname",
+          "is_default",
+          "battery_health_pct",
+          "variant",
+          "spec",
+          "overrides",
+          "field_sources",
+          "created_at"
+        ]
+      },
+      "VehicleSpec": {
+        "type": "object",
+        "properties": {
+          "battery_gross_kwh": {
+            "type": ["number", "null"]
+          },
+          "battery_usable_kwh": {
+            "type": ["number", "null"]
+          },
+          "chemistry": {
+            "type": ["string", "null"]
+          },
+          "range_km": {
+            "type": ["number", "null"]
+          },
+          "range_cycle": {
+            "$ref": "#/components/schemas/RangeCycle"
+          },
+          "consumption_kwh_100km": {
+            "type": ["number", "null"]
+          },
+          "curb_weight_kg": {
+            "type": ["number", "null"]
+          },
+          "ac_onboard_kw": {
+            "type": ["number", "null"]
+          },
+          "ac_phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "dc_max_kw": {
+            "type": ["number", "null"]
+          },
+          "connector_ac": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "connector_dc": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "charge_curve": {
+            "type": ["array", "null"],
+            "items": {
+              "$ref": "#/components/schemas/ChargeCurvePoint"
+            }
+          }
+        },
+        "required": [
+          "battery_gross_kwh",
+          "battery_usable_kwh",
+          "chemistry",
+          "range_km",
+          "range_cycle",
+          "consumption_kwh_100km",
+          "curb_weight_kg",
+          "ac_onboard_kw",
+          "ac_phases",
+          "dc_max_kw",
+          "connector_ac",
+          "connector_dc",
+          "charge_curve"
+        ],
+        "description": "Catalog sheet with the user's corrections applied; null = Por confirmar."
+      },
+      "VehicleOverrides": {
+        "type": "object",
+        "properties": {
+          "battery_gross_kwh": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "battery_usable_kwh": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_km": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "range_cycle": {
+            "$ref": "#/components/schemas/RangeCycle"
+          },
+          "consumption_kwh_100km": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "curb_weight_kg": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 99999
+          },
+          "ac_onboard_kw": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 999
+          },
+          "ac_phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "dc_max_kw": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 9999
+          },
+          "connector_ac": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "connector_dc": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateVehicle": {
+        "type": "object",
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nickname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "battery_health_pct": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 100,
+            "default": 100
+          },
+          "overrides": {
+            "$ref": "#/components/schemas/VehicleOverrides"
+          }
+        },
+        "required": ["variant_id"]
+      },
+      "UpdateVehicle": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "battery_health_pct": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 100
+          },
+          "overrides": {
+            "$ref": "#/components/schemas/VehicleOverrides"
+          },
+          "is_default": {
+            "type": "boolean",
+            "enum": [true],
+            "description": "Make this the default vehicle."
+          }
+        }
+      },
+      "ChargerList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Charger"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "Charger": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "use": {
+            "type": "string",
+            "enum": ["home", "public"]
+          },
+          "charger_model": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ChargerModel"
+              },
+              {
+                "type": ["object", "null"]
+              }
+            ]
+          },
+          "voltage_v": {
+            "type": "number"
+          },
+          "phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "circuit_amperage_a": {
+            "type": "number"
+          },
+          "connector": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "efficiency": {
+            "type": ["number", "null"]
+          },
+          "power": {
+            "$ref": "#/components/schemas/ChargerPower"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "use",
+          "charger_model",
+          "voltage_v",
+          "phases",
+          "circuit_amperage_a",
+          "connector",
+          "efficiency",
+          "power",
+          "created_at"
+        ]
+      },
+      "ChargerPower": {
+        "type": "object",
+        "properties": {
+          "kw": {
+            "type": "number"
+          },
+          "limited_by": {
+            "type": "string",
+            "enum": ["circuit", "charger"]
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["low_voltage_high_amperage", "amperage_above_charger_max"]
+            }
+          }
+        },
+        "required": ["kw", "limited_by", "warnings"],
+        "description": "Grid power before the vehicle's on-board limit, which depends on the car."
+      },
+      "CreateCharger": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "charger_model_id": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "default": null
+          },
+          "voltage_v": {
+            "type": "number",
+            "minimum": 100,
+            "maximum": 1000
+          },
+          "phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "circuit_amperage_a": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "connector": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "efficiency": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 1,
+            "default": null
+          }
+        },
+        "required": ["name", "voltage_v", "circuit_amperage_a"],
+        "description": "Home chargers only in the MVP."
+      },
+      "UpdateCharger": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "charger_model_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "voltage_v": {
+            "type": "number",
+            "minimum": 100,
+            "maximum": 1000
+          },
+          "phases": {
+            "$ref": "#/components/schemas/Phases"
+          },
+          "circuit_amperage_a": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "connector": {
+            "$ref": "#/components/schemas/ConnectorCode"
+          },
+          "efficiency": {
+            "type": ["number", "null"],
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          }
+        }
       }
     },
     "parameters": {}
@@ -148,6 +1394,1176 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MetaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/brands": {
+      "get": {
+        "summary": "Search brands that have visible variants (typo tolerant)",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": ""
+            },
+            "required": false,
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching brands.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BrandList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/models": {
+      "get": {
+        "summary": "Search models, optionally within a brand (\"deepal s05\", \"Deepal S-05\")",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": ""
+            },
+            "required": false,
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "brand",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching models, best first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/variants": {
+      "get": {
+        "summary": "Years and versions of a model",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "model",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Variants, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VariantList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/variants/{id}": {
+      "get": {
+        "summary": "Technical sheet of a variant with the source of each field",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The technical sheet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Variant"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The variant does not exist or is not visible.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/chargers": {
+      "get": {
+        "summary": "Search home chargers by brand and model",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": ""
+            },
+            "required": false,
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching chargers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargerModelList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/connectors": {
+      "get": {
+        "summary": "Reference connector types (Open Charge Map ids)",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All connector types.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectorList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/lookup": {
+      "post": {
+        "summary": "Look up a missing vehicle or charger with AI",
+        "description": "Searches the web and extracts a technical sheet for the user to confirm. Without AI configured the request is still recorded for an admin.",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The lookup, pending confirmation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Daily lookup limit reached.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/submissions/{id}": {
+      "get": {
+        "summary": "A lookup made by the caller",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The lookup.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such lookup for this user.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/catalog/submissions/{id}/confirm": {
+      "post": {
+        "summary": "Confirm a lookup as a pending catalog contribution",
+        "tags": ["catalog"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The pending catalog entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmSubmissionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such lookup for this user.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The lookup was already confirmed.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicles": {
+      "get": {
+        "summary": "The caller's vehicles",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicles, default first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a catalog variant to the garage",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new vehicle.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The variant does not exist or is not visible.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/vehicles/{id}": {
+      "get": {
+        "summary": "One vehicle",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The vehicle.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Rename, correct data or make default",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The vehicle.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove a vehicle from the garage",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chargers": {
+      "get": {
+        "summary": "The caller's chargers",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chargers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargerList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add a home charger",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCharger"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new charger.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Charger"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The charger model does not exist or is not visible.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chargers/{id}": {
+      "get": {
+        "summary": "One charger",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The charger.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Charger"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a charger",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCharger"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The charger.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Charger"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove a charger",
+        "tags": ["garage"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
