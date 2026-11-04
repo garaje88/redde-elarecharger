@@ -10,10 +10,12 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "demo": "tsx scripts/demo.ts"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.1.0",
+    "tsx": "^4.23.15",
     "vitest": "^5.1.0"
   }
 }
