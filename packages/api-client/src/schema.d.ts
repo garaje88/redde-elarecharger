@@ -1185,6 +1185,274 @@ export interface paths {
     };
     trace?: never;
   };
+  "/profile": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** The caller's preferences */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The profile. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Profile"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update tariff, reserve or defaults */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateProfile"];
+        };
+      };
+      responses: {
+        /** @description The profile. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Profile"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
+  "/calc/charge": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Estimate charging time, energy and cost (not saved) */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ChargeRequest"];
+        };
+      };
+      responses: {
+        /** @description The estimate. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ChargeEstimate"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle or charger does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/charge-calculations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recent saved charge calculations */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Newest first, up to 50. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ChargeCalculationList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /** Estimate and save to the history */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["ChargeRequest"];
+        };
+      };
+      responses: {
+        /** @description The saved calculation. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ChargeCalculation"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle or charger does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1629,6 +1897,119 @@ export interface components {
       connector?:
         "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       efficiency?: number | null;
+    };
+    Profile: {
+      /** Format: uuid */
+      id: string;
+      display_name: string | null;
+      /** @enum {string} */
+      units: "metric" | "imperial";
+      currency: string;
+      /** @description From the user's energy bill (COP/kWh); there is no default. */
+      tariff_per_kwh: number | null;
+      reserve_pct: number;
+      /** Format: uuid */
+      default_vehicle_id: string | null;
+      /** Format: uuid */
+      default_charger_id: string | null;
+    };
+    UpdateProfile: {
+      display_name?: string;
+      tariff_per_kwh?: number | null;
+      reserve_pct?: number;
+      /** Format: uuid */
+      default_vehicle_id?: string | null;
+      /** Format: uuid */
+      default_charger_id?: string | null;
+    };
+    ChargeEstimate: {
+      /** Format: uuid */
+      vehicle_id: string;
+      /** Format: uuid */
+      charger_id: string;
+      start_soc: number;
+      target_soc: number;
+      /** @description Power drawn from the grid. */
+      grid_power_kw: number;
+      /** @description Power reaching the battery. */
+      effective_kw: number;
+      limited_by: components["schemas"]["ChargeLimit"];
+      efficiency: number;
+      duration_min: number;
+      /** Format: date-time */
+      ends_at: string | null;
+      battery_kwh: number;
+      grid_kwh: number;
+      /** @description The user's tariff; null hides the cost. */
+      tariff_per_kwh: number | null;
+      currency: string;
+      cost: number | null;
+      range_gained_km: number | null;
+      curve: components["schemas"]["ChargeCurveSample"][];
+      warnings: components["schemas"]["ChargeWarning"][];
+      engine_version: string;
+    };
+    /**
+     * @description What caps the power.
+     * @enum {string}
+     */
+    ChargeLimit: "circuit" | "charger" | "onboard_charger" | "vehicle_dc";
+    ChargeCurveSample: {
+      minute: number;
+      soc: number;
+      kw: number;
+    };
+    /** @enum {string} */
+    ChargeWarning:
+      "onboard_charger_unknown" | "vehicle_dc_max_unknown" | "low_voltage_high_amperage";
+    ChargeRequest: {
+      /** Format: uuid */
+      vehicle_id: string;
+      /** Format: uuid */
+      charger_id: string;
+      /** @example 20 */
+      start_soc: number;
+      /** @example 80 */
+      target_soc: number;
+      /**
+       * Format: date-time
+       * @description When charging starts; the result then includes ends_at.
+       */
+      start_at?: string;
+    };
+    ChargeCalculation: {
+      /** Format: uuid */
+      vehicle_id: string;
+      /** Format: uuid */
+      charger_id: string;
+      start_soc: number;
+      target_soc: number;
+      /** @description Power drawn from the grid. */
+      grid_power_kw: number;
+      /** @description Power reaching the battery. */
+      effective_kw: number;
+      limited_by: components["schemas"]["ChargeLimit"];
+      efficiency: number;
+      duration_min: number;
+      /** Format: date-time */
+      ends_at: string | null;
+      battery_kwh: number;
+      grid_kwh: number;
+      /** @description The user's tariff; null hides the cost. */
+      tariff_per_kwh: number | null;
+      currency: string;
+      cost: number | null;
+      range_gained_km: number | null;
+      curve: components["schemas"]["ChargeCurveSample"][];
+      warnings: components["schemas"]["ChargeWarning"][];
+      engine_version: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    ChargeCalculationList: {
+      items: components["schemas"]["ChargeCalculation"][];
     };
   };
   responses: never;

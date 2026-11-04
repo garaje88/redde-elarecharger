@@ -1,4 +1,5 @@
 import "server-only";
+import { CalcInputError } from "@elacharger/calc";
 import { PROBLEM_CONTENT_TYPE, type ProblemDetails } from "@elacharger/schemas";
 import { unstable_rethrow } from "next/navigation";
 import type { NextRequest } from "next/server";
@@ -73,6 +74,16 @@ export function toProblemResponse(error: unknown, instance: string): Response {
       detail: "The request did not pass validation.",
       instance,
       errors: zodErrors(error),
+    });
+  }
+  if (error instanceof CalcInputError) {
+    return problemResponse({
+      type: "about:blank",
+      title: "Unprocessable Content",
+      status: 422,
+      detail: error.message,
+      instance,
+      errors: [{ path: error.field, message: error.message }],
     });
   }
   console.error("Unhandled API error", error);

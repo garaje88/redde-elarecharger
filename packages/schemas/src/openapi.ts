@@ -30,7 +30,14 @@ import {
   VehicleListSchema,
   VehicleSchema,
 } from "./garage";
+import {
+  ChargeCalculationListSchema,
+  ChargeCalculationSchema,
+  ChargeEstimateSchema,
+  ChargeRequestSchema,
+} from "./charge";
 import { PROBLEM_CONTENT_TYPE, ProblemDetailsSchema } from "./problem";
+import { ProfileSchema, UpdateProfileSchema } from "./profile";
 import { HealthResponseSchema, MetaResponseSchema } from "./system";
 
 const problemResponse = (description: string) => ({
@@ -273,6 +280,54 @@ function buildRegistry(): OpenAPIRegistry {
     tags: ["garage"],
     request: { params: idParam },
     responses: { 204: { description: "Deleted." }, 404: problemResponse("Not found.") },
+  });
+
+  // Profile -------------------------------------------------------------------------------
+  route({
+    method: "get",
+    path: "/profile",
+    summary: "The caller's preferences",
+    tags: ["profile"],
+    responses: { 200: json(ProfileSchema, "The profile.") },
+  });
+  route({
+    method: "patch",
+    path: "/profile",
+    summary: "Update tariff, reserve or defaults",
+    tags: ["profile"],
+    request: { body: body(UpdateProfileSchema) },
+    responses: { 200: json(ProfileSchema, "The profile.") },
+  });
+
+  // Charging (F2) ------------------------------------------------------------------------
+  route({
+    method: "post",
+    path: "/calc/charge",
+    summary: "Estimate charging time, energy and cost (not saved)",
+    tags: ["calc"],
+    request: { body: body(ChargeRequestSchema) },
+    responses: {
+      200: json(ChargeEstimateSchema, "The estimate."),
+      404: problemResponse("The vehicle or charger does not exist."),
+    },
+  });
+  route({
+    method: "post",
+    path: "/charge-calculations",
+    summary: "Estimate and save to the history",
+    tags: ["calc"],
+    request: { body: body(ChargeRequestSchema) },
+    responses: {
+      201: json(ChargeCalculationSchema, "The saved calculation."),
+      404: problemResponse("The vehicle or charger does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/charge-calculations",
+    summary: "Recent saved charge calculations",
+    tags: ["calc"],
+    responses: { 200: json(ChargeCalculationListSchema, "Newest first, up to 50.") },
   });
 
   return registry;

@@ -44,7 +44,7 @@ test("search a charger, pick voltage and amperage, and save it", async ({ page }
   await page.getByRole("button", { name: "Guardar cargador" }).click();
   await expect(page).toHaveURL(/\/garage\?tab=chargers$/);
   await expect(page.getByText("Casa E2E · Nivel 2")).toBeVisible();
-  await expect(page.getByText("220 V · 32 A · monofásico")).toBeVisible();
+  await expect(page.getByText("220 V · 32 A · monofásico").first()).toBeVisible();
 });
 
 test("a model missing from the catalog goes through the lookup and stays pending", async ({

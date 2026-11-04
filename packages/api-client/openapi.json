@@ -1435,6 +1435,346 @@
             "maximum": 1
           }
         }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "display_name": {
+            "type": ["string", "null"]
+          },
+          "units": {
+            "type": "string",
+            "enum": ["metric", "imperial"]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "tariff_per_kwh": {
+            "type": ["number", "null"],
+            "description": "From the user's energy bill (COP/kWh); there is no default."
+          },
+          "reserve_pct": {
+            "type": "integer"
+          },
+          "default_vehicle_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "default_charger_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "units",
+          "currency",
+          "tariff_per_kwh",
+          "reserve_pct",
+          "default_vehicle_id",
+          "default_charger_id"
+        ]
+      },
+      "UpdateProfile": {
+        "type": "object",
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "tariff_per_kwh": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 99999999
+          },
+          "reserve_pct": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 50
+          },
+          "default_vehicle_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "default_charger_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChargeEstimate": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "charger_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start_soc": {
+            "type": "number"
+          },
+          "target_soc": {
+            "type": "number"
+          },
+          "grid_power_kw": {
+            "type": "number",
+            "description": "Power drawn from the grid."
+          },
+          "effective_kw": {
+            "type": "number",
+            "description": "Power reaching the battery."
+          },
+          "limited_by": {
+            "$ref": "#/components/schemas/ChargeLimit"
+          },
+          "efficiency": {
+            "type": "number"
+          },
+          "duration_min": {
+            "type": "number"
+          },
+          "ends_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "battery_kwh": {
+            "type": "number"
+          },
+          "grid_kwh": {
+            "type": "number"
+          },
+          "tariff_per_kwh": {
+            "type": ["number", "null"],
+            "description": "The user's tariff; null hides the cost."
+          },
+          "currency": {
+            "type": "string"
+          },
+          "cost": {
+            "type": ["number", "null"]
+          },
+          "range_gained_km": {
+            "type": ["number", "null"]
+          },
+          "curve": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargeCurveSample"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargeWarning"
+            }
+          },
+          "engine_version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "charger_id",
+          "start_soc",
+          "target_soc",
+          "grid_power_kw",
+          "effective_kw",
+          "limited_by",
+          "efficiency",
+          "duration_min",
+          "ends_at",
+          "battery_kwh",
+          "grid_kwh",
+          "tariff_per_kwh",
+          "currency",
+          "cost",
+          "range_gained_km",
+          "curve",
+          "warnings",
+          "engine_version"
+        ]
+      },
+      "ChargeLimit": {
+        "type": "string",
+        "enum": ["circuit", "charger", "onboard_charger", "vehicle_dc"],
+        "description": "What caps the power."
+      },
+      "ChargeCurveSample": {
+        "type": "object",
+        "properties": {
+          "minute": {
+            "type": "number"
+          },
+          "soc": {
+            "type": "number"
+          },
+          "kw": {
+            "type": "number"
+          }
+        },
+        "required": ["minute", "soc", "kw"]
+      },
+      "ChargeWarning": {
+        "type": "string",
+        "enum": ["onboard_charger_unknown", "vehicle_dc_max_unknown", "low_voltage_high_amperage"]
+      },
+      "ChargeRequest": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "charger_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start_soc": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 20
+          },
+          "target_soc": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 80
+          },
+          "start_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When charging starts; the result then includes ends_at."
+          }
+        },
+        "required": ["vehicle_id", "charger_id", "start_soc", "target_soc"]
+      },
+      "ChargeCalculation": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "charger_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "start_soc": {
+            "type": "number"
+          },
+          "target_soc": {
+            "type": "number"
+          },
+          "grid_power_kw": {
+            "type": "number",
+            "description": "Power drawn from the grid."
+          },
+          "effective_kw": {
+            "type": "number",
+            "description": "Power reaching the battery."
+          },
+          "limited_by": {
+            "$ref": "#/components/schemas/ChargeLimit"
+          },
+          "efficiency": {
+            "type": "number"
+          },
+          "duration_min": {
+            "type": "number"
+          },
+          "ends_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "battery_kwh": {
+            "type": "number"
+          },
+          "grid_kwh": {
+            "type": "number"
+          },
+          "tariff_per_kwh": {
+            "type": ["number", "null"],
+            "description": "The user's tariff; null hides the cost."
+          },
+          "currency": {
+            "type": "string"
+          },
+          "cost": {
+            "type": ["number", "null"]
+          },
+          "range_gained_km": {
+            "type": ["number", "null"]
+          },
+          "curve": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargeCurveSample"
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargeWarning"
+            }
+          },
+          "engine_version": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "charger_id",
+          "start_soc",
+          "target_soc",
+          "grid_power_kw",
+          "effective_kw",
+          "limited_by",
+          "efficiency",
+          "duration_min",
+          "ends_at",
+          "battery_kwh",
+          "grid_kwh",
+          "tariff_per_kwh",
+          "currency",
+          "cost",
+          "range_gained_km",
+          "curve",
+          "warnings",
+          "engine_version",
+          "id",
+          "created_at"
+        ]
+      },
+      "ChargeCalculationList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChargeCalculation"
+            }
+          }
+        },
+        "required": ["items"]
       }
     },
     "parameters": {}
@@ -2640,6 +2980,267 @@
           },
           "404": {
             "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "summary": "The caller's preferences",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update tariff, reserve or defaults",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calc/charge": {
+      "post": {
+        "summary": "Estimate charging time, energy and cost (not saved)",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The estimate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeEstimate"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle or charger does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/charge-calculations": {
+      "post": {
+        "summary": "Estimate and save to the history",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChargeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The saved calculation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeCalculation"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle or charger does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Recent saved charge calculations",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Newest first, up to 50.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeCalculationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
             "content": {
               "application/problem+json": {
                 "schema": {

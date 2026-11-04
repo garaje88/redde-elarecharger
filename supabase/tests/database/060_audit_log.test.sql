@@ -12,7 +12,8 @@ select throws_ok(
 
 select tests.clear_authentication();
 select is(
-  (select user_id from public.audit_log where event = 'sign_in'),
+  -- now() is fixed within the transaction: only the row this test wrote.
+  (select user_id from public.audit_log where event = 'sign_in' and created_at = now()),
   :'ana'::uuid,
   'events are attributed to the caller, not to a parameter'
 );
