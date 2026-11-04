@@ -1,0 +1,12 @@
+{
+  "bogota": {
+    "label": "Bogot\u00e1, Colombia",
+    "lng": -74.0721,
+    "lat": 4.711
+  },
+  "girardot": {
+    "label": "Girardot, Cundinamarca, Colombia",
+    "lng": -74.803,
+    "lat": 4.303
+  }
+}

@@ -13,7 +13,14 @@ const eslintConfig = defineConfig([
       "react/no-danger": "error",
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "next-env.d.ts",
+    "public/vendor/**",
+  ]),
 ]);
 
 export default eslintConfig;

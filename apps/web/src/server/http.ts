@@ -76,6 +76,28 @@ export function toProblemResponse(error: unknown, instance: string): Response {
       errors: zodErrors(error),
     });
   }
+  // Matched by name: errors thrown inside "use cache" functions may lose their class.
+  if (error instanceof Error && error.name === "RoutingError") {
+    const kind = (error as Error & { kind?: string }).kind;
+    return kind === "no_route"
+      ? problemResponse({
+          type: "about:blank",
+          title: "Not Found",
+          status: 404,
+          detail: "There is no drivable route between these points.",
+          instance,
+        })
+      : problemResponse({
+          type: "about:blank",
+          title: "Service Unavailable",
+          status: 503,
+          detail:
+            kind === "not_configured"
+              ? "Routing is not configured on this server."
+              : "The routing provider is unavailable. Try again shortly.",
+          instance,
+        });
+  }
   if (error instanceof CalcInputError) {
     return problemResponse({
       type: "about:blank",

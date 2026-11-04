@@ -1775,6 +1775,689 @@
           }
         },
         "required": ["items"]
+      },
+      "PlaceList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Place"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "Place": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          }
+        },
+        "required": ["label", "lat", "lng"]
+      },
+      "Route": {
+        "type": "object",
+        "properties": {
+          "distance_km": {
+            "type": "number"
+          },
+          "duration_min": {
+            "type": "number"
+          },
+          "ascent_m": {
+            "type": "number"
+          },
+          "descent_m": {
+            "type": "number"
+          },
+          "geometry": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "bbox": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "[west, south, east, north]"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RouteSegment"
+            },
+            "description": "About 10 km each, for mountain accuracy."
+          }
+        },
+        "required": [
+          "distance_km",
+          "duration_min",
+          "ascent_m",
+          "descent_m",
+          "geometry",
+          "bbox",
+          "segments"
+        ]
+      },
+      "RouteSegment": {
+        "type": "object",
+        "properties": {
+          "distance_km": {
+            "type": "number"
+          },
+          "duration_min": {
+            "type": "number"
+          },
+          "ascent_m": {
+            "type": "number"
+          },
+          "descent_m": {
+            "type": "number"
+          }
+        },
+        "required": ["distance_km", "duration_min", "ascent_m", "descent_m"]
+      },
+      "DirectionsRequest": {
+        "type": "object",
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/LatLng"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/LatLng"
+          }
+        },
+        "required": ["origin", "destination"]
+      },
+      "LatLng": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lng": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        },
+        "required": ["lat", "lng"]
+      },
+      "TripEstimate": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route"
+          },
+          "start_soc": {
+            "type": "number"
+          },
+          "energy_kwh": {
+            "type": "number"
+          },
+          "energy_range_kwh": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": ["min", "max"],
+            "description": "±10 %."
+          },
+          "consumed_pct": {
+            "type": "number"
+          },
+          "arrival_soc": {
+            "type": "number",
+            "description": "Negative when the destination is out of reach."
+          },
+          "arrival_soc_range": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": ["min", "max"]
+          },
+          "remaining_range_km": {
+            "type": "number"
+          },
+          "reachable": {
+            "type": "boolean"
+          },
+          "below_reserve": {
+            "type": "boolean"
+          },
+          "reserve_pct": {
+            "type": "number"
+          },
+          "breakdown": {
+            "type": "object",
+            "properties": {
+              "base_consumption_kwh_100km": {
+                "type": "number"
+              },
+              "usable_kwh": {
+                "type": "number"
+              },
+              "mass_kg": {
+                "type": "number"
+              },
+              "curb_weight_estimated": {
+                "type": "boolean"
+              },
+              "style_factor": {
+                "type": "number"
+              },
+              "climate_factor": {
+                "type": "number"
+              },
+              "air_conditioning_factor": {
+                "type": "number"
+              },
+              "driving_kwh": {
+                "type": "number"
+              },
+              "climb_kwh": {
+                "type": "number"
+              },
+              "regen_kwh": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "base_consumption_kwh_100km",
+              "usable_kwh",
+              "mass_kg",
+              "curb_weight_estimated",
+              "style_factor",
+              "climate_factor",
+              "air_conditioning_factor",
+              "driving_kwh",
+              "climb_kwh",
+              "regen_kwh"
+            ],
+            "description": "\"¿Cómo se calculó?\""
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "start_soc": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "passengers": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9,
+                "default": 1,
+                "description": "Including the driver."
+              },
+              "cargo_kg": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 2000,
+                "default": 0
+              },
+              "air_conditioning": {
+                "type": "boolean",
+                "default": false
+              },
+              "style": {
+                "$ref": "#/components/schemas/DrivingStyle"
+              },
+              "outside_temp_c": {
+                "type": ["number", "null"],
+                "minimum": -40,
+                "maximum": 60,
+                "default": null
+              },
+              "reserve_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 50,
+                "description": "Defaults to the user's reserve (10 %)."
+              }
+            },
+            "required": ["start_soc"]
+          },
+          "engine_version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "origin",
+          "destination",
+          "route",
+          "start_soc",
+          "energy_kwh",
+          "energy_range_kwh",
+          "consumed_pct",
+          "arrival_soc",
+          "arrival_soc_range",
+          "remaining_range_km",
+          "reachable",
+          "below_reserve",
+          "reserve_pct",
+          "breakdown",
+          "options",
+          "engine_version"
+        ]
+      },
+      "DrivingStyle": {
+        "type": "string",
+        "enum": ["eco", "normal", "sport"],
+        "default": "normal"
+      },
+      "TripRequest": {
+        "type": "object",
+        "properties": {
+          "start_soc": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9,
+            "default": 1,
+            "description": "Including the driver."
+          },
+          "cargo_kg": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2000,
+            "default": 0
+          },
+          "air_conditioning": {
+            "type": "boolean",
+            "default": false
+          },
+          "style": {
+            "$ref": "#/components/schemas/DrivingStyle"
+          },
+          "outside_temp_c": {
+            "type": ["number", "null"],
+            "minimum": -40,
+            "maximum": 60,
+            "default": null
+          },
+          "reserve_pct": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "description": "Defaults to the user's reserve (10 %)."
+          },
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          }
+        },
+        "required": ["start_soc", "vehicle_id", "origin", "destination"]
+      },
+      "TripCalculation": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          },
+          "destination": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number",
+                "minimum": -90,
+                "maximum": 90
+              },
+              "lng": {
+                "type": "number",
+                "minimum": -180,
+                "maximum": 180
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "required": ["lat", "lng"]
+          },
+          "route": {
+            "$ref": "#/components/schemas/Route"
+          },
+          "start_soc": {
+            "type": "number"
+          },
+          "energy_kwh": {
+            "type": "number"
+          },
+          "energy_range_kwh": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": ["min", "max"],
+            "description": "±10 %."
+          },
+          "consumed_pct": {
+            "type": "number"
+          },
+          "arrival_soc": {
+            "type": "number",
+            "description": "Negative when the destination is out of reach."
+          },
+          "arrival_soc_range": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": ["min", "max"]
+          },
+          "remaining_range_km": {
+            "type": "number"
+          },
+          "reachable": {
+            "type": "boolean"
+          },
+          "below_reserve": {
+            "type": "boolean"
+          },
+          "reserve_pct": {
+            "type": "number"
+          },
+          "breakdown": {
+            "type": "object",
+            "properties": {
+              "base_consumption_kwh_100km": {
+                "type": "number"
+              },
+              "usable_kwh": {
+                "type": "number"
+              },
+              "mass_kg": {
+                "type": "number"
+              },
+              "curb_weight_estimated": {
+                "type": "boolean"
+              },
+              "style_factor": {
+                "type": "number"
+              },
+              "climate_factor": {
+                "type": "number"
+              },
+              "air_conditioning_factor": {
+                "type": "number"
+              },
+              "driving_kwh": {
+                "type": "number"
+              },
+              "climb_kwh": {
+                "type": "number"
+              },
+              "regen_kwh": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "base_consumption_kwh_100km",
+              "usable_kwh",
+              "mass_kg",
+              "curb_weight_estimated",
+              "style_factor",
+              "climate_factor",
+              "air_conditioning_factor",
+              "driving_kwh",
+              "climb_kwh",
+              "regen_kwh"
+            ],
+            "description": "\"¿Cómo se calculó?\""
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "start_soc": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "passengers": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9,
+                "default": 1,
+                "description": "Including the driver."
+              },
+              "cargo_kg": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 2000,
+                "default": 0
+              },
+              "air_conditioning": {
+                "type": "boolean",
+                "default": false
+              },
+              "style": {
+                "$ref": "#/components/schemas/DrivingStyle"
+              },
+              "outside_temp_c": {
+                "type": ["number", "null"],
+                "minimum": -40,
+                "maximum": 60,
+                "default": null
+              },
+              "reserve_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 50,
+                "description": "Defaults to the user's reserve (10 %)."
+              }
+            },
+            "required": ["start_soc"]
+          },
+          "engine_version": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "origin",
+          "destination",
+          "route",
+          "start_soc",
+          "energy_kwh",
+          "energy_range_kwh",
+          "consumed_pct",
+          "arrival_soc",
+          "arrival_soc_range",
+          "remaining_range_km",
+          "reachable",
+          "below_reserve",
+          "reserve_pct",
+          "breakdown",
+          "options",
+          "engine_version",
+          "id",
+          "created_at"
+        ]
+      },
+      "TripCalculationList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripCalculation"
+            }
+          }
+        },
+        "required": ["items"]
       }
     },
     "parameters": {}
@@ -3235,6 +3918,476 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChargeCalculationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routing/geocode": {
+      "get": {
+        "summary": "Search addresses and places (Colombia first)",
+        "tags": ["routing"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            },
+            "required": true,
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": ["number", "null"],
+              "minimum": -90,
+              "maximum": 90
+            },
+            "required": false,
+            "name": "lat",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": ["number", "null"],
+              "minimum": -180,
+              "maximum": 180
+            },
+            "required": false,
+            "name": "lng",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching places.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaceList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many routing requests; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Routing is not configured or the provider is unavailable.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routing/reverse": {
+      "get": {
+        "summary": "Name of a point on the map",
+        "tags": ["routing"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": ["number", "null"],
+              "minimum": -90,
+              "maximum": 90
+            },
+            "required": false,
+            "name": "lat",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": ["number", "null"],
+              "minimum": -180,
+              "maximum": 180
+            },
+            "required": false,
+            "name": "lng",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The closest place.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Place"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many routing requests; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Routing is not configured or the provider is unavailable.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/routing/directions": {
+      "post": {
+        "summary": "Driving route with elevation, split in ~10 km segments",
+        "tags": ["routing"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Route"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No drivable route between the points.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many routing requests; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Routing is not configured or the provider is unavailable.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calc/trip": {
+      "post": {
+        "summary": "Estimate battery use from A to B (not saved)",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The estimate with its route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripEstimate"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle does not exist or there is no route.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many routing requests; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Routing is not configured or the provider is unavailable.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trip-calculations": {
+      "post": {
+        "summary": "Estimate and save to the history",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The saved trip.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripCalculation"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle does not exist or there is no route.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many routing requests; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Routing is not configured or the provider is unavailable.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Recent saved trips",
+        "tags": ["calc"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Newest first, up to 50.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripCalculationList"
                 }
               }
             }

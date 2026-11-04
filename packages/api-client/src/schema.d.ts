@@ -1453,6 +1453,450 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/routing/geocode": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Search addresses and places (Colombia first) */
+    get: {
+      parameters: {
+        query: {
+          q: string;
+          lat?: number | null;
+          lng?: number | null;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Matching places. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["PlaceList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Too many routing requests; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Routing is not configured or the provider is unavailable. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/routing/reverse": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Name of a point on the map */
+    get: {
+      parameters: {
+        query?: {
+          lat?: number | null;
+          lng?: number | null;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The closest place. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Place"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Too many routing requests; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Routing is not configured or the provider is unavailable. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/routing/directions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Driving route with elevation, split in ~10 km segments */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["DirectionsRequest"];
+        };
+      };
+      responses: {
+        /** @description The route. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Route"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description No drivable route between the points. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Too many routing requests; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Routing is not configured or the provider is unavailable. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/calc/trip": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Estimate battery use from A to B (not saved) */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TripRequest"];
+        };
+      };
+      responses: {
+        /** @description The estimate with its route. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TripEstimate"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist or there is no route. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Too many routing requests; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Routing is not configured or the provider is unavailable. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/trip-calculations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Recent saved trips */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Newest first, up to 50. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TripCalculationList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /** Estimate and save to the history */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["TripRequest"];
+        };
+      };
+      responses: {
+        /** @description The saved trip. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["TripCalculation"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist or there is no route. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Too many routing requests; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Routing is not configured or the provider is unavailable. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2010,6 +2454,208 @@ export interface components {
     };
     ChargeCalculationList: {
       items: components["schemas"]["ChargeCalculation"][];
+    };
+    PlaceList: {
+      items: components["schemas"]["Place"][];
+    };
+    Place: {
+      label: string;
+      lat: number;
+      lng: number;
+    };
+    Route: {
+      distance_km: number;
+      duration_min: number;
+      ascent_m: number;
+      descent_m: number;
+      geometry: [number, number][];
+      /** @description [west, south, east, north] */
+      bbox: [number, number, number, number];
+      /** @description About 10 km each, for mountain accuracy. */
+      segments: components["schemas"]["RouteSegment"][];
+    };
+    RouteSegment: {
+      distance_km: number;
+      duration_min: number;
+      ascent_m: number;
+      descent_m: number;
+    };
+    DirectionsRequest: {
+      origin: components["schemas"]["LatLng"];
+      destination: components["schemas"]["LatLng"];
+    };
+    LatLng: {
+      lat: number;
+      lng: number;
+    };
+    TripEstimate: {
+      /** Format: uuid */
+      vehicle_id: string;
+      origin: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+      destination: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+      route: components["schemas"]["Route"];
+      start_soc: number;
+      energy_kwh: number;
+      /** @description ±10 %. */
+      energy_range_kwh: {
+        min: number;
+        max: number;
+      };
+      consumed_pct: number;
+      /** @description Negative when the destination is out of reach. */
+      arrival_soc: number;
+      arrival_soc_range: {
+        min: number;
+        max: number;
+      };
+      remaining_range_km: number;
+      reachable: boolean;
+      below_reserve: boolean;
+      reserve_pct: number;
+      /** @description "¿Cómo se calculó?" */
+      breakdown: {
+        base_consumption_kwh_100km: number;
+        usable_kwh: number;
+        mass_kg: number;
+        curb_weight_estimated: boolean;
+        style_factor: number;
+        climate_factor: number;
+        air_conditioning_factor: number;
+        driving_kwh: number;
+        climb_kwh: number;
+        regen_kwh: number;
+      };
+      options: {
+        start_soc: number;
+        /**
+         * @description Including the driver.
+         * @default 1
+         */
+        passengers: number;
+        /** @default 0 */
+        cargo_kg: number;
+        /** @default false */
+        air_conditioning: boolean;
+        style?: components["schemas"]["DrivingStyle"];
+        /** @default null */
+        outside_temp_c: number | null;
+        /** @description Defaults to the user's reserve (10 %). */
+        reserve_pct?: number;
+      };
+      engine_version: string;
+    };
+    /**
+     * @default normal
+     * @enum {string}
+     */
+    DrivingStyle: "eco" | "normal" | "sport";
+    TripRequest: {
+      start_soc: number;
+      /**
+       * @description Including the driver.
+       * @default 1
+       */
+      passengers: number;
+      /** @default 0 */
+      cargo_kg: number;
+      /** @default false */
+      air_conditioning: boolean;
+      style?: components["schemas"]["DrivingStyle"];
+      /** @default null */
+      outside_temp_c: number | null;
+      /** @description Defaults to the user's reserve (10 %). */
+      reserve_pct?: number;
+      /** Format: uuid */
+      vehicle_id: string;
+      origin: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+      destination: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+    };
+    TripCalculation: {
+      /** Format: uuid */
+      vehicle_id: string;
+      origin: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+      destination: {
+        lat: number;
+        lng: number;
+        label?: string;
+      };
+      route: components["schemas"]["Route"];
+      start_soc: number;
+      energy_kwh: number;
+      /** @description ±10 %. */
+      energy_range_kwh: {
+        min: number;
+        max: number;
+      };
+      consumed_pct: number;
+      /** @description Negative when the destination is out of reach. */
+      arrival_soc: number;
+      arrival_soc_range: {
+        min: number;
+        max: number;
+      };
+      remaining_range_km: number;
+      reachable: boolean;
+      below_reserve: boolean;
+      reserve_pct: number;
+      /** @description "¿Cómo se calculó?" */
+      breakdown: {
+        base_consumption_kwh_100km: number;
+        usable_kwh: number;
+        mass_kg: number;
+        curb_weight_estimated: boolean;
+        style_factor: number;
+        climate_factor: number;
+        air_conditioning_factor: number;
+        driving_kwh: number;
+        climb_kwh: number;
+        regen_kwh: number;
+      };
+      options: {
+        start_soc: number;
+        /**
+         * @description Including the driver.
+         * @default 1
+         */
+        passengers: number;
+        /** @default 0 */
+        cargo_kg: number;
+        /** @default false */
+        air_conditioning: boolean;
+        style?: components["schemas"]["DrivingStyle"];
+        /** @default null */
+        outside_temp_c: number | null;
+        /** @description Defaults to the user's reserve (10 %). */
+        reserve_pct?: number;
+      };
+      engine_version: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: date-time */
+      created_at: string;
+    };
+    TripCalculationList: {
+      items: components["schemas"]["TripCalculation"][];
     };
   };
   responses: never;

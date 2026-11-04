@@ -8,3 +8,4 @@ test-results/
 apps/web/next-env.d.ts
 CLAUDE.md
 START.md
+apps/web/public/vendor/
