@@ -1,4 +1,8 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+
+// Locally, reuse the app's env (Supabase URL and keys, E2E_SUPABASE_SECRET_KEY); CI sets them.
+if (existsSync("apps/web/.env.local")) process.loadEnvFile("apps/web/.env.local");
 
 const PORT = Number(process.env.PORT ?? 3100);
 const baseURL = `http://localhost:${PORT}`;
@@ -11,8 +15,17 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: { baseURL, trace: "on-first-retry" },
   projects: [
-    { name: "api", testMatch: /api\/.*\.spec\.ts/ },
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    { name: "api", testMatch: /api\/.*\.spec\.ts/, dependencies: ["setup"] },
     { name: "mobile", testMatch: /ui\/.*\.spec\.ts/, use: { ...devices["Pixel 7"] } },
+    {
+      name: "garage",
+      testMatch: /garage\/.*\.spec\.ts/,
+      dependencies: ["setup"],
+      // One shared test user: run these in order.
+      fullyParallel: false,
+      use: { ...devices["Pixel 7"], storageState: "playwright/.auth/user.json" },
+    },
   ],
   webServer: {
     command: `pnpm --filter @elacharger/web start --port ${PORT}`,

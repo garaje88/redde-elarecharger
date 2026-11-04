@@ -226,7 +226,8 @@
             "maximum": 9999
           },
           "range_cycle": {
-            "$ref": "#/components/schemas/RangeCycle"
+            "type": ["string", "null"],
+            "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
           },
           "status": {
             "$ref": "#/components/schemas/CatalogStatus"
@@ -242,10 +243,6 @@
           "range_cycle",
           "status"
         ]
-      },
-      "RangeCycle": {
-        "type": ["string", "null"],
-        "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
       },
       "CatalogStatus": {
         "type": "string",
@@ -317,7 +314,8 @@
             "maximum": 9999
           },
           "range_cycle": {
-            "$ref": "#/components/schemas/RangeCycle"
+            "type": ["string", "null"],
+            "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
           },
           "consumption_kwh_100km": {
             "type": ["number", "null"],
@@ -335,7 +333,19 @@
             "maximum": 999
           },
           "ac_phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dc_max_kw": {
             "type": ["number", "null"],
@@ -343,10 +353,12 @@
             "maximum": 9999
           },
           "connector_ac": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "connector_dc": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "charge_curve": {
             "type": ["array", "null"],
@@ -385,25 +397,6 @@
           "status"
         ],
         "description": "Technical sheet of one year and version."
-      },
-      "Phases": {
-        "anyOf": [
-          {
-            "type": "number",
-            "enum": [1]
-          },
-          {
-            "type": "number",
-            "enum": [3]
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "ConnectorCode": {
-        "type": ["string", "null"],
-        "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
       },
       "ChargeCurvePoint": {
         "type": "object",
@@ -483,7 +476,16 @@
             "exclusiveMinimum": 0
           },
           "phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ]
           },
           "max_amperage_a": {
             "type": ["number", "null"]
@@ -501,7 +503,8 @@
             "type": ["number", "null"]
           },
           "connector": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "tethered_cable": {
             "type": "boolean"
@@ -550,7 +553,8 @@
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": "string",
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS"]
           },
           "name": {
             "type": "string"
@@ -569,7 +573,8 @@
           "compatible_adapters": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ConnectorCode"
+              "type": "string",
+              "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS"]
             }
           }
         },
@@ -703,7 +708,8 @@
             "maximum": 9999
           },
           "range_cycle": {
-            "$ref": "#/components/schemas/RangeCycle"
+            "type": ["string", "null"],
+            "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
           },
           "consumption_kwh_100km": {
             "type": ["number", "null"],
@@ -721,7 +727,19 @@
             "maximum": 999
           },
           "ac_phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dc_max_kw": {
             "type": ["number", "null"],
@@ -729,10 +747,12 @@
             "maximum": 9999
           },
           "connector_ac": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "connector_dc": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           }
         },
         "required": [
@@ -775,7 +795,17 @@
             "maximum": 999
           },
           "phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ],
+            "default": 1
           },
           "max_amperage_a": {
             "type": ["number", "null"],
@@ -803,7 +833,8 @@
             "maximum": 1000
           },
           "connector": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "tethered_cable": {
             "type": "boolean",
@@ -1031,7 +1062,8 @@
             "type": ["number", "null"]
           },
           "range_cycle": {
-            "$ref": "#/components/schemas/RangeCycle"
+            "type": ["string", "null"],
+            "enum": ["NEDC", "WLTP", "EPA", "CLTC", null]
           },
           "consumption_kwh_100km": {
             "type": ["number", "null"]
@@ -1043,16 +1075,30 @@
             "type": ["number", "null"]
           },
           "ac_phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "dc_max_kw": {
             "type": ["number", "null"]
           },
           "connector_ac": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "connector_dc": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "charge_curve": {
             "type": ["array", "null"],
@@ -1097,7 +1143,8 @@
             "maximum": 9999
           },
           "range_cycle": {
-            "$ref": "#/components/schemas/RangeCycle"
+            "type": "string",
+            "enum": ["NEDC", "WLTP", "EPA", "CLTC"]
           },
           "consumption_kwh_100km": {
             "type": "number",
@@ -1115,7 +1162,16 @@
             "maximum": 999
           },
           "ac_phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ]
           },
           "dc_max_kw": {
             "type": "number",
@@ -1123,10 +1179,12 @@
             "maximum": 9999
           },
           "connector_ac": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": "string",
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS"]
           },
           "connector_dc": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": "string",
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS"]
           }
         },
         "additionalProperties": false
@@ -1218,13 +1276,23 @@
             "type": "number"
           },
           "phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ]
           },
           "circuit_amperage_a": {
             "type": "number"
           },
           "connector": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "efficiency": {
             "type": ["number", "null"]
@@ -1291,7 +1359,17 @@
             "maximum": 1000
           },
           "phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ],
+            "default": 1
           },
           "circuit_amperage_a": {
             "type": "number",
@@ -1299,7 +1377,9 @@
             "maximum": 500
           },
           "connector": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null],
+            "default": null
           },
           "efficiency": {
             "type": ["number", "null"],
@@ -1329,7 +1409,16 @@
             "maximum": 1000
           },
           "phases": {
-            "$ref": "#/components/schemas/Phases"
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [1]
+              },
+              {
+                "type": "number",
+                "enum": [3]
+              }
+            ]
           },
           "circuit_amperage_a": {
             "type": "number",
@@ -1337,7 +1426,8 @@
             "maximum": 500
           },
           "connector": {
-            "$ref": "#/components/schemas/ConnectorCode"
+            "type": ["string", "null"],
+            "enum": ["TYPE1", "TYPE2", "GBT_AC", "CCS1", "CCS2", "CHADEMO", "GBT_DC", "NACS", null]
           },
           "efficiency": {
             "type": ["number", "null"],

@@ -1,15 +1,9 @@
 import "server-only";
-import type {
-  CreateVehicle,
-  UpdateVehicle,
-  Variant,
-  Vehicle,
-  VehicleOverrides,
-  VehicleSpec,
-} from "@elacharger/schemas";
+import type { CreateVehicle, UpdateVehicle, Vehicle } from "@elacharger/schemas";
 import { VehicleOverridesSchema } from "@elacharger/schemas";
 import { type Db, check, unwrap } from "../db";
 import { notFound } from "../http";
+import { resolveSpec } from "@/features/garage/resolve-spec";
 import { VARIANT_SELECT, getVariant, toVariant } from "./catalog";
 
 const VEHICLE_SELECT = `
@@ -29,44 +23,6 @@ interface VehicleRow {
 }
 
 const USER_SOURCE = { source: "usuario", confidence: 1 } as const;
-
-const EMPTY_SPEC: VehicleSpec = {
-  battery_gross_kwh: null,
-  battery_usable_kwh: null,
-  chemistry: null,
-  range_km: null,
-  range_cycle: null,
-  consumption_kwh_100km: null,
-  curb_weight_kg: null,
-  ac_onboard_kw: null,
-  ac_phases: null,
-  dc_max_kw: null,
-  connector_ac: null,
-  connector_dc: null,
-  charge_curve: null,
-};
-
-/** The catalog sheet with the user's corrections on top. Pure, so the UI can preview edits. */
-export function resolveSpec(variant: Variant | null, overrides: VehicleOverrides): VehicleSpec {
-  const base: VehicleSpec = variant
-    ? {
-        battery_gross_kwh: variant.battery_gross_kwh,
-        battery_usable_kwh: variant.battery_usable_kwh,
-        chemistry: variant.chemistry,
-        range_km: variant.range_km,
-        range_cycle: variant.range_cycle,
-        consumption_kwh_100km: variant.consumption_kwh_100km,
-        curb_weight_kg: variant.curb_weight_kg,
-        ac_onboard_kw: variant.ac_onboard_kw,
-        ac_phases: variant.ac_phases,
-        dc_max_kw: variant.dc_max_kw,
-        connector_ac: variant.connector_ac,
-        connector_dc: variant.connector_dc,
-        charge_curve: variant.charge_curve,
-      }
-    : EMPTY_SPEC;
-  return { ...base, ...overrides };
-}
 
 function toVehicle(row: VehicleRow, defaultId: string | null): Vehicle {
   // Stored overrides were validated on write; parse again so a bad row cannot leak out.

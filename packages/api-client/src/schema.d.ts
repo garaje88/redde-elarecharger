@@ -1266,11 +1266,10 @@ export interface components {
       trim: string;
       battery_usable_kwh: number | null;
       range_km: number | null;
-      range_cycle: components["schemas"]["RangeCycle"];
+      /** @enum {string|null} */
+      range_cycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
       status: components["schemas"]["CatalogStatus"];
     };
-    /** @enum {string|null} */
-    RangeCycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
     /**
      * @description pending = a contribution awaiting admin review.
      * @enum {string}
@@ -1298,22 +1297,23 @@ export interface components {
       battery_usable_kwh: number | null;
       chemistry: string | null;
       range_km: number | null;
-      range_cycle: components["schemas"]["RangeCycle"];
+      /** @enum {string|null} */
+      range_cycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
       consumption_kwh_100km: number | null;
       curb_weight_kg: number | null;
       ac_onboard_kw: number | null;
-      ac_phases: components["schemas"]["Phases"];
+      ac_phases: 1 | 3 | null;
       dc_max_kw: number | null;
-      connector_ac: components["schemas"]["ConnectorCode"];
-      connector_dc: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector_ac:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
+      /** @enum {string|null} */
+      connector_dc:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       charge_curve: components["schemas"]["ChargeCurvePoint"][] | null;
       field_sources: components["schemas"]["FieldSources"];
       status: components["schemas"]["CatalogStatus"];
     };
-    Phases: 1 | 3 | null;
-    /** @enum {string|null} */
-    ConnectorCode:
-      "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
     ChargeCurvePoint: {
       soc: number;
       kw: number;
@@ -1341,12 +1341,14 @@ export interface components {
       model: string;
       kind: components["schemas"]["ChargerKind"];
       rated_kw: number;
-      phases: components["schemas"]["Phases"];
+      phases: 1 | 3;
       max_amperage_a: number | null;
       adjustable_amperage: number[];
       input_voltage_min: number | null;
       input_voltage_max: number | null;
-      connector: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       tethered_cable: boolean;
       field_sources: components["schemas"]["FieldSources"];
       status: components["schemas"]["CatalogStatus"];
@@ -1357,14 +1359,17 @@ export interface components {
       items: components["schemas"]["Connector"][];
     };
     Connector: {
-      code: components["schemas"]["ConnectorCode"];
+      /** @enum {string} */
+      code: "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS";
       name: string;
       /** @enum {string} */
       current: "AC" | "DC";
       max_kw_typical: number | null;
       /** @description ConnectionType id in Open Charge Map. */
       ocm_id: number | null;
-      compatible_adapters: components["schemas"]["ConnectorCode"][];
+      compatible_adapters: (
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS"
+      )[];
     };
     Submission: {
       /** Format: uuid */
@@ -1405,27 +1410,35 @@ export interface components {
       battery_usable_kwh: number | null;
       chemistry: string | null;
       range_km: number | null;
-      range_cycle: components["schemas"]["RangeCycle"];
+      /** @enum {string|null} */
+      range_cycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
       consumption_kwh_100km: number | null;
       curb_weight_kg: number | null;
       ac_onboard_kw: number | null;
-      ac_phases: components["schemas"]["Phases"];
+      ac_phases: 1 | 3 | null;
       dc_max_kw: number | null;
-      connector_ac: components["schemas"]["ConnectorCode"];
-      connector_dc: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector_ac:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
+      /** @enum {string|null} */
+      connector_dc:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
     };
     ChargerSubmissionSpec: {
       brand: string;
       model: string;
       kind: components["schemas"]["ChargerKind"];
       rated_kw: number;
-      phases?: components["schemas"]["Phases"];
+      /** @default 1 */
+      phases: 1 | 3;
       max_amperage_a: number | null;
       /** @default [] */
       adjustable_amperage: number[];
       input_voltage_min: number | null;
       input_voltage_max: number | null;
-      connector: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       /** @default true */
       tethered_cable: boolean;
     };
@@ -1507,28 +1520,36 @@ export interface components {
       battery_usable_kwh: number | null;
       chemistry: string | null;
       range_km: number | null;
-      range_cycle: components["schemas"]["RangeCycle"];
+      /** @enum {string|null} */
+      range_cycle: "NEDC" | "WLTP" | "EPA" | "CLTC" | null;
       consumption_kwh_100km: number | null;
       curb_weight_kg: number | null;
       ac_onboard_kw: number | null;
-      ac_phases: components["schemas"]["Phases"];
+      ac_phases: 1 | 3 | null;
       dc_max_kw: number | null;
-      connector_ac: components["schemas"]["ConnectorCode"];
-      connector_dc: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector_ac:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
+      /** @enum {string|null} */
+      connector_dc:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       charge_curve: components["schemas"]["ChargeCurvePoint"][] | null;
     };
     VehicleOverrides: {
       battery_gross_kwh?: number;
       battery_usable_kwh?: number;
       range_km?: number;
-      range_cycle?: components["schemas"]["RangeCycle"];
+      /** @enum {string} */
+      range_cycle?: "NEDC" | "WLTP" | "EPA" | "CLTC";
       consumption_kwh_100km?: number;
       curb_weight_kg?: number;
       ac_onboard_kw?: number;
-      ac_phases?: components["schemas"]["Phases"];
+      ac_phases?: 1 | 3;
       dc_max_kw?: number;
-      connector_ac?: components["schemas"]["ConnectorCode"];
-      connector_dc?: components["schemas"]["ConnectorCode"];
+      /** @enum {string} */
+      connector_ac?: "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS";
+      /** @enum {string} */
+      connector_dc?: "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS";
     };
     CreateVehicle: {
       /** Format: uuid */
@@ -1559,9 +1580,11 @@ export interface components {
       use: "home" | "public";
       charger_model: components["schemas"]["ChargerModel"] & (Record<string, never> | null);
       voltage_v: number;
-      phases: components["schemas"]["Phases"];
+      phases: 1 | 3;
       circuit_amperage_a: number;
-      connector: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       efficiency: number | null;
       power: components["schemas"]["ChargerPower"];
       /** Format: date-time */
@@ -1583,9 +1606,15 @@ export interface components {
        */
       charger_model_id: string | null;
       voltage_v: number;
-      phases?: components["schemas"]["Phases"];
+      /** @default 1 */
+      phases: 1 | 3;
       circuit_amperage_a: number;
-      connector?: components["schemas"]["ConnectorCode"];
+      /**
+       * @default null
+       * @enum {string|null}
+       */
+      connector:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       /** @default null */
       efficiency: number | null;
     };
@@ -1594,9 +1623,11 @@ export interface components {
       /** Format: uuid */
       charger_model_id?: string | null;
       voltage_v?: number;
-      phases?: components["schemas"]["Phases"];
+      phases?: 1 | 3;
       circuit_amperage_a?: number;
-      connector?: components["schemas"]["ConnectorCode"];
+      /** @enum {string|null} */
+      connector?:
+        "TYPE1" | "TYPE2" | "GBT_AC" | "CCS1" | "CCS2" | "CHADEMO" | "GBT_DC" | "NACS" | null;
       efficiency?: number | null;
     };
   };

@@ -19,18 +19,6 @@ test("GET /health answers 401 with a forged token", async ({ request }) => {
   expect(response.status()).toBe(401);
 });
 
-test("GET /health answers 200 with a real Supabase token", async ({ request }) => {
-  const token = process.env.E2E_BEARER_TOKEN;
-  test.skip(!token, "Set E2E_BEARER_TOKEN to test against a live Supabase project.");
-
-  const response = await request.get("/api/v1/health", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  expect(response.status()).toBe(200);
-  expect(await response.json()).toMatchObject({ status: "ok" });
-});
-
 test("GET /meta is public", async ({ request }) => {
   const response = await request.get("/api/v1/meta");
 

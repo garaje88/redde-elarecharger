@@ -14,13 +14,15 @@ export const CONNECTOR_CODES = [
   "NACS",
 ] as const;
 
-export const RangeCycleSchema = z.enum(RANGE_CYCLES).meta({ id: "RangeCycle" });
-export const ConnectorCodeSchema = z.enum(CONNECTOR_CODES).meta({ id: "ConnectorCode" });
+// No OpenAPI ids on enums used with .nullable(): zod-to-openapi would make the shared
+// component itself nullable.
+export const RangeCycleSchema = z.enum(RANGE_CYCLES);
+export const ConnectorCodeSchema = z.enum(CONNECTOR_CODES);
 export const CatalogStatusSchema = z
   .enum(["verified", "pending"])
   .meta({ id: "CatalogStatus", description: "pending = a contribution awaiting admin review." });
 export const ChargerKindSchema = z.enum(["wallbox", "portable"]).meta({ id: "ChargerKind" });
-export const PhasesSchema = z.union([z.literal(1), z.literal(3)]).meta({ id: "Phases" });
+export const PhasesSchema = z.union([z.literal(1), z.literal(3)]);
 
 export const FieldSourceSchema = z
   .object({

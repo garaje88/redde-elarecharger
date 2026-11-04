@@ -1,6 +1,8 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { Db } from "./db";
 
 export interface SessionUser {
   id: string;
@@ -13,7 +15,18 @@ export interface SessionUser {
  * (getClaims, never getSession) and returns a narrow user, or redirects to /login.
  * Reads cookies, so callers must render it behind a <Suspense> boundary.
  */
+/** The signed-in user's id and an RLS-bound client, for pages that call services. */
+export async function getSession(): Promise<{ userId: string; supabase: Db }> {
+  // Supabase reads the clock while validating the session: never during a prerender.
+  await connection();
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getClaims();
+  if (!data) redirect("/login");
+  return { userId: data.claims.sub, supabase };
+}
+
 export async function getCurrentUser(): Promise<SessionUser> {
+  await connection();
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getClaims();
   if (!data) redirect("/login");

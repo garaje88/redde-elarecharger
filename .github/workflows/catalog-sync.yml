@@ -1,0 +1,37 @@
+name: Catalog sync
+
+# Weekly reimport of the open sources into the production catalog (docs/PLAN.md F3).
+# Never overwrites fields an admin marked as "manual". Needs the SUPABASE_URL and
+# SUPABASE_SERVICE_ROLE_KEY repository secrets; without them the job does nothing.
+
+on:
+  schedule:
+    - cron: "17 7 * * 1" # Mondays 02:17 Bogotá
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - if: env.SUPABASE_URL == '' || env.SUPABASE_SERVICE_ROLE_KEY == ''
+        run: echo "::notice::Catalog secrets are not set; skipping."
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: actions/checkout@v4
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: pnpm/action-setup@v4
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        run: pnpm install --frozen-lockfile
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        run: pnpm catalog:import

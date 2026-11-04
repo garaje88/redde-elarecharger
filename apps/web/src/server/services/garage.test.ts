@@ -2,7 +2,7 @@ import type { ChargerModel, Submission, Variant } from "@elacharger/schemas";
 import { describe, expect, it } from "vitest";
 import { chargerPower } from "./chargers";
 import { fieldSourcesFor } from "./lookup";
-import { resolveSpec } from "./vehicles";
+import { completeOverrides, resolveSpec } from "@/features/garage/resolve-spec";
 
 const variant = {
   id: "0b8f6a4e-0000-4000-8000-000000000003",
@@ -44,6 +44,17 @@ describe("resolveSpec", () => {
       battery_usable_kwh: 40,
       range_km: null,
     });
+  });
+});
+
+describe("completeOverrides", () => {
+  it("adds the catalog cycle to a corrected range", () => {
+    const base = resolveSpec(variant, {});
+    expect(completeOverrides(base, { range_km: 420 })).toEqual({
+      range_km: 420,
+      range_cycle: "NEDC",
+    });
+    expect(completeOverrides(base, { dc_max_kw: 50 })).toEqual({ dc_max_kw: 50 });
   });
 });
 

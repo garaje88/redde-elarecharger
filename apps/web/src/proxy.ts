@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getPublicEnv } from "@/env.public";
 
 // Paths reachable without a session. /api answers 401 itself and never redirects.
-const PUBLIC_PATHS = ["/login", "/auth/", "/privacidad", "/terminos"];
+const PUBLIC_PATHS = ["/login", "/auth/", "/privacidad", "/terminos", "/acerca"];
 
 const isPublic = (pathname: string) =>
   PUBLIC_PATHS.some(
