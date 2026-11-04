@@ -26,6 +26,15 @@ pnpm db:types     # regenera packages/types desde el esquema (CI falla si queda 
 
 Para iniciar sesión con Google en local, copia `supabase/.env.example` a `supabase/.env` con el Client ID y el Secret de tu cliente OAuth, y agrega `http://127.0.0.1:54321/auth/v1/callback` como URI de redirección autorizada en Google Cloud. Los administradores del catálogo se marcan con `app_metadata.role = "admin"` (solo con la service role).
 
+## Motor de cálculo
+
+```bash
+pnpm calc:demo                              # escenarios de carga y trayecto con resultados en tablas
+pnpm --filter @elacharger/calc test         # pruebas y cobertura (incluye los 6 casos del PLAN)
+```
+
+Edita los escenarios en `packages/calc/scripts/demo.ts` (vehículo, voltaje, amperaje, %, tarifa, segmentos con subida y bajada) y vuelve a correr el demo.
+
 ## Estructura
 
 | Ruta                  | Contenido                                                   |

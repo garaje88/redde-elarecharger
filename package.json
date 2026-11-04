@@ -21,7 +21,8 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:types": "supabase gen types typescript --schema public > packages/types/src/database.ts && prettier --write packages/types/src/database.ts",
-    "check:db-types": "pnpm db:types && git diff --exit-code packages/types"
+    "check:db-types": "pnpm db:types && git diff --exit-code packages/types",
+    "calc:demo": "pnpm --filter @elacharger/calc demo"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
