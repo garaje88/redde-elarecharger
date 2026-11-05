@@ -56,16 +56,34 @@ function routeMessage(status: number | undefined) {
   return apiErrorMessage(status);
 }
 
-export function TripPlanner({ vehicles, profile }: { vehicles: Vehicle[]; profile: Profile }) {
+export function TripPlanner({
+  vehicles,
+  profile,
+  initial,
+}: {
+  vehicles: Vehicle[];
+  profile: Profile;
+  /** From "Repetir" in the history. */
+  initial?: {
+    vehicleId?: string | undefined;
+    origin: Place | null;
+    destination: Place | null;
+    options: Partial<TripOptions>;
+  };
+}) {
   const [vehicleId, setVehicleId] = useState(
-    (vehicles.find((v) => v.is_default) ?? vehicles[0])?.id ?? "",
+    (
+      vehicles.find((v) => v.id === initial?.vehicleId) ??
+      vehicles.find((v) => v.is_default) ??
+      vehicles[0]
+    )?.id ?? "",
   );
-  const [origin, setOrigin] = useState<Place | null>(null);
-  const [destination, setDestination] = useState<Place | null>(null);
-  const [active, setActive] = useState<Field>("origin");
+  const [origin, setOrigin] = useState<Place | null>(initial?.origin ?? null);
+  const [destination, setDestination] = useState<Place | null>(initial?.destination ?? null);
+  const [active, setActive] = useState<Field>(initial?.origin ? "destination" : "origin");
   const [route, setRoute] = useState<Route | null>(null);
   const [routeError, setRouteError] = useState<string | null>(null);
-  const [loadingRoute, setLoadingRoute] = useState(false);
+  const [loadingRoute, setLoadingRoute] = useState(Boolean(initial?.origin && initial.destination));
   const [options, setOptions] = useState<TripOptions>({
     start_soc: 80,
     passengers: 1,
@@ -73,6 +91,7 @@ export function TripPlanner({ vehicles, profile }: { vehicles: Vehicle[]; profil
     air_conditioning: false,
     style: "normal",
     outside_temp_c: null,
+    ...initial?.options,
   });
   const [expanded, setExpanded] = useState(true);
   const [status, setStatus] = useState<{ kind: "saved" | "error"; text: string } | null>(null);
@@ -123,14 +142,7 @@ export function TripPlanner({ vehicles, profile }: { vehicles: Vehicle[]; profil
   // Only the latest route request may update the screen.
   const routeRequest = useRef(0);
 
-  if (!vehicle) return null;
-
-  const loadRoute = async (a: Place | null, b: Place | null) => {
-    const request = ++routeRequest.current;
-    setRoute(null);
-    setRouteError(null);
-    if (!a || !b) return;
-    setLoadingRoute(true);
+  const fetchRoute = async (request: number, a: Place, b: Place) => {
     const { data, response } = await api.POST("/routing/directions", {
       body: { origin: { lat: a.lat, lng: a.lng }, destination: { lat: b.lat, lng: b.lng } },
     });
@@ -139,6 +151,27 @@ export function TripPlanner({ vehicles, profile }: { vehicles: Vehicle[]; profil
     // OpenAPI renders the [lng, lat] tuples as arrays; the server validated them with Zod.
     setRoute((data as Route | undefined) ?? null);
     if (!data) setRouteError(routeMessage(response.status));
+  };
+
+  // A repeated trip arrives with both points: route it once on mount.
+  const repeated = useRef(
+    initial?.origin && initial.destination ? { a: initial.origin, b: initial.destination } : null,
+  );
+  useEffect(() => {
+    if (!repeated.current) return;
+    void fetchRoute(++routeRequest.current, repeated.current.a, repeated.current.b);
+    repeated.current = null;
+  }, []);
+
+  if (!vehicle) return null;
+
+  const loadRoute = async (a: Place | null, b: Place | null) => {
+    const request = ++routeRequest.current;
+    setRoute(null);
+    setRouteError(null);
+    if (!a || !b) return;
+    setLoadingRoute(true);
+    await fetchRoute(request, a, b);
   };
 
   const setPoint = (field: Field, place: Place) => {
@@ -582,6 +615,12 @@ export function TripPlanner({ vehicles, profile }: { vehicles: Vehicle[]; profil
         >
           {status?.text ?? ""}
         </p>
+        <Link
+          href="/history"
+          className="text-center text-sm font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          Ver historial
+        </Link>
       </section>
     </div>
   );

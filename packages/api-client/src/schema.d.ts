@@ -1897,6 +1897,474 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/trip-calculations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete a saved trip */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/charge-calculations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete a saved charge calculation */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Logged charging sessions, newest first (cursor pagination) */
+    get: {
+      parameters: {
+        query?: {
+          vehicle?: string;
+          /** @description Cursor: started_at of the last item of the previous page. */
+          before?: string;
+          limit?: number;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description A page of sessions. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["SessionList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /** Log a real charging session */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateSession"];
+        };
+      };
+      responses: {
+        /** @description The session. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle or charger does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sessions/stats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Real consumption, cost per km, km between charges and monthly totals */
+    get: {
+      parameters: {
+        query: {
+          vehicle: string;
+          /** @description YYYY-MM in Colombian time; defaults to the current month. */
+          month?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Statistics. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["SessionStats"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/sessions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** One session */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The session. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Delete a session */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    /** Correct a session */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateSession"];
+        };
+      };
+      responses: {
+        /** @description The session. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Session"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2656,6 +3124,115 @@ export interface components {
     };
     TripCalculationList: {
       items: components["schemas"]["TripCalculation"][];
+    };
+    SessionList: {
+      items: components["schemas"]["Session"][];
+      /**
+       * Format: date-time
+       * @description Pass as ?before= to get the next page.
+       */
+      next_cursor: string | null;
+    };
+    Session: {
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      vehicle_id: string | null;
+      /** Format: uuid */
+      charger_id: string | null;
+      /** Format: date-time */
+      started_at: string;
+      /** Format: date-time */
+      ended_at: string | null;
+      start_soc: number | null;
+      end_soc: number | null;
+      /** @description kWh delivered by the charger. */
+      energy_kwh: number | null;
+      cost: number | null;
+      odometer_km: number | null;
+      location_label: string | null;
+      notes: string | null;
+      vehicle_nickname: string | null;
+      charger_name: string | null;
+      /** Format: date-time */
+      created_at: string;
+    };
+    CreateSession: {
+      /**
+       * Format: uuid
+       * @default null
+       */
+      vehicle_id: string | null;
+      /**
+       * Format: uuid
+       * @default null
+       */
+      charger_id: string | null;
+      /** Format: date-time */
+      started_at: string;
+      /**
+       * Format: date-time
+       * @default null
+       */
+      ended_at: string | null;
+      /** @default null */
+      start_soc: number | null;
+      /** @default null */
+      end_soc: number | null;
+      /**
+       * @description kWh delivered by the charger.
+       * @default null
+       */
+      energy_kwh: number | null;
+      /**
+       * @description When omitted, energy × the user's tariff, if both are known.
+       * @default null
+       */
+      cost: number | null;
+      /** @default null */
+      odometer_km: number | null;
+      /** @default null */
+      location_label: string | null;
+      /** @default null */
+      notes: string | null;
+    };
+    SessionStats: {
+      /** Format: uuid */
+      vehicle_id: string;
+      month: string;
+      currency: string;
+      real_consumption_kwh_100km: number | null;
+      estimated_consumption_kwh_100km: number | null;
+      cost_per_km: number | null;
+      avg_km_between_charges: number | null;
+      month_km: number | null;
+      month_energy_kwh: number;
+      month_sessions: number;
+      month_cost: number;
+      monthly: {
+        month: string;
+        energy_kwh: number;
+        cost: number;
+        sessions: number;
+      }[];
+    };
+    UpdateSession: {
+      /** Format: uuid */
+      vehicle_id?: string | null;
+      /** Format: uuid */
+      charger_id?: string | null;
+      /** Format: date-time */
+      started_at?: string;
+      /** Format: date-time */
+      ended_at?: string | null;
+      start_soc?: number | null;
+      end_soc?: number | null;
+      /** @description kWh delivered by the charger. */
+      energy_kwh?: number | null;
+      cost?: number | null;
+      odometer_km?: number | null;
+      location_label?: string | null;
+      notes?: string | null;
     };
   };
   responses: never;

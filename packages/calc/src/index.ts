@@ -11,5 +11,6 @@ export * from "./constants";
 export * from "./consumption";
 export * from "./curves";
 export * from "./route";
+export * from "./stats";
 export * from "./errors";
 export * from "./trip";

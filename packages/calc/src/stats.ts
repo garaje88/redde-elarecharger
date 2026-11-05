@@ -1,0 +1,155 @@
+import { assertNonNegative } from "./errors";
+
+// Real-world statistics from logged charging sessions (docs/PLAN.md phase 6).
+
+export interface SessionRecord {
+  startedAt: Date;
+  /** kWh delivered by the charger (grid side), when known. */
+  energyKwh?: number | null;
+  cost?: number | null;
+  odometerKm?: number | null;
+  startSocPct?: number | null;
+  endSocPct?: number | null;
+}
+
+export interface StatsOptions {
+  /** Usable battery, so SoC deltas can be turned into kWh (battery side). */
+  usableKwh?: number | null;
+  /** Month to summarize, "YYYY-MM" in local time. */
+  month: string;
+  /** How many months the chart covers, ending at `month`. */
+  months?: number;
+  /** Local time offset in minutes; Colombia is UTC−5 all year. */
+  utcOffsetMin?: number;
+}
+
+export interface MonthlyTotal {
+  month: string;
+  energyKwh: number;
+  cost: number;
+  sessions: number;
+}
+
+export interface SessionStats {
+  /** kWh/100 km measured between charges; null without two odometer readings. */
+  realConsumptionKwh100km: number | null;
+  costPerKm: number | null;
+  avgKmBetweenCharges: number | null;
+  /** Km between the charges that fall in `month`. */
+  monthKm: number | null;
+  monthEnergyKwh: number;
+  monthSessions: number;
+  monthCost: number;
+  monthly: MonthlyTotal[];
+}
+
+const round = (value: number, decimals: number) =>
+  Math.round(value * 10 ** decimals) / 10 ** decimals;
+
+/** "YYYY-MM" of a date in local time. */
+export function monthKey(date: Date, utcOffsetMin = -300): string {
+  const local = new Date(date.getTime() + utcOffsetMin * 60_000);
+  return `${local.getUTCFullYear()}-${String(local.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function previousMonths(month: string, count: number): string[] {
+  const [year = 0, mon = 1] = month.split("-").map(Number);
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(Date.UTC(year, mon - 1 - (count - 1 - i), 1));
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+  });
+}
+
+/**
+ * Energy used between two charges: from the SoC drop when both readings and the battery size
+ * are known (battery side, comparable with the trip estimate), otherwise the kWh of the next
+ * charge (grid side, includes charging losses).
+ */
+function energyBetween(
+  previous: SessionRecord,
+  current: SessionRecord,
+  usableKwh: number | null | undefined,
+) {
+  if (
+    usableKwh &&
+    previous.endSocPct != null &&
+    current.startSocPct != null &&
+    previous.endSocPct > current.startSocPct
+  ) {
+    return ((previous.endSocPct - current.startSocPct) / 100) * usableKwh;
+  }
+  return current.energyKwh ?? null;
+}
+
+/** Statistics for one vehicle's sessions. */
+export function sessionStats(
+  sessions: readonly SessionRecord[],
+  options: StatsOptions,
+): SessionStats {
+  const offset = options.utcOffsetMin ?? -300;
+  for (const [i, s] of sessions.entries()) {
+    if (s.energyKwh != null) assertNonNegative(`sessions.${i}.energyKwh`, s.energyKwh);
+    if (s.cost != null) assertNonNegative(`sessions.${i}.cost`, s.cost);
+    if (s.odometerKm != null) assertNonNegative(`sessions.${i}.odometerKm`, s.odometerKm);
+  }
+
+  // Consecutive charges with growing odometer readings define the distance driven.
+  const withOdometer = sessions
+    .filter((s) => s.odometerKm != null)
+    .sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime());
+  let km = 0;
+  let energy = 0;
+  let energyKm = 0;
+  let cost = 0;
+  let costKm = 0;
+  let intervals = 0;
+  let monthKm = 0;
+  let monthIntervals = 0;
+  for (let i = 1; i < withOdometer.length; i++) {
+    const previous = withOdometer[i - 1] as SessionRecord;
+    const current = withOdometer[i] as SessionRecord;
+    const driven = (current.odometerKm as number) - (previous.odometerKm as number);
+    if (driven <= 0) continue;
+    km += driven;
+    intervals++;
+    if (monthKey(current.startedAt, offset) === options.month) {
+      monthKm += driven;
+      monthIntervals++;
+    }
+    const used = energyBetween(previous, current, options.usableKwh);
+    if (used != null) {
+      energy += used;
+      energyKm += driven;
+    }
+    if (current.cost != null) {
+      cost += current.cost;
+      costKm += driven;
+    }
+  }
+
+  const months = previousMonths(options.month, options.months ?? 6);
+  const monthly = new Map(months.map((m) => [m, { month: m, energyKwh: 0, cost: 0, sessions: 0 }]));
+  for (const s of sessions) {
+    const bucket = monthly.get(monthKey(s.startedAt, offset));
+    if (!bucket) continue;
+    bucket.energyKwh += s.energyKwh ?? 0;
+    bucket.cost += s.cost ?? 0;
+    bucket.sessions++;
+  }
+  const current = monthly.get(options.month) as MonthlyTotal;
+
+  return {
+    realConsumptionKwh100km: energyKm > 0 ? round((energy / energyKm) * 100, 1) : null,
+    costPerKm: costKm > 0 ? round(cost / costKm, 1) : null,
+    avgKmBetweenCharges: intervals > 0 ? round(km / intervals, 0) : null,
+    monthKm: monthIntervals > 0 ? round(monthKm, 0) : null,
+    monthEnergyKwh: round(current.energyKwh, 1),
+    monthSessions: current.sessions,
+    monthCost: round(current.cost, 0),
+    monthly: [...monthly.values()].map((m) => ({
+      ...m,
+      energyKwh: round(m.energyKwh, 1),
+      cost: round(m.cost, 0),
+    })),
+  };
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { parseTripParams } from "@/features/history/repeat-links";
 import { getProfile } from "@/server/services/profile";
 import { listVehicles } from "@/server/services/vehicles";
 import { getSession } from "@/server/session";
@@ -8,15 +9,16 @@ import { TripPlanner } from "./trip-planner";
 
 export const metadata: Metadata = { title: "Trayecto" };
 
-export default function TripPage() {
+export default function TripPage({ searchParams }: PageProps<"/trip">) {
   return (
     <Suspense fallback={<div aria-hidden="true" className="flex-1 animate-pulse bg-muted" />}>
-      <Content />
+      <Content searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Content() {
+async function Content({ searchParams }: Pick<PageProps<"/trip">, "searchParams">) {
+  const initial = parseTripParams(await searchParams);
   const { userId, supabase } = await getSession();
   const [vehicles, profile] = await Promise.all([
     listVehicles(supabase, userId),
@@ -39,5 +41,5 @@ async function Content() {
       </main>
     );
   }
-  return <TripPlanner vehicles={vehicles} profile={profile} />;
+  return <TripPlanner vehicles={vehicles} profile={profile} initial={initial} />;
 }

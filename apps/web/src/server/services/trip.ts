@@ -9,6 +9,7 @@ import type { Json } from "@elacharger/types";
 import { estimateTripForSetup } from "@/features/trip/estimate";
 import { encodePolyline } from "@/lib/polyline";
 import { type Db, unwrap } from "../db";
+import { notFound } from "../http";
 import { getRoute } from "../routing";
 import { getProfile } from "./profile";
 import { getVehicle } from "./vehicles";
@@ -109,4 +110,12 @@ export async function listTripCalculations(db: Db): Promise<TripCalculation[]> {
     const parsed = TripEstimateSchema.safeParse((row.inputs as { estimate?: unknown }).estimate);
     return parsed.success ? [{ ...parsed.data, id: row.id, created_at: row.created_at }] : [];
   });
+}
+
+export async function deleteTripCalculation(db: Db, id: string): Promise<void> {
+  const deleted = unwrap(
+    await db.from("trip_calculations").delete().eq("id", id).select("id"),
+    "Trip",
+  );
+  if (deleted.length === 0) throw notFound("The trip does not exist.");
 }

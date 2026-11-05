@@ -47,6 +47,15 @@ import {
   RouteSchema,
 } from "./routing";
 import {
+  CreateSessionSchema,
+  SessionListQuerySchema,
+  SessionListSchema,
+  SessionSchema,
+  SessionStatsQuerySchema,
+  SessionStatsSchema,
+  UpdateSessionSchema,
+} from "./sessions";
+import {
   TripCalculationListSchema,
   TripCalculationSchema,
   TripEstimateSchema,
@@ -409,6 +418,74 @@ function buildRegistry(): OpenAPIRegistry {
     summary: "Recent saved trips",
     tags: ["calc"],
     responses: { 200: json(TripCalculationListSchema, "Newest first, up to 50.") },
+  });
+
+  // History ------------------------------------------------------------------------------
+  for (const kind of ["trip-calculations", "charge-calculations"] as const) {
+    route({
+      method: "delete",
+      path: `/${kind}/{id}`,
+      summary: `Delete a saved ${kind === "trip-calculations" ? "trip" : "charge calculation"}`,
+      tags: ["calc"],
+      request: { params: idParam },
+      responses: { 204: { description: "Deleted." }, 404: problemResponse("Not found.") },
+    });
+  }
+
+  // Charging sessions (phase 6) ------------------------------------------------------------
+  route({
+    method: "get",
+    path: "/sessions",
+    summary: "Logged charging sessions, newest first (cursor pagination)",
+    tags: ["sessions"],
+    request: { query: SessionListQuerySchema },
+    responses: { 200: json(SessionListSchema, "A page of sessions.") },
+  });
+  route({
+    method: "post",
+    path: "/sessions",
+    summary: "Log a real charging session",
+    tags: ["sessions"],
+    request: { body: body(CreateSessionSchema) },
+    responses: {
+      201: json(SessionSchema, "The session."),
+      404: problemResponse("The vehicle or charger does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/sessions/stats",
+    summary: "Real consumption, cost per km, km between charges and monthly totals",
+    tags: ["sessions"],
+    request: { query: SessionStatsQuerySchema },
+    responses: {
+      200: json(SessionStatsSchema, "Statistics."),
+      404: problemResponse("The vehicle does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/sessions/{id}",
+    summary: "One session",
+    tags: ["sessions"],
+    request: { params: idParam },
+    responses: { 200: json(SessionSchema, "The session."), 404: problemResponse("Not found.") },
+  });
+  route({
+    method: "patch",
+    path: "/sessions/{id}",
+    summary: "Correct a session",
+    tags: ["sessions"],
+    request: { params: idParam, body: body(UpdateSessionSchema) },
+    responses: { 200: json(SessionSchema, "The session."), 404: problemResponse("Not found.") },
+  });
+  route({
+    method: "delete",
+    path: "/sessions/{id}",
+    summary: "Delete a session",
+    tags: ["sessions"],
+    request: { params: idParam },
+    responses: { 204: { description: "Deleted." }, 404: problemResponse("Not found.") },
   });
 
   return registry;

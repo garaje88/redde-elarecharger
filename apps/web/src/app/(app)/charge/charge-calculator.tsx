@@ -68,23 +68,34 @@ export function ChargeCalculator({
   vehicles,
   chargers,
   profile: initialProfile,
+  initial = {},
 }: {
   vehicles: Vehicle[];
   chargers: Charger[];
   profile: Profile;
+  /** From "Repetir" in the history. */
+  initial?: { vehicleId?: string; chargerId?: string; start?: number; target?: number };
 }) {
   const now = useNow();
   const startId = useId();
   const targetId = useId();
   const [profile, setProfile] = useState(initialProfile);
   const [vehicleId, setVehicleId] = useState(
-    (vehicles.find((v) => v.is_default) ?? vehicles[0])?.id ?? "",
+    (
+      vehicles.find((v) => v.id === initial.vehicleId) ??
+      vehicles.find((v) => v.is_default) ??
+      vehicles[0]
+    )?.id ?? "",
   );
   const [chargerId, setChargerId] = useState(
-    (chargers.find((c) => c.id === initialProfile.default_charger_id) ?? chargers[0])?.id ?? "",
+    (
+      chargers.find((c) => c.id === initial.chargerId) ??
+      chargers.find((c) => c.id === initialProfile.default_charger_id) ??
+      chargers[0]
+    )?.id ?? "",
   );
-  const [start, setStart] = useState(20);
-  const [target, setTarget] = useState(80);
+  const [start, setStart] = useState(initial.start ?? 20);
+  const [target, setTarget] = useState(initial.target ?? 80);
   const [tariffDraft, setTariffDraft] = useState("");
   const [editingTariff, setEditingTariff] = useState(false);
   const [status, setStatus] = useState<{ kind: "saved" | "error"; text: string } | null>(null);
@@ -129,7 +140,15 @@ export function ChargeCalculator({
   return (
     <>
       <header className="flex flex-col gap-1">
-        <h1 className="font-heading text-[26px] font-semibold">Tiempo de carga</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="font-heading text-[26px] font-semibold">Tiempo de carga</h1>
+          <Link
+            href="/history"
+            className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
+          >
+            Historial
+          </Link>
+        </div>
         {vehicles.length > 1 ? (
           <label className="text-sm text-muted-foreground">
             <span className="sr-only">Vehículo</span>
