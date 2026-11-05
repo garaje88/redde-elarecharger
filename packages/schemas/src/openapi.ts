@@ -6,6 +6,18 @@ import {
 import { z } from "zod";
 import { AccountExportSchema, DeleteAccountSchema, IdempotencyHeadersSchema } from "./account";
 import {
+  AiExtractionSchema,
+  AiUploadRequestSchema,
+  AiUploadSchema,
+  AiUsageSummarySchema,
+  AssistantEventSchema,
+  AssistantRequestSchema,
+  ConversationListSchema,
+  ConversationSchema,
+  CreateExtractionSchema,
+  UpdateExtractionSchema,
+} from "./ai";
+import {
   BrandListSchema,
   BrandQuerySchema,
   ChargerModelListSchema,
@@ -519,6 +531,102 @@ function buildRegistry(): OpenAPIRegistry {
     tags: ["account"],
     request: { body: body(DeleteAccountSchema) },
     responses: { 204: { description: "Deleted; the session is closed." } },
+  });
+
+  // AI (phase 8) -----------------------------------------------------------------------------
+  const aiErrors = {
+    429: problemResponse("Daily AI limit reached; see Retry-After."),
+    503: problemResponse("AI is not configured or the monthly budget is spent."),
+  };
+  route({
+    method: "get",
+    path: "/ai/usage",
+    summary: "AI availability and today's usage against the daily limits",
+    tags: ["ai"],
+    responses: { 200: json(AiUsageSummarySchema, "Usage.") },
+  });
+  route({
+    method: "post",
+    path: "/ai/uploads",
+    summary:
+      "Signed URL to upload a technical sheet or a charging photo (private, deleted after reading)",
+    tags: ["ai"],
+    request: { body: body(AiUploadRequestSchema) },
+    responses: {
+      200: json(AiUploadSchema, "Upload the file with PUT to signed_url."),
+      ...aiErrors,
+    },
+  });
+  route({
+    method: "post",
+    path: "/ai/extractions",
+    summary: "Read an uploaded sheet (IA1) or charging photo (IA2) into a draft to confirm",
+    tags: ["ai"],
+    request: { body: body(CreateExtractionSchema) },
+    responses: {
+      201: json(AiExtractionSchema, "The draft; nothing is saved to the garage or sessions."),
+      404: problemResponse("The upload does not exist."),
+      ...aiErrors,
+    },
+  });
+  route({
+    method: "get",
+    path: "/ai/extractions/{id}",
+    summary: "One extraction draft",
+    tags: ["ai"],
+    request: { params: idParam },
+    responses: { 200: json(AiExtractionSchema, "The draft."), 404: problemResponse("Not found.") },
+  });
+  route({
+    method: "patch",
+    path: "/ai/extractions/{id}",
+    summary: "Mark a draft as confirmed or discarded",
+    tags: ["ai"],
+    request: { params: idParam, body: body(UpdateExtractionSchema) },
+    responses: { 200: json(AiExtractionSchema, "The draft."), 404: problemResponse("Not found.") },
+  });
+  route({
+    method: "post",
+    path: "/ai/assistant",
+    summary: "Ask the assistant (IA3); answers stream as Server-Sent Events",
+    description:
+      "Each event is `data: <AssistantEvent JSON>`. Text arrives in pieces; cards carry results computed by the app's engine. The stream ends with `done` or `error`.",
+    tags: ["ai"],
+    request: { body: body(AssistantRequestSchema) },
+    responses: {
+      200: {
+        description: "An event stream.",
+        content: { "text/event-stream": { schema: AssistantEventSchema } },
+      },
+      404: problemResponse("The conversation does not exist."),
+      ...aiErrors,
+    },
+  });
+  route({
+    method: "get",
+    path: "/ai/conversations",
+    summary: "Saved assistant conversations, newest first",
+    tags: ["ai"],
+    responses: { 200: json(ConversationListSchema, "Up to 20 conversations.") },
+  });
+  route({
+    method: "get",
+    path: "/ai/conversations/{id}",
+    summary: "One conversation as text and cards",
+    tags: ["ai"],
+    request: { params: idParam },
+    responses: {
+      200: json(ConversationSchema, "The conversation."),
+      404: problemResponse("Not found."),
+    },
+  });
+  route({
+    method: "delete",
+    path: "/ai/conversations/{id}",
+    summary: "Delete a conversation",
+    tags: ["ai"],
+    request: { params: idParam },
+    responses: { 204: { description: "Deleted." }, 404: problemResponse("Not found.") },
   });
 
   return registry;

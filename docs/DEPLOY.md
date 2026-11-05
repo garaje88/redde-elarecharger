@@ -51,8 +51,11 @@ Cada push a `main` despliega. Las ramas pueden generar versiones de vista previa
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Secret | Sí | Sin Redis, el límite de peticiones vive en la memoria de cada instancia del Worker y casi no limita |
 | `SENTRY_DSN` | Secret | Opcional | Errores del servidor, sin datos personales |
 | `SENTRY_ENVIRONMENT` | Variable | Opcional | Por defecto `production` |
-| `ANTHROPIC_API_KEY` | Secret | Opcional | IA: fichas faltantes y fase 8 |
-| `AI_MODEL_EXTRACTION`, `AI_DAILY_LIMIT_EXTRACTIONS` | Variable | Opcional | Tienen valor por defecto |
+| `ANTHROPIC_API_KEY` | Secret | Opcional | IA: búsqueda de fichas, importar ficha, recarga con foto y asistente. Sin ella, esas funciones responden 503 |
+| `AI_MODEL_EXTRACTION` | Variable | Opcional | Lectura de fichas y fotos; por defecto `claude-haiku-5-5` |
+| `AI_MODEL_ASSISTANT` | Variable | Opcional | Asistente y búsqueda web de fichas; por defecto `claude-opus-5-5` |
+| `AI_DAILY_LIMIT_EXTRACTIONS`, `AI_DAILY_LIMIT_MESSAGES` | Variable | Opcional | Por usuario y día; por defecto 20 y 50 |
+| `AI_MONTHLY_BUDGET_USD` | Variable | Opcional | Tope global de gasto estimado en IA por mes; por defecto 50 |
 
 Nunca configures `SUPABASE_SERVICE_ROLE_KEY` ni `E2E_SUPABASE_SECRET_KEY` en el Worker: la app no las usa.
 
@@ -93,3 +96,4 @@ En local sí se usan tus `.env` (es tu máquina). Para variables puntuales: `pnp
 - Las cachés en memoria (rutas, catálogo) son por instancia del Worker: funcionan, pero comparten menos.
 - `global_fetch_strictly_public` impide que el Worker llame a direcciones privadas.
 - El catálogo se sincroniza con `.github/workflows/catalog-sync.yml` cuando el repositorio tiene los secretos `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
+- IA (fase 8): la migración crea el bucket privado `ai-uploads`. La app borra cada ficha o foto apenas la lee; `.github/workflows/ai-uploads-purge.yml` borra cada hora lo que quede con más de 24 h (mismos secretos del repositorio). El gasto estimado queda en la tabla `ai_usage`.

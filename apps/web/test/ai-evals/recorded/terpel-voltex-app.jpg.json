@@ -1,0 +1,62 @@
+{
+  "raw": {
+    "found": true,
+    "energy_kwh": {
+      "value": 41.2,
+      "confidence": 0.95
+    },
+    "cost": {
+      "value": 70040,
+      "confidence": 0.95
+    },
+    "currency": {
+      "value": "COP",
+      "confidence": 0.9
+    },
+    "start_soc": {
+      "value": 12,
+      "confidence": 0.95
+    },
+    "end_soc": {
+      "value": 85,
+      "confidence": 0.95
+    },
+    "date": {
+      "value": "2026-11-02",
+      "confidence": 0.95
+    },
+    "start_time": {
+      "value": "14:20",
+      "confidence": 0.95
+    },
+    "end_time": {
+      "value": "15:08",
+      "confidence": 0.95
+    },
+    "odometer_km": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "location_label": {
+      "value": "Voltex Terpel Calle 80, Bogotá",
+      "confidence": 0.92
+    }
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3349,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 243,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  }
+}

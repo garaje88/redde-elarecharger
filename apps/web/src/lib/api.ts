@@ -15,7 +15,9 @@ export function apiErrorMessage(status: number | undefined): string {
     case 422:
       return "Revisa los datos: hay valores fuera de rango.";
     case 429:
-      return "Llegaste al límite de búsquedas de hoy. Intenta mañana.";
+      return "Llegaste al límite de hoy. Intenta mañana.";
+    case 503:
+      return "La IA no está disponible en este momento. Intenta más tarde.";
     default:
       return "Algo falló. Revisa tu conexión e intenta de nuevo.";
   }

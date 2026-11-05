@@ -3,6 +3,122 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          cards: NonNullable<Json>;
+          created_at: string;
+          id: string;
+          messages: NonNullable<Json>;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cards?: NonNullable<Json>;
+          created_at?: string;
+          id?: string;
+          messages?: NonNullable<Json>;
+          title: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          cards?: NonNullable<Json>;
+          created_at?: string;
+          id?: string;
+          messages?: NonNullable<Json>;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      ai_extractions: {
+        Row: {
+          confidence: NonNullable<Json>;
+          created_at: string;
+          extracted: NonNullable<Json>;
+          id: string;
+          kind: Database["public"]["Enums"]["ai_extraction_kind"];
+          model: string;
+          status: Database["public"]["Enums"]["ai_extraction_status"];
+          storage_path: string;
+          submission_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          confidence?: NonNullable<Json>;
+          created_at?: string;
+          extracted?: NonNullable<Json>;
+          id?: string;
+          kind: Database["public"]["Enums"]["ai_extraction_kind"];
+          model: string;
+          status?: Database["public"]["Enums"]["ai_extraction_status"];
+          storage_path: string;
+          submission_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Update: {
+          confidence?: NonNullable<Json>;
+          created_at?: string;
+          extracted?: NonNullable<Json>;
+          id?: string;
+          kind?: Database["public"]["Enums"]["ai_extraction_kind"];
+          model?: string;
+          status?: Database["public"]["Enums"]["ai_extraction_status"];
+          storage_path?: string;
+          submission_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_extractions_submission_id_fkey";
+            columns: ["submission_id"];
+            isOneToOne: false;
+            referencedRelation: "catalog_submissions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ai_usage: {
+        Row: {
+          created_at: string;
+          est_cost_usd: number;
+          feature: Database["public"]["Enums"]["ai_feature"];
+          id: number;
+          input_tokens: number;
+          model: string;
+          output_tokens: number;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          est_cost_usd: number;
+          feature: Database["public"]["Enums"]["ai_feature"];
+          id?: never;
+          input_tokens: number;
+          model: string;
+          output_tokens: number;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          est_cost_usd?: number;
+          feature?: Database["public"]["Enums"]["ai_feature"];
+          id?: never;
+          input_tokens?: number;
+          model?: string;
+          output_tokens?: number;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       audit_log: {
         Row: {
           created_at: string;
@@ -660,6 +776,7 @@ export type Database = {
           privacy_accepted_at: string | null;
           privacy_version: string | null;
           reserve_pct: number;
+          store_ai_conversations: boolean;
           store_route_geometry: boolean;
           tariff_per_kwh: number | null;
           units: Database["public"]["Enums"]["unit_system"];
@@ -678,6 +795,7 @@ export type Database = {
           privacy_accepted_at?: string | null;
           privacy_version?: string | null;
           reserve_pct?: number;
+          store_ai_conversations?: boolean;
           store_route_geometry?: boolean;
           tariff_per_kwh?: number | null;
           units?: Database["public"]["Enums"]["unit_system"];
@@ -695,6 +813,7 @@ export type Database = {
           privacy_accepted_at?: string | null;
           privacy_version?: string | null;
           reserve_pct?: number;
+          store_ai_conversations?: boolean;
           store_route_geometry?: boolean;
           tariff_per_kwh?: number | null;
           units?: Database["public"]["Enums"]["unit_system"];
@@ -848,6 +967,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      ai_spend_this_month: { Args: Record<PropertyKey, never>; Returns: number };
       catalog_match_score: { Args: { query: string; target: string }; Returns: number };
       catalog_normalize: { Args: { value: string }; Returns: string };
       confirm_charger_submission: { Args: { spec: Json; submission: string }; Returns: string };
@@ -858,6 +978,16 @@ export type Database = {
       log_audit_event: { Args: { event: string; metadata?: Json }; Returns: undefined };
       owns_charger: { Args: { charger: string }; Returns: boolean };
       owns_vehicle: { Args: { vehicle: string }; Returns: boolean };
+      record_ai_usage: {
+        Args: {
+          est_cost_usd: number;
+          feature: Database["public"]["Enums"]["ai_feature"];
+          input_tokens: number;
+          model: string;
+          output_tokens: number;
+        };
+        Returns: undefined;
+      };
       search_charger_models: {
         Args: { max_rows?: number; query?: string };
         Returns: {
@@ -915,6 +1045,9 @@ export type Database = {
       };
     };
     Enums: {
+      ai_extraction_kind: "vehicle_spec" | "charging_receipt";
+      ai_extraction_status: "pending" | "confirmed" | "discarded";
+      ai_feature: "catalog_lookup" | "vehicle_spec" | "charging_receipt" | "assistant";
       catalog_kind: "vehicle" | "charger";
       catalog_status: "pending" | "verified";
       charger_kind: "wallbox" | "portable";
@@ -1034,6 +1167,9 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_extraction_kind: ["vehicle_spec", "charging_receipt"],
+      ai_extraction_status: ["pending", "confirmed", "discarded"],
+      ai_feature: ["catalog_lookup", "vehicle_spec", "charging_receipt", "assistant"],
       catalog_kind: ["vehicle", "charger"],
       catalog_status: ["pending", "verified"],
       charger_kind: ["wallbox", "portable"],

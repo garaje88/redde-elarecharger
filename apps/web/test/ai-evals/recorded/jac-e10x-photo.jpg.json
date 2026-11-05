@@ -1,0 +1,81 @@
+{
+  "raw": {
+    "found": true,
+    "brand": "JAC",
+    "model": "E10X",
+    "trim": "",
+    "year_from": {
+      "value": 2024,
+      "confidence": 0.7
+    },
+    "year_to": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "battery_gross_kwh": {
+      "value": 31.4,
+      "confidence": 0.95
+    },
+    "battery_usable_kwh": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "chemistry": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "range_km": {
+      "value": 302,
+      "confidence": 0.95
+    },
+    "range_cycle": {
+      "value": "NEDC",
+      "confidence": 0.95
+    },
+    "consumption_kwh_100km": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "curb_weight_kg": {
+      "value": 1190,
+      "confidence": 0.95
+    },
+    "ac_onboard_kw": {
+      "value": 6.6,
+      "confidence": 0.95
+    },
+    "ac_phases": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "dc_max_kw": {
+      "value": 40,
+      "confidence": 0.95
+    },
+    "connector_ac": {
+      "value": "TYPE2",
+      "confidence": 0.95
+    },
+    "connector_dc": {
+      "value": "CCS2",
+      "confidence": 0.95
+    }
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 4685,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 662,
+    "output_tokens_details": {
+      "thinking_tokens": 294
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  }
+}

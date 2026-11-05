@@ -11,7 +11,10 @@ const PROCESSORS = [
   ["Google", "inicio de sesión con tu cuenta"],
   ["OpenRouteService (HeiGIT)", "cálculo de rutas y búsqueda de direcciones"],
   ["OpenFreeMap / MapTiler", "imágenes del mapa"],
-  ["Anthropic", "búsqueda con IA de fichas técnicas que no están en el catálogo"],
+  [
+    "Anthropic",
+    "IA: buscar y leer fichas técnicas, leer fotos de recargas y responder al asistente",
+  ],
   ["Sentry", "registro de errores, sin correo ni coordenadas"],
 ] as const;
 
@@ -53,6 +56,14 @@ export default function PrivacyPage() {
             guarda si lo permites en Ajustes.
           </li>
           <li>Tus cálculos de carga y las recargas que registres.</li>
+          <li>
+            Fichas técnicas y fotos de recargas que subas para la IA: borramos el archivo apenas lo
+            leemos (a más tardar en 24 horas) y guardamos solo los datos extraídos.
+          </li>
+          <li>
+            Tus conversaciones con el asistente, si lo permites en Ajustes. Al asistente no le
+            enviamos tu nombre ni tu correo.
+          </li>
           <li>
             Eventos de seguridad: inicios y cierres de sesión, exportación y borrado de cuenta.
           </li>

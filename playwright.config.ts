@@ -7,14 +7,20 @@ if (existsSync("apps/web/.env.local")) process.loadEnvFile("apps/web/.env.local"
 const PORT = Number(process.env.PORT ?? 3100);
 const baseURL = `http://localhost:${PORT}`;
 const ORS_MOCK_PORT = 3201;
+const ANTHROPIC_MOCK_PORT = 3202;
 // E2E_RUNTIME=cloudflare runs the suite against the OpenNext Worker (`pnpm --filter
 // @elacharger/web exec opennextjs-cloudflare build` first) instead of `next start`.
-const ORS_ENV = { ORS_API_KEY: "e2e-mock-key", ORS_BASE_URL: `http://localhost:${ORS_MOCK_PORT}` };
+const MOCK_ENV = {
+  ORS_API_KEY: "e2e-mock-key",
+  ORS_BASE_URL: `http://localhost:${ORS_MOCK_PORT}`,
+  ANTHROPIC_API_KEY: "e2e-mock-key",
+  ANTHROPIC_BASE_URL: `http://localhost:${ANTHROPIC_MOCK_PORT}`,
+};
 const webCommand =
   process.env.E2E_RUNTIME === "cloudflare"
     ? // Wrangler does not hand the shell env to the Worker: pass it as --var.
       `pnpm --filter @elacharger/web exec opennextjs-cloudflare preview --port ${PORT} ` +
-      Object.entries(ORS_ENV)
+      Object.entries(MOCK_ENV)
         .map(([key, value]) => `--var ${key}:${value}`)
         .join(" ")
     : `pnpm --filter @elacharger/web start --port ${PORT}`;
@@ -49,9 +55,17 @@ export default defineConfig({
       timeout: 30_000,
     },
     {
+      // Simulated Claude API (phase 8): recorded extractions and a scripted assistant.
+      command: `node tests/e2e/mocks/anthropic-server.mjs`,
+      url: `http://localhost:${ANTHROPIC_MOCK_PORT}/health`,
+      env: { ANTHROPIC_MOCK_PORT: String(ANTHROPIC_MOCK_PORT) },
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+    {
       command: webCommand,
       url: `${baseURL}/api/v1/meta`,
-      env: ORS_ENV,
+      env: MOCK_ENV,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

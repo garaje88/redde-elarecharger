@@ -1,5 +1,5 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import {
   CONNECTOR_CODES,
@@ -10,7 +10,7 @@ import {
   type VehicleSubmissionSpec,
 } from "@elacharger/schemas";
 import { z } from "zod";
-import { getServerEnv } from "@/env";
+import { EMPTY_USAGE, type TokenUsage, addUsage, aiModel, getAnthropic } from "./client";
 
 // IA1-style lookup (docs/PLAN.md F3): search the web for a technical sheet and extract it.
 // The model only reads and extracts; every number is validated here and confirmed by the user.
@@ -24,11 +24,16 @@ export interface SpecLookupResult {
   sources: { title: string; url: string }[];
 }
 
-export interface SpecLookupProvider {
-  lookup(kind: LookupKind, query: string): Promise<SpecLookupResult | null>;
+export interface SpecLookupOutcome {
+  result: SpecLookupResult | null;
+  model: string;
+  usage: TokenUsage;
 }
 
-const DEFAULT_MODEL = "claude-opus-5-5";
+export interface SpecLookupProvider {
+  lookup(kind: LookupKind, query: string): Promise<SpecLookupOutcome>;
+}
+
 const MAX_CONTINUATIONS = 3;
 
 /** One extracted value with how sure the model is and where it read it. */
@@ -39,25 +44,30 @@ const field = <T extends z.ZodType>(value: T) =>
     source_url: z.string().nullable(),
   });
 
+/** Vehicle sheet fields; IA1 reuses them without source URLs (the sheet is the source). */
+export const vehicleSpecFields = <T extends z.ZodType>(wrap: (value: z.ZodType) => T) => ({
+  year_from: wrap(z.number().int()),
+  year_to: wrap(z.number().int()),
+  battery_gross_kwh: wrap(z.number()),
+  battery_usable_kwh: wrap(z.number()),
+  chemistry: wrap(z.string()),
+  range_km: wrap(z.number()),
+  range_cycle: wrap(z.enum(RANGE_CYCLES)),
+  consumption_kwh_100km: wrap(z.number()),
+  curb_weight_kg: wrap(z.number()),
+  ac_onboard_kw: wrap(z.number()),
+  ac_phases: wrap(z.number().int()),
+  dc_max_kw: wrap(z.number()),
+  connector_ac: wrap(z.enum(CONNECTOR_CODES)),
+  connector_dc: wrap(z.enum(CONNECTOR_CODES)),
+});
+
 const VehicleExtraction = z.object({
   found: z.boolean().describe("false if no reliable sheet for this exact car exists"),
   brand: z.string(),
   model: z.string(),
   trim: z.string(),
-  year_from: field(z.number().int()),
-  year_to: field(z.number().int()),
-  battery_gross_kwh: field(z.number()),
-  battery_usable_kwh: field(z.number()),
-  chemistry: field(z.string()),
-  range_km: field(z.number()),
-  range_cycle: field(z.enum(RANGE_CYCLES)),
-  consumption_kwh_100km: field(z.number()),
-  curb_weight_kg: field(z.number()),
-  ac_onboard_kw: field(z.number()),
-  ac_phases: field(z.number().int()),
-  dc_max_kw: field(z.number()),
-  connector_ac: field(z.enum(CONNECTOR_CODES)),
-  connector_dc: field(z.enum(CONNECTOR_CODES)),
+  ...vehicleSpecFields(field),
 });
 
 const ChargerExtraction = z.object({
@@ -90,7 +100,7 @@ const isUrl = (value: string | null): value is string =>
   !!value && z.url().safeParse(value).success;
 
 /** Keeps only fields that pass the shared Zod schema; the rest stay null with confidence 0. */
-function toResult(
+export function toSpecResult(
   kind: LookupKind,
   extraction: Record<string, unknown>,
   sources: SpecLookupResult["sources"],
@@ -142,7 +152,7 @@ export class AnthropicSpecLookup implements SpecLookupProvider {
     private readonly model: string,
   ) {}
 
-  async lookup(kind: LookupKind, query: string): Promise<SpecLookupResult | null> {
+  async lookup(kind: LookupKind, query: string): Promise<SpecLookupOutcome> {
     const format = betaZodOutputFormat(kind === "vehicle" ? VehicleExtraction : ChargerExtraction);
     const messages: Anthropic.Beta.BetaMessageParam[] = [
       {
@@ -150,6 +160,8 @@ export class AnthropicSpecLookup implements SpecLookupProvider {
         content: `Find the technical sheet of this ${kind === "vehicle" ? "electric car" : "home EV charger"}: ${query}`,
       },
     ];
+    let usage = EMPTY_USAGE;
+    const outcome = (result: SpecLookupResult | null) => ({ result, model: this.model, usage });
 
     for (let turn = 0; turn <= MAX_CONTINUATIONS; turn++) {
       const response = await this.client.beta.messages.parse({
@@ -162,12 +174,13 @@ export class AnthropicSpecLookup implements SpecLookupProvider {
         tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
         messages,
       });
+      usage = addUsage(usage, response.usage);
 
       if (response.stop_reason === "pause_turn") {
         messages.push({ role: "assistant", content: response.content });
         continue;
       }
-      if (response.stop_reason === "refusal" || !response.parsed_output) return null;
+      if (response.stop_reason === "refusal" || !response.parsed_output) return outcome(null);
 
       const sources = new Map<string, string>();
       for (const block of response.content) {
@@ -175,13 +188,15 @@ export class AnthropicSpecLookup implements SpecLookupProvider {
           for (const result of block.content) sources.set(result.url, result.title);
         }
       }
-      return toResult(
-        kind,
-        response.parsed_output as Record<string, unknown>,
-        [...sources].slice(0, 8).map(([url, title]) => ({ url, title })),
+      return outcome(
+        toSpecResult(
+          kind,
+          response.parsed_output as Record<string, unknown>,
+          [...sources].slice(0, 8).map(([url, title]) => ({ url, title })),
+        ),
       );
     }
-    return null;
+    return outcome(null);
   }
 }
 
@@ -190,13 +205,9 @@ let provider: SpecLookupProvider | null | undefined;
 /** null when no API key is configured: lookups are then recorded for an admin to complete. */
 export function getSpecLookupProvider(): SpecLookupProvider | null {
   if (provider === undefined) {
-    const env = getServerEnv();
-    provider = env.ANTHROPIC_API_KEY
-      ? new AnthropicSpecLookup(
-          new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, timeout: 120_000, maxRetries: 1 }),
-          env.AI_MODEL_EXTRACTION ?? DEFAULT_MODEL,
-        )
-      : null;
+    const anthropic = getAnthropic();
+    // Web search and reading several pages needs the more capable model.
+    provider = anthropic ? new AnthropicSpecLookup(anthropic, aiModel("assistant")) : null;
   }
   return provider;
 }
@@ -206,4 +217,4 @@ export function setSpecLookupProvider(next: SpecLookupProvider | null | undefine
   provider = next;
 }
 
-export const __test = { toResult };
+export const __test = { toResult: toSpecResult };

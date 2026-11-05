@@ -2550,6 +2550,605 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/ai/usage": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** AI availability and today's usage against the daily limits */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Usage. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AiUsageSummary"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ai/uploads": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Signed URL to upload a technical sheet or a charging photo (private, deleted after reading) */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AiUploadRequest"];
+        };
+      };
+      responses: {
+        /** @description Upload the file with PUT to signed_url. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AiUpload"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Daily AI limit reached; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description AI is not configured or the monthly budget is spent. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ai/extractions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Read an uploaded sheet (IA1) or charging photo (IA2) into a draft to confirm */
+    post: {
+      parameters: {
+        query?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["CreateExtraction"];
+        };
+      };
+      responses: {
+        /** @description The draft; nothing is saved to the garage or sessions. */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AiExtraction"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The upload does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Daily AI limit reached; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description AI is not configured or the monthly budget is spent. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ai/extractions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** One extraction draft */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The draft. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AiExtraction"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Mark a draft as confirmed or discarded */
+    patch: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["UpdateExtraction"];
+        };
+      };
+      responses: {
+        /** @description The draft. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AiExtraction"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    trace?: never;
+  };
+  "/ai/assistant": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Ask the assistant (IA3); answers stream as Server-Sent Events
+     * @description Each event is `data: <AssistantEvent JSON>`. Text arrives in pieces; cards carry results computed by the app's engine. The stream ends with `done` or `error`.
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AssistantRequest"];
+        };
+      };
+      responses: {
+        /** @description An event stream. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "text/event-stream": components["schemas"]["AssistantEvent"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The conversation does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Daily AI limit reached; see Retry-After. */
+        429: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description AI is not configured or the monthly budget is spent. */
+        503: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ai/conversations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Saved assistant conversations, newest first */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Up to 20 conversations. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ConversationList"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ai/conversations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** One conversation as text and cards */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The conversation. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["Conversation"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    /** Delete a conversation */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: string;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Deleted. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description Not found. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3011,6 +3610,8 @@ export interface components {
       default_charger_id: string | null;
       /** @description When false, saved trips keep endpoints and results but no route line. */
       store_route_geometry: boolean;
+      /** @description When false, the assistant keeps no history on the server. */
+      store_ai_conversations: boolean;
       /** Format: date-time */
       privacy_accepted_at: string | null;
       privacy_version: string | null;
@@ -3024,6 +3625,7 @@ export interface components {
       /** Format: uuid */
       default_charger_id?: string | null;
       store_route_geometry?: boolean;
+      store_ai_conversations?: boolean;
     };
     ChargeEstimate: {
       /** Format: uuid */
@@ -3456,6 +4058,15 @@ export interface components {
       catalog_submissions: {
         [key: string]: unknown;
       }[];
+      ai_extractions: {
+        [key: string]: unknown;
+      }[];
+      ai_conversations: {
+        [key: string]: unknown;
+      }[];
+      ai_usage: {
+        [key: string]: unknown;
+      }[];
     };
     DeleteAccount: {
       /**
@@ -3463,6 +4074,302 @@ export interface components {
        * @enum {string}
        */
       confirmation: "BORRAR";
+    };
+    AiUsageSummary: {
+      /** @description false without an API key or over the budget. */
+      available: boolean;
+      extractions_today: number;
+      extractions_limit: number;
+      messages_today: number;
+      messages_limit: number;
+    };
+    AiUpload: {
+      /** @description Pass to POST /ai/extractions after uploading. */
+      path: string;
+      /**
+       * Format: uri
+       * @description PUT the file here (Supabase Storage signed upload).
+       */
+      signed_url: string;
+      token: string;
+    };
+    AiUploadRequest: {
+      kind: components["schemas"]["AiExtractionKind"];
+      content_type: components["schemas"]["AiUploadContentType"];
+      size_bytes: number;
+    };
+    /**
+     * @description vehicle_spec: a technical sheet (IA1). charging_receipt: a photo of a charge (IA2).
+     * @enum {string}
+     */
+    AiExtractionKind: "vehicle_spec" | "charging_receipt";
+    /** @enum {string} */
+    AiUploadContentType: "application/pdf" | "image/jpeg" | "image/png" | "image/webp";
+    AiExtraction:
+      | {
+          /** @enum {string} */
+          kind: "charging_receipt";
+          /** Format: uuid */
+          id: string;
+          /** @enum {string} */
+          status: "pending" | "confirmed" | "discarded";
+          model: string;
+          confidence: components["schemas"]["FieldConfidence"];
+          /** Format: date-time */
+          created_at: string;
+          draft: components["schemas"]["ReceiptDraft"];
+        }
+      | {
+          /** @enum {string} */
+          kind: "vehicle_spec";
+          /** Format: uuid */
+          id: string;
+          /** @enum {string} */
+          status: "pending" | "confirmed" | "discarded";
+          model: string;
+          confidence: components["schemas"]["FieldConfidence"];
+          /** Format: date-time */
+          created_at: string;
+          /** @description Confirm it with POST /catalog/submissions/{id}/confirm. */
+          submission: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["CatalogKind"];
+            query: string;
+            /** @enum {string} */
+            status: "pending" | "approved" | "rejected";
+            extracted: {
+              spec:
+                | components["schemas"]["VehicleSubmissionSpec"]
+                | components["schemas"]["ChargerSubmissionSpec"];
+              confidence: components["schemas"]["FieldConfidence"];
+              /** @description Page each field was read from, when known. */
+              field_urls: {
+                [key: string]: string;
+              };
+            } | null;
+            sources: components["schemas"]["LookupSource"][];
+            /** Format: uuid */
+            created_variant_id: string | null;
+            /** Format: uuid */
+            created_charger_model_id: string | null;
+            /** Format: date-time */
+            created_at: string;
+          } | null;
+        };
+    ReceiptDraft: {
+      energy_kwh: number | null;
+      cost: number | null;
+      currency: string | null;
+      start_soc: number | null;
+      end_soc: number | null;
+      /** Format: date-time */
+      started_at: string | null;
+      /** Format: date-time */
+      ended_at: string | null;
+      odometer_km: number | null;
+      location_label: string | null;
+    };
+    CreateExtraction: {
+      kind: components["schemas"]["AiExtractionKind"];
+      path: string;
+    };
+    UpdateExtraction: {
+      /** @enum {string} */
+      status: "confirmed" | "discarded";
+    };
+    AssistantEvent:
+      | {
+          /** @enum {string} */
+          type: "text";
+          text: string;
+        }
+      | {
+          /** @enum {string} */
+          type: "tool";
+          /** @description The tool the assistant is running. */
+          name: string;
+        }
+      | {
+          /** @enum {string} */
+          type: "card";
+          card: components["schemas"]["AssistantCard"];
+        }
+      | {
+          /** @enum {string} */
+          type: "done";
+          /** Format: uuid */
+          conversation_id: string | null;
+          /** @description Only when conversations are not saved; send it back next turn. */
+          history:
+            | {
+                /** @enum {string} */
+                role: "user" | "assistant";
+                content?: unknown;
+              }[]
+            | null;
+        }
+      | {
+          /** @enum {string} */
+          type: "error";
+          status: number;
+          detail: string;
+        };
+    AssistantCard:
+      | {
+          /** @enum {string} */
+          kind: "trip";
+          trip: {
+            /** Format: uuid */
+            vehicle_id: string;
+            origin: {
+              lat: number;
+              lng: number;
+              label?: string;
+            };
+            destination: {
+              lat: number;
+              lng: number;
+              label?: string;
+            };
+            start_soc: number;
+            energy_kwh: number;
+            /** @description ±10 %. */
+            energy_range_kwh: {
+              min: number;
+              max: number;
+            };
+            consumed_pct: number;
+            /** @description Negative when the destination is out of reach. */
+            arrival_soc: number;
+            arrival_soc_range: {
+              min: number;
+              max: number;
+            };
+            remaining_range_km: number;
+            reachable: boolean;
+            below_reserve: boolean;
+            reserve_pct: number;
+            /** @description "¿Cómo se calculó?" */
+            breakdown: {
+              base_consumption_kwh_100km: number;
+              usable_kwh: number;
+              mass_kg: number;
+              curb_weight_estimated: boolean;
+              style_factor: number;
+              climate_factor: number;
+              air_conditioning_factor: number;
+              driving_kwh: number;
+              climb_kwh: number;
+              regen_kwh: number;
+            };
+            options: {
+              start_soc: number;
+              /**
+               * @description Including the driver.
+               * @default 1
+               */
+              passengers: number;
+              /** @default 0 */
+              cargo_kg: number;
+              /** @default false */
+              air_conditioning: boolean;
+              style?: components["schemas"]["DrivingStyle"];
+              /** @default null */
+              outside_temp_c: number | null;
+              /** @description Defaults to the user's reserve (10 %). */
+              reserve_pct?: number;
+            };
+            engine_version: string;
+            distance_km: number;
+            duration_min: number;
+          };
+        }
+      | {
+          /** @enum {string} */
+          kind: "charge";
+          charge: {
+            /** Format: uuid */
+            vehicle_id: string;
+            /** Format: uuid */
+            charger_id: string;
+            start_soc: number;
+            target_soc: number;
+            /** @description Power drawn from the grid. */
+            grid_power_kw: number;
+            /** @description Power reaching the battery. */
+            effective_kw: number;
+            limited_by: components["schemas"]["ChargeLimit"];
+            efficiency: number;
+            duration_min: number;
+            /** Format: date-time */
+            ends_at: string | null;
+            battery_kwh: number;
+            grid_kwh: number;
+            /** @description The user's tariff; null hides the cost. */
+            tariff_per_kwh: number | null;
+            currency: string;
+            cost: number | null;
+            range_gained_km: number | null;
+            warnings: components["schemas"]["ChargeWarning"][];
+            engine_version: string;
+          };
+        }
+      | {
+          /** @enum {string} */
+          kind: "stats";
+          stats: {
+            /** Format: uuid */
+            vehicle_id: string;
+            month: string;
+            currency: string;
+            real_consumption_kwh_100km: number | null;
+            estimated_consumption_kwh_100km: number | null;
+            cost_per_km: number | null;
+            avg_km_between_charges: number | null;
+            month_km: number | null;
+            month_energy_kwh: number;
+            month_sessions: number;
+            month_cost: number;
+          };
+        };
+    AssistantRequest: {
+      message: string;
+      /**
+       * Format: uuid
+       * @description Continue a saved conversation.
+       */
+      conversation_id?: string;
+      /** @description When the user does not save conversations: the `history` of the previous `done` event, unchanged. */
+      history?: {
+        /** @enum {string} */
+        role: "user" | "assistant";
+        content?: unknown;
+      }[];
+    };
+    ConversationList: {
+      items: components["schemas"]["ConversationSummary"][];
+    };
+    ConversationSummary: {
+      /** Format: uuid */
+      id: string;
+      title: string;
+      /** Format: date-time */
+      updated_at: string;
+    };
+    Conversation: {
+      /** Format: uuid */
+      id: string;
+      title: string;
+      /** Format: date-time */
+      updated_at: string;
+      turns: components["schemas"]["AssistantTurn"][];
+    };
+    AssistantTurn: {
+      /** @enum {string} */
+      role: "user" | "assistant";
+      text: string;
+      cards: components["schemas"]["AssistantCard"][];
     };
   };
   responses: never;

@@ -1,0 +1,37 @@
+name: AI uploads purge
+
+# Deletes uploaded sheets and photos older than 24 h (docs/PLAN.md, Funcionalidades de IA).
+# Needs the SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY repository secrets; without them the job
+# does nothing.
+
+on:
+  schedule:
+    - cron: "23 * * * *" # hourly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - if: env.SUPABASE_URL == '' || env.SUPABASE_SERVICE_ROLE_KEY == ''
+        run: echo "::notice::Supabase secrets are not set; skipping."
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: actions/checkout@v4
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: pnpm/action-setup@v4
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        run: pnpm install --frozen-lockfile
+      - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
+        run: node scripts/purge-ai-uploads.mjs

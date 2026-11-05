@@ -1,11 +1,13 @@
 "use client";
 
-import type { Charger, Profile, Vehicle } from "@elacharger/schemas";
-import { ChevronLeft } from "lucide-react";
+import type { AiExtraction, Charger, Profile, Vehicle } from "@elacharger/schemas";
+import { ChevronLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { FileExtractButton } from "@/features/ai/file-extract-button";
 import { cop } from "@/features/sessions/format";
+import { settleExtraction } from "@/lib/ai-upload";
 import { api, apiErrorMessage } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
 
@@ -16,6 +18,19 @@ const decimal = (text: string): number | null => {
   const value = Number(text.trim().replace(/\./g, "").replace(",", "."));
   return text.trim() === "" || !Number.isFinite(value) ? null : value;
 };
+
+const AI_LABELS: Record<string, string> = {
+  energy_kwh: "kWh",
+  cost: "costo",
+  start_soc: "% inicial",
+  end_soc: "% final",
+  started_at: "inicio",
+  ended_at: "duración",
+  odometer_km: "odómetro",
+  location_label: "lugar",
+};
+
+const comma = (value: number) => String(value).replace(".", ",");
 
 /** "YYYY-MM-DDTHH:mm" in the browser's time, for datetime-local. */
 const localInput = (date: Date) =>
@@ -50,6 +65,7 @@ export function SessionForm({
   const [place, setPlace] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [ai, setAi] = useState<{ id: string; filled: string[]; doubtful: string[] } | null>(null);
   const [saving, startSaving] = useTransition();
   // One key per form: a double tap or a retry on a flaky connection logs the session once.
   const [idempotencyKey] = useState(() => crypto.randomUUID());
@@ -66,6 +82,47 @@ export function SessionForm({
         ) / 10
       : null;
   const kwh = decimal(energy);
+
+  /** IA2: the photo's values pre-fill the form; nothing is saved until the user does. */
+  const applyPhoto = (extraction: AiExtraction) => {
+    if (extraction.kind !== "charging_receipt") return;
+    const { draft, confidence } = extraction;
+    const filled = Object.keys(AI_LABELS).filter(
+      (key) => draft[key as keyof typeof draft] !== null && key !== "ended_at",
+    );
+    if (filled.length === 0) {
+      setAi(null);
+      return setError(
+        "No vimos datos de una recarga en la foto. Prueba con otra o llena el formulario.",
+      );
+    }
+    setError(null);
+    if (draft.energy_kwh !== null) setEnergy(comma(draft.energy_kwh));
+    if (draft.cost !== null) setCost(String(Math.round(draft.cost)));
+    if (draft.start_soc !== null) setStartSoc(comma(draft.start_soc));
+    if (draft.end_soc !== null) setEndSoc(comma(draft.end_soc));
+    if (draft.odometer_km !== null) setOdometer(String(Math.round(draft.odometer_km)));
+    if (draft.started_at !== null) {
+      setStartedAt(localInput(new Date(draft.started_at)));
+      if (draft.ended_at !== null) {
+        const total = Math.round(
+          (new Date(draft.ended_at).getTime() - new Date(draft.started_at).getTime()) / 60_000,
+        );
+        setHours(String(Math.floor(total / 60)));
+        setMinutes(String(total % 60));
+      }
+    }
+    if (draft.location_label !== null) {
+      // A named station is not the home charger.
+      setChargerId("");
+      setPlace(draft.location_label);
+    }
+    setAi({
+      id: extraction.id,
+      filled,
+      doubtful: filled.filter((key) => (confidence[key] ?? 0) < 0.6),
+    });
+  };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -94,6 +151,7 @@ export function SessionForm({
         },
       });
       if (!data) return setError(apiErrorMessage(response.status));
+      if (ai) await settleExtraction(ai.id, "confirmed");
       // Pages render per request: the target already shows the new session. A refresh here
       // would race the navigation and can cancel it.
       router.push(`/sessions?vehicle=${vehicleId}`);
@@ -112,6 +170,27 @@ export function SessionForm({
         </Link>
         <h1 className="font-heading text-[22px] font-semibold">Registrar recarga</h1>
       </header>
+
+      <FileExtractButton
+        kind="charging_receipt"
+        label="Llenar con una foto"
+        hint="Toma una foto del cargador, el recibo o el tablero. Revisas todo antes de guardar."
+        onExtracted={applyPhoto}
+      />
+      {ai && (
+        <p
+          role="status"
+          className="flex gap-2 rounded-xl bg-brand-soft px-3 py-2.5 text-sm text-foreground"
+        >
+          <Sparkles aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+          <span>
+            Llenamos {ai.filled.map((key) => AI_LABELS[key]).join(", ")} desde la foto.
+            {ai.doubtful.length > 0
+              ? ` Revisa con cuidado: ${ai.doubtful.map((key) => AI_LABELS[key]).join(", ")}.`
+              : " Revisa antes de guardar."}
+          </span>
+        </p>
+      )}
 
       <fieldset className="flex flex-col gap-3 rounded-[20px] bg-card p-4">
         <legend className="sr-only">Dónde y cuándo</legend>
