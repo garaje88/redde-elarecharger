@@ -1,66 +1,78 @@
-"use client";
-
 import type { SessionStats } from "@elacharger/schemas";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatNumber } from "@/lib/format";
 import { monthShort } from "./format";
 
+// Plain SVG (no chart library): it renders on the server and costs no JavaScript.
+const W = 340;
+const H = 170;
+const PAD = { top: 18, right: 4, bottom: 22, left: 4 };
+const PLOT_H = H - PAD.top - PAD.bottom;
+
 /** kWh charged per month; the selected month is highlighted. */
-export default function MonthlyChart({
+export function MonthlyChart({
   monthly,
   current,
 }: {
   monthly: SessionStats["monthly"];
   current: string;
 }) {
+  if (monthly.length === 0) return null;
+  const max = Math.max(1, ...monthly.map((m) => m.energy_kwh));
+  const slot = (W - PAD.left - PAD.right) / monthly.length;
+  const barW = Math.min(36, slot * 0.6);
+
   return (
-    <ResponsiveContainer width="100%" height={170}>
-      <BarChart data={monthly} margin={{ top: 8, right: 4, bottom: 0, left: -20 }}>
-        <CartesianGrid stroke="var(--border)" vertical={false} />
-        <XAxis
-          dataKey="month"
-          tickFormatter={monthShort}
-          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+    <figure className="flex flex-col gap-1">
+      <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" aria-hidden="true">
+        <line
+          x1={PAD.left}
+          x2={W - PAD.right}
+          y1={H - PAD.bottom}
+          y2={H - PAD.bottom}
           stroke="var(--border)"
         />
-        <YAxis
-          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-          stroke="var(--border)"
-          allowDecimals={false}
-        />
-        <Tooltip
-          cursor={{ fill: "var(--muted)" }}
-          formatter={(value) => [`${formatNumber(Number(value), 1)} kWh`, "Cargados"]}
-          labelFormatter={(month) => monthShort(String(month))}
-          contentStyle={{
-            background: "var(--card)",
-            border: "1px solid var(--border)",
-            borderRadius: 12,
-            fontSize: 13,
-          }}
-        />
-        <Bar
-          dataKey="energy_kwh"
-          radius={[6, 6, 0, 0]}
-          isAnimationActive={false}
-          shape={(props: {
-            x?: number;
-            y?: number;
-            width?: number;
-            height?: number;
-            payload?: { month: string };
-          }) => (
-            <rect
-              x={props.x}
-              y={props.y}
-              width={props.width}
-              height={props.height}
-              rx={6}
-              fill={props.payload?.month === current ? "var(--primary)" : "var(--brand-soft)"}
-            />
-          )}
-        />
-      </BarChart>
-    </ResponsiveContainer>
+        {monthly.map((m, i) => {
+          const h = (m.energy_kwh / max) * PLOT_H;
+          const cx = PAD.left + slot * i + slot / 2;
+          const top = H - PAD.bottom - h;
+          return (
+            <g key={m.month}>
+              {h > 0 && (
+                <rect
+                  x={cx - barW / 2}
+                  y={top}
+                  width={barW}
+                  height={h}
+                  rx={6}
+                  fill={m.month === current ? "var(--primary)" : "var(--brand-soft)"}
+                />
+              )}
+              {m.energy_kwh > 0 && (
+                <text
+                  x={cx}
+                  y={top - 4}
+                  textAnchor="middle"
+                  fontSize={11}
+                  fill="var(--muted-foreground)"
+                >
+                  {formatNumber(m.energy_kwh, 0)}
+                </text>
+              )}
+              <text
+                x={cx}
+                y={H - 6}
+                textAnchor="middle"
+                fontSize={11}
+                fontWeight={m.month === current ? 600 : 400}
+                fill={m.month === current ? "var(--foreground)" : "var(--muted-foreground)"}
+              >
+                {monthShort(m.month)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <figcaption className="sr-only">kWh cargados por mes</figcaption>
+    </figure>
   );
 }

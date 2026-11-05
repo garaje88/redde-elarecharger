@@ -619,6 +619,34 @@ export type Database = {
           },
         ];
       };
+      idempotency_keys: {
+        Row: {
+          created_at: string;
+          key: string;
+          request_hash: string;
+          response_body: Json | null;
+          response_status: number | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          key: string;
+          request_hash: string;
+          response_body?: Json | null;
+          response_status?: number | null;
+          user_id?: string;
+        };
+        Update: {
+          created_at?: string;
+          key?: string;
+          request_hash?: string;
+          response_body?: Json | null;
+          response_status?: number | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -629,7 +657,10 @@ export type Database = {
           display_name: string | null;
           id: string;
           onboarded_at: string | null;
+          privacy_accepted_at: string | null;
+          privacy_version: string | null;
           reserve_pct: number;
+          store_route_geometry: boolean;
           tariff_per_kwh: number | null;
           units: Database["public"]["Enums"]["unit_system"];
           updated_at: string;
@@ -644,7 +675,10 @@ export type Database = {
           display_name?: string | null;
           id: string;
           onboarded_at?: string | null;
+          privacy_accepted_at?: string | null;
+          privacy_version?: string | null;
           reserve_pct?: number;
+          store_route_geometry?: boolean;
           tariff_per_kwh?: number | null;
           units?: Database["public"]["Enums"]["unit_system"];
           updated_at?: string;
@@ -658,7 +692,10 @@ export type Database = {
           display_name?: string | null;
           id?: string;
           onboarded_at?: string | null;
+          privacy_accepted_at?: string | null;
+          privacy_version?: string | null;
           reserve_pct?: number;
+          store_route_geometry?: boolean;
           tariff_per_kwh?: number | null;
           units?: Database["public"]["Enums"]["unit_system"];
           updated_at?: string;
@@ -815,6 +852,7 @@ export type Database = {
       catalog_normalize: { Args: { value: string }; Returns: string };
       confirm_charger_submission: { Args: { spec: Json; submission: string }; Returns: string };
       confirm_vehicle_submission: { Args: { spec: Json; submission: string }; Returns: string };
+      delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_valid_charge_curve: { Args: { curve: Json }; Returns: boolean };
       log_audit_event: { Args: { event: string; metadata?: Json }; Returns: undefined };

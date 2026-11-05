@@ -6,7 +6,11 @@ test("signed-out visitors are sent to /login, keeping where they were going", as
   await expect(page).toHaveURL(/\/login\?next=%2Fgarage%3Ftab%3Dchargers$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "es-CO");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Continuar con Google" })).toBeEnabled();
+  // Ley 1581 de 2012: the sign-in starts only after an express authorization.
+  const signIn = page.getByRole("button", { name: "Continuar con Google" });
+  await expect(signIn).toBeDisabled();
+  await page.getByRole("checkbox", { name: /autorizo el tratamiento de mis datos/ }).check();
+  await expect(signIn).toBeEnabled();
 });
 
 test("login links to the legal documents without requiring a session", async ({ page }) => {

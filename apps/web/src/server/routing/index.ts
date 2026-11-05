@@ -1,8 +1,8 @@
 import "server-only";
 import { segmentsFromProfile } from "@elacharger/calc";
 import type { LatLng, Place, Route } from "@elacharger/schemas";
-import { cacheLife } from "next/cache";
 import { getServerEnv } from "@/env";
+import { ttlCache } from "../ttl-cache";
 import { OrsProvider } from "./ors";
 import { type RawRoute, RoutingError, type RoutingProvider } from "./provider";
 
@@ -63,16 +63,16 @@ export function toRoute(raw: RawRoute): Route {
   };
 }
 
+const DAY_MS = 86_400_000;
+
 /** Cached 24 h per rounded A→B pair, shared across users (a route holds no personal data). */
-async function cachedRoute(oLat: number, oLng: number, dLat: number, dLng: number): Promise<Route> {
-  "use cache";
-  cacheLife({ stale: 3600, revalidate: 86_400, expire: 86_400 });
-  const raw = await getRoutingProvider().directions(
-    { lat: oLat, lng: oLng },
-    { lat: dLat, lng: dLng },
-  );
-  return toRoute(raw);
-}
+const cachedRoute = ttlCache(
+  async (oLat: number, oLng: number, dLat: number, dLng: number): Promise<Route> =>
+    toRoute(
+      await getRoutingProvider().directions({ lat: oLat, lng: oLng }, { lat: dLat, lng: dLng }),
+    ),
+  { ttlMs: DAY_MS, maxEntries: 500 },
+);
 
 export function getRoute(origin: LatLng, destination: LatLng): Promise<Route> {
   const a = roundPoint(origin);
@@ -80,18 +80,11 @@ export function getRoute(origin: LatLng, destination: LatLng): Promise<Route> {
   return cachedRoute(a.lat, a.lng, b.lat, b.lng);
 }
 
-async function cachedGeocode(
-  text: string,
-  lat: number | null,
-  lng: number | null,
-): Promise<Place[]> {
-  "use cache";
-  cacheLife("days");
-  return getRoutingProvider().geocode(
-    text,
-    lat !== null && lng !== null ? { lat, lng } : undefined,
-  );
-}
+const cachedGeocode = ttlCache(
+  (text: string, lat: number | null, lng: number | null): Promise<Place[]> =>
+    getRoutingProvider().geocode(text, lat !== null && lng !== null ? { lat, lng } : undefined),
+  { ttlMs: DAY_MS, maxEntries: 2000 },
+);
 
 export function geocode(text: string, focus?: LatLng): Promise<Place[]> {
   // Focus rounded to ~1 km: good enough to rank results, and keeps the cache useful.
@@ -99,11 +92,10 @@ export function geocode(text: string, focus?: LatLng): Promise<Place[]> {
   return cachedGeocode(text.trim().toLowerCase(), f?.lat ?? null, f?.lng ?? null);
 }
 
-async function cachedReverse(lat: number, lng: number): Promise<Place | null> {
-  "use cache";
-  cacheLife("days");
-  return getRoutingProvider().reverse({ lat, lng });
-}
+const cachedReverse = ttlCache(
+  (lat: number, lng: number): Promise<Place | null> => getRoutingProvider().reverse({ lat, lng }),
+  { ttlMs: DAY_MS, maxEntries: 2000 },
+);
 
 export function reverseGeocode(point: LatLng): Promise<Place | null> {
   const p = roundPoint(point);

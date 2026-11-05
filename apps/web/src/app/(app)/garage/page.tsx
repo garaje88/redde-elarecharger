@@ -1,7 +1,6 @@
 import { Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { ChargerRow } from "@/features/garage/charger-row";
 import { DeleteButton } from "@/features/garage/delete-button";
 import { VehicleCard } from "@/features/garage/vehicle-card";
@@ -15,9 +14,7 @@ export default function GaragePage({ searchParams }: PageProps<"/garage">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 md:max-w-2xl">
       <h1 className="font-heading text-[26px] font-semibold">Garaje</h1>
-      <Suspense fallback={<GarageSkeleton />}>
-        <GarageContent searchParams={searchParams} />
-      </Suspense>
+      <GarageContent searchParams={searchParams} />
     </main>
   );
 }
@@ -133,15 +130,5 @@ async function GarageContent({ searchParams }: Pick<PageProps<"/garage">, "searc
 function EmptyState({ text }: { text: string }) {
   return (
     <p className="rounded-2xl bg-card p-5 text-center text-[15px] text-muted-foreground">{text}</p>
-  );
-}
-
-function GarageSkeleton() {
-  return (
-    <div aria-hidden="true" className="flex flex-col gap-4">
-      <div className="h-12 animate-pulse rounded-[14px] bg-muted" />
-      <div className="h-72 animate-pulse rounded-[20px] bg-muted" />
-      <div className="h-13 animate-pulse rounded-2xl bg-muted" />
-    </div>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { parseTripParams } from "@/features/history/repeat-links";
 import { getProfile } from "@/server/services/profile";
 import { listVehicles } from "@/server/services/vehicles";
@@ -10,11 +9,7 @@ import { TripPlanner } from "./trip-planner";
 export const metadata: Metadata = { title: "Trayecto" };
 
 export default function TripPage({ searchParams }: PageProps<"/trip">) {
-  return (
-    <Suspense fallback={<div aria-hidden="true" className="flex-1 animate-pulse bg-muted" />}>
-      <Content searchParams={searchParams} />
-    </Suspense>
-  );
+  return <Content searchParams={searchParams} />;
 }
 
 async function Content({ searchParams }: Pick<PageProps<"/trip">, "searchParams">) {

@@ -51,6 +51,8 @@ export function SessionForm({
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, startSaving] = useTransition();
+  // One key per form: a double tap or a retry on a flaky connection logs the session once.
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const vehicle = vehicles.find((v) => v.id === vehicleId);
   const usable = vehicle?.spec.battery_usable_kwh ?? null;
@@ -75,6 +77,7 @@ export function SessionForm({
     setError(null);
     startSaving(async () => {
       const { data, response } = await api.POST("/sessions", {
+        params: { header: { "Idempotency-Key": idempotencyKey } },
         body: {
           vehicle_id: vehicleId || null,
           charger_id: chargerId || null,
@@ -91,8 +94,9 @@ export function SessionForm({
         },
       });
       if (!data) return setError(apiErrorMessage(response.status));
+      // Pages render per request: the target already shows the new session. A refresh here
+      // would race the navigation and can cancel it.
       router.push(`/sessions?vehicle=${vehicleId}`);
-      router.refresh();
     });
   };
 

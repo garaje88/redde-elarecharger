@@ -3,7 +3,6 @@
 import { CalcInputError } from "@elacharger/calc";
 import type { Charger, Profile, Vehicle } from "@elacharger/schemas";
 import { Check } from "lucide-react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useId, useState, useTransition } from "react";
 import { estimateForSetup } from "@/features/charge/estimate";
@@ -12,12 +11,7 @@ import { chargerDetails } from "@/features/garage/charger-row";
 import { api, apiErrorMessage } from "@/lib/api";
 import { formatKw, formatNumber } from "@/lib/format";
 import { useNow } from "@/lib/use-now";
-
-// Recharts only runs in the browser and is not needed for the first paint.
-const ChargeChart = dynamic(() => import("./charge-chart"), {
-  ssr: false,
-  loading: () => <div aria-hidden="true" className="h-[180px] animate-pulse rounded-xl bg-muted" />,
-});
+import ChargeChart from "./charge-chart";
 
 const cop = (value: number, currency: string) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency, maximumFractionDigits: 0 }).format(

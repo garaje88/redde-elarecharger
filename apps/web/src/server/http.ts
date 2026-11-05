@@ -76,7 +76,7 @@ export function toProblemResponse(error: unknown, instance: string): Response {
       errors: zodErrors(error),
     });
   }
-  // Matched by name: errors thrown inside "use cache" functions may lose their class.
+  // Matched by name so the check survives module duplication across bundles.
   if (error instanceof Error && error.name === "RoutingError") {
     const kind = (error as Error & { kind?: string }).kind;
     return kind === "no_route"

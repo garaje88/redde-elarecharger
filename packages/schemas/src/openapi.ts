@@ -4,6 +4,7 @@ import {
   type RouteConfig,
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+import { AccountExportSchema, DeleteAccountSchema, IdempotencyHeadersSchema } from "./account";
 import {
   BrandListSchema,
   BrandQuerySchema,
@@ -124,12 +125,27 @@ function buildRegistry(): OpenAPIRegistry {
     config: Omit<RouteConfig, "security" | "responses"> & {
       responses: RouteConfig["responses"];
     },
-  ) =>
+  ) => {
+    // POSTs that create records accept an Idempotency-Key.
+    const creates = config.method === "post" && 201 in config.responses;
     registry.registerPath({
       ...config,
+      ...(creates ? { request: { ...config.request, headers: IdempotencyHeadersSchema } } : {}),
       security: secured,
-      responses: { ...errors, ...config.responses },
+      responses: {
+        ...errors,
+        ...(creates
+          ? {
+              409: problemResponse("A request with this Idempotency-Key is still in progress."),
+              422: problemResponse(
+                "The request did not pass validation, or the Idempotency-Key was used with another request.",
+              ),
+            }
+          : {}),
+        ...config.responses,
+      },
     });
+  };
 
   // Catalog -------------------------------------------------------------------------------
   route({
@@ -486,6 +502,23 @@ function buildRegistry(): OpenAPIRegistry {
     tags: ["sessions"],
     request: { params: idParam },
     responses: { 204: { description: "Deleted." }, 404: problemResponse("Not found.") },
+  });
+
+  // Account (phase 7) ----------------------------------------------------------------------
+  route({
+    method: "get",
+    path: "/account/export",
+    summary: "Download everything stored about the user (JSON)",
+    tags: ["account"],
+    responses: { 200: json(AccountExportSchema, "The user's data.") },
+  });
+  route({
+    method: "post",
+    path: "/account/delete",
+    summary: "Delete the account and all its data; cannot be undone",
+    tags: ["account"],
+    request: { body: body(DeleteAccountSchema) },
+    responses: { 204: { description: "Deleted; the session is closed." } },
   });
 
   return registry;

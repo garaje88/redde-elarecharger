@@ -448,7 +448,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -476,7 +479,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -580,7 +592,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path: {
           id: string;
         };
@@ -628,7 +643,7 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -696,7 +711,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -733,7 +751,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -966,7 +993,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -1003,7 +1033,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -1399,7 +1438,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -1436,7 +1478,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -1825,7 +1876,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -1862,7 +1916,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -2079,7 +2142,10 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header?: {
+          /** @description Retries with the same key replay the first response for 24 h. */
+          "Idempotency-Key"?: string;
+        };
         path?: never;
         cookie?: never;
       };
@@ -2116,7 +2182,16 @@ export interface paths {
             "application/problem+json": components["schemas"]["ProblemDetails"];
           };
         };
-        /** @description The request did not pass validation. */
+        /** @description A request with this Idempotency-Key is still in progress. */
+        409: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation, or the Idempotency-Key was used with another request. */
         422: {
           headers: {
             [name: string]: unknown;
@@ -2363,6 +2438,116 @@ export interface paths {
         };
       };
     };
+    trace?: never;
+  };
+  "/account/export": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Download everything stored about the user (JSON) */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The user's data. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["AccountExport"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/account/delete": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Delete the account and all its data; cannot be undone */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["DeleteAccount"];
+        };
+      };
+      responses: {
+        /** @description Deleted; the session is closed. */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
 }
@@ -2824,6 +3009,11 @@ export interface components {
       default_vehicle_id: string | null;
       /** Format: uuid */
       default_charger_id: string | null;
+      /** @description When false, saved trips keep endpoints and results but no route line. */
+      store_route_geometry: boolean;
+      /** Format: date-time */
+      privacy_accepted_at: string | null;
+      privacy_version: string | null;
     };
     UpdateProfile: {
       display_name?: string;
@@ -2833,6 +3023,7 @@ export interface components {
       default_vehicle_id?: string | null;
       /** Format: uuid */
       default_charger_id?: string | null;
+      store_route_geometry?: boolean;
     };
     ChargeEstimate: {
       /** Format: uuid */
@@ -3233,6 +3424,45 @@ export interface components {
       odometer_km?: number | null;
       location_label?: string | null;
       notes?: string | null;
+    };
+    AccountExport: {
+      /** @enum {number} */
+      format_version: 1;
+      /** Format: date-time */
+      exported_at: string;
+      user: {
+        /** Format: uuid */
+        id: string;
+        email: string | null;
+      };
+      profile: {
+        [key: string]: unknown;
+      } | null;
+      vehicles: {
+        [key: string]: unknown;
+      }[];
+      chargers: {
+        [key: string]: unknown;
+      }[];
+      trip_calculations: {
+        [key: string]: unknown;
+      }[];
+      charge_calculations: {
+        [key: string]: unknown;
+      }[];
+      charging_sessions: {
+        [key: string]: unknown;
+      }[];
+      catalog_submissions: {
+        [key: string]: unknown;
+      }[];
+    };
+    DeleteAccount: {
+      /**
+       * @description The user typed "BORRAR" to confirm.
+       * @enum {string}
+       */
+      confirmation: "BORRAR";
     };
   };
   responses: never;
