@@ -136,7 +136,6 @@ export function ChargerForm({ initialQuery = "" }: { initialQuery?: string }) {
       });
       if (!data) return setError(apiErrorMessage(response.status));
       router.push("/garage?tab=chargers");
-      router.refresh();
     });
 
   return (

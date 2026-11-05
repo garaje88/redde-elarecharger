@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { LookupFlow } from "./lookup-flow";
 
 export const metadata: Metadata = { title: "Buscar con IA" };
@@ -7,9 +6,7 @@ export const metadata: Metadata = { title: "Buscar con IA" };
 export default function LookupPage({ searchParams }: PageProps<"/garage/lookup">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6">
-      <Suspense>
-        <LookupContent searchParams={searchParams} />
-      </Suspense>
+      <LookupContent searchParams={searchParams} />
     </main>
   );
 }

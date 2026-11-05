@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { parseChargeParams } from "@/features/history/repeat-links";
 import { listChargers } from "@/server/services/chargers";
 import { getProfile } from "@/server/services/profile";
@@ -13,13 +12,7 @@ export const metadata: Metadata = { title: "Tiempo de carga" };
 export default function ChargePage({ searchParams }: PageProps<"/charge">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 md:max-w-xl">
-      <Suspense
-        fallback={
-          <div aria-hidden="true" className="h-[600px] animate-pulse rounded-[20px] bg-muted" />
-        }
-      >
-        <Content searchParams={searchParams} />
-      </Suspense>
+      <Content searchParams={searchParams} />
     </main>
   );
 }

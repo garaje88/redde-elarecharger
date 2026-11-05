@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { connection } from "next/server";
+import { ServiceWorkerRegistration } from "@/components/service-worker";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,6 +19,11 @@ export const metadata: Metadata = {
   description:
     "Calcula el consumo de batería de tu trayecto y el tiempo de carga de tu carro eléctrico.",
   applicationName: "Elacharger",
+  appleWebApp: { capable: true, title: "Elacharger", statusBarStyle: "default" },
+  icons: {
+    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport: Viewport = {
@@ -26,10 +33,16 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Every page renders per request: the CSP nonce set in proxy.ts must reach Next's scripts,
+  // and a prerendered page would carry none.
+  await connection();
   return (
     <html lang="es-CO" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        <ServiceWorkerRegistration />
+      </body>
     </html>
   );
 }

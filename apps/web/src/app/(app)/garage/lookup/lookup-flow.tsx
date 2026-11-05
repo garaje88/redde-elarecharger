@@ -187,7 +187,6 @@ export function LookupFlow({ kind, initialQuery }: { kind: Kind; initialQuery: s
           `/garage/chargers/new?q=${encodeURIComponent(`${String(spec.brand)} ${String(spec.model)}`)}`,
         );
       }
-      router.refresh();
     });
   };
 

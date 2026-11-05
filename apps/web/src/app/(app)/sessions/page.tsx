@@ -2,7 +2,6 @@ import { monthKey } from "@elacharger/calc";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { DeleteButton } from "@/features/garage/delete-button";
 import {
   cop,
@@ -11,7 +10,7 @@ import {
   sessionSummary,
   shiftMonth,
 } from "@/features/sessions/format";
-import { MonthlyChartLazy } from "@/features/sessions/monthly-chart-lazy";
+import { MonthlyChart } from "@/features/sessions/monthly-chart";
 import { formatNumber } from "@/lib/format";
 import { getSessionStats, listSessions } from "@/server/services/sessions";
 import { getProfile } from "@/server/services/profile";
@@ -25,13 +24,7 @@ const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
 export default function SessionsPage({ searchParams }: PageProps<"/sessions">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 md:max-w-2xl">
-      <Suspense
-        fallback={
-          <div aria-hidden="true" className="h-[600px] animate-pulse rounded-[20px] bg-muted" />
-        }
-      >
-        <Content searchParams={searchParams} />
-      </Suspense>
+      <Content searchParams={searchParams} />
     </main>
   );
 }
@@ -205,7 +198,7 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
         <h2 id="monthly-title" className="mb-2 text-sm font-semibold">
           kWh cargados por mes
         </h2>
-        <MonthlyChartLazy monthly={stats.monthly} current={month} />
+        <MonthlyChart monthly={stats.monthly} current={month} />
         <table className="sr-only">
           <caption>kWh cargados por mes</caption>
           <tbody>

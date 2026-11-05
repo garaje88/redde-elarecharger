@@ -60,7 +60,10 @@ export async function saveTripCalculation(
   userId: string,
   request: TripRequest,
 ): Promise<TripCalculation> {
-  const estimate = await estimateTripFor(db, userId, request);
+  const [estimate, profile] = await Promise.all([
+    estimateTripFor(db, userId, request),
+    getProfile(db, userId),
+  ]);
   // The history keeps the inputs and results; the drawn line goes to route_polyline only.
   const { route, ...rest } = estimate;
   const { geometry, ...routeSummary } = route;
@@ -80,7 +83,8 @@ export async function saveTripCalculation(
         duration_min: route.duration_min,
         ascent_m: route.ascent_m,
         descent_m: route.descent_m,
-        route_polyline: encodePolyline(geometry),
+        // Privacy setting: the user may keep endpoints and results without the full route.
+        route_polyline: profile.store_route_geometry ? encodePolyline(geometry) : null,
         start_soc: estimate.start_soc,
         energy_kwh: estimate.energy_kwh,
         consumed_pct: estimate.consumed_pct,

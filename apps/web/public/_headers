@@ -1,0 +1,17 @@
+# Cloudflare serves files in public/ and /_next/static without running the Worker, so the
+# headers from next.config.ts do not reach them. Keep in sync with src/lib/security-headers.ts
+# (checked by security-headers.test.ts).
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Security-Policy: default-src 'self'; script-src 'self'
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -34,6 +34,13 @@ jobs:
       - run: pnpm test
       - run: pnpm check:api-client
       - run: pnpm build
+      # The deployable artifact: a clean build carries no .env secrets and fits Wrangler's checks.
+      - name: Build the Cloudflare Worker
+        working-directory: apps/web
+        run: |
+          pnpm exec opennextjs-cloudflare build
+          node scripts/check-worker-env.mjs
+          pnpm exec wrangler deploy --dry-run --outdir .wrangler/dry-run
 
   database:
     runs-on: ubuntu-latest
@@ -80,9 +87,12 @@ jobs:
               console.log(`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${j.PUBLISHABLE_KEY}`);
               console.log(`E2E_SUPABASE_SECRET_KEY=${j.SECRET_KEY}`);
             });' >> "$GITHUB_ENV"
-      - run: pnpm build
+      # E2E runs on the Worker, the runtime that is deployed (Wrangler's local workerd).
+      - run: pnpm --filter @elacharger/web exec opennextjs-cloudflare build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+        env:
+          E2E_RUNTIME: cloudflare
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -154,7 +154,6 @@ export function VehicleWizard() {
       });
       if (!data) return setError(apiErrorMessage(response.status));
       router.push("/garage");
-      router.refresh();
     });
 
   const lookupHref = `/garage/lookup?kind=vehicle${query.trim() ? `&q=${encodeURIComponent(query.trim())}` : ""}`;

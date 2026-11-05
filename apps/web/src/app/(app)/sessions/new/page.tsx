@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { listChargers } from "@/server/services/chargers";
 import { getProfile } from "@/server/services/profile";
 import { listVehicles } from "@/server/services/vehicles";
@@ -12,13 +11,7 @@ export const metadata: Metadata = { title: "Registrar recarga" };
 export default function NewSessionPage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6">
-      <Suspense
-        fallback={
-          <div aria-hidden="true" className="h-[600px] animate-pulse rounded-[20px] bg-muted" />
-        }
-      >
-        <Content />
-      </Suspense>
+      <Content />
     </main>
   );
 }

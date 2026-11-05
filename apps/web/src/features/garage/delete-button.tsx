@@ -26,8 +26,9 @@ export function DeleteButton({
         setError(true);
         return;
       }
+      // Navigating already fetches fresh data; refreshing too would race and cancel it.
       if (redirectTo) router.push(redirectTo);
-      router.refresh();
+      else router.refresh();
     });
 
   if (!confirming) {

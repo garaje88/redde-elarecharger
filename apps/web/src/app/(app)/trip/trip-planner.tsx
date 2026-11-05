@@ -9,7 +9,15 @@ import type {
   TripOptions,
   Vehicle,
 } from "@elacharger/schemas";
-import { ArrowUpDown, ChevronDown, ChevronUp, LocateFixed, Minus, Plus } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronUp,
+  LocateFixed,
+  Map as MapIcon,
+  Minus,
+  Plus,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -20,11 +28,14 @@ import { estimateTripForSetup, tripStatus } from "@/features/trip/estimate";
 import { PlaceSearch } from "@/features/trip/place-search";
 import { api, apiErrorMessage } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
+import { useIdle } from "@/lib/use-idle";
 import { useMediaQuery } from "@/lib/use-media-query";
+
+const MapPlaceholder = () => <div aria-hidden="true" className="size-full bg-muted" />;
 
 const TripMap = dynamic(() => import("@/features/trip/trip-map"), {
   ssr: false,
-  loading: () => <div aria-hidden="true" className="size-full animate-pulse bg-muted" />,
+  loading: MapPlaceholder,
 });
 
 type Field = "origin" | "destination";
@@ -95,6 +106,10 @@ export function TripPlanner({
   });
   const [expanded, setExpanded] = useState(true);
   const [status, setStatus] = useState<{ kind: "saved" | "error"; text: string } | null>(null);
+  // MapLibre is the heaviest code in the app. On a phone it loads when there is something to
+  // draw or the user asks for it (it also spares mobile data); on a desktop, once the page is idle.
+  const idle = useIdle();
+  const [mapRequested, setMapRequested] = useState(false);
   const [saving, startSaving] = useTransition();
 
   const vehicle = vehicles.find((v) => v.id === vehicleId) ?? vehicles[0];
@@ -229,6 +244,7 @@ export function TripPlanner({
       );
     });
 
+  const showMap = (desktop && idle) || mapRequested || origin !== null || destination !== null;
   const tone = estimate ? tripStatus(estimate) : "ok";
   const net = estimate ? estimate.route.ascent_m - estimate.route.descent_m : 0;
 
@@ -243,17 +259,32 @@ export function TripPlanner({
             </p>
           }
         >
-          <TripMap
-            origin={origin}
-            destination={destination}
-            route={route}
-            onPick={(point) => void pickOnMap(point)}
-            padding={{ top: 40, bottom: desktop ? 0 : sheetHeight, left: 0, right: 0 }}
-          />
+          {!showMap ? (
+            <div className="flex size-full items-start justify-center bg-muted pt-6">
+              <button
+                type="button"
+                onClick={() => setMapRequested(true)}
+                className="flex min-h-11 items-center gap-2 rounded-full bg-card px-4 text-sm font-semibold shadow hover:bg-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                <MapIcon aria-hidden="true" className="size-4" />
+                Ver mapa
+              </button>
+            </div>
+          ) : (
+            <TripMap
+              origin={origin}
+              destination={destination}
+              route={route}
+              onPick={(point) => void pickOnMap(point)}
+              padding={{ top: 40, bottom: desktop ? 0 : sheetHeight, left: 0, right: 0 }}
+            />
+          )}
         </ErrorBoundary>
-        <p className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 rounded-full bg-card/90 px-3 py-1.5 text-xs font-medium shadow">
-          Toca el mapa para poner {active === "origin" ? "A" : "B"}
-        </p>
+        {showMap && (
+          <p className="pointer-events-none absolute top-3 left-1/2 -translate-x-1/2 rounded-full bg-card/90 px-3 py-1.5 text-xs font-medium shadow">
+            Toca el mapa para poner {active === "origin" ? "A" : "B"}
+          </p>
+        )}
       </div>
 
       <section

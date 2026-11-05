@@ -7,6 +7,17 @@ if (existsSync("apps/web/.env.local")) process.loadEnvFile("apps/web/.env.local"
 const PORT = Number(process.env.PORT ?? 3100);
 const baseURL = `http://localhost:${PORT}`;
 const ORS_MOCK_PORT = 3201;
+// E2E_RUNTIME=cloudflare runs the suite against the OpenNext Worker (`pnpm --filter
+// @elacharger/web exec opennextjs-cloudflare build` first) instead of `next start`.
+const ORS_ENV = { ORS_API_KEY: "e2e-mock-key", ORS_BASE_URL: `http://localhost:${ORS_MOCK_PORT}` };
+const webCommand =
+  process.env.E2E_RUNTIME === "cloudflare"
+    ? // Wrangler does not hand the shell env to the Worker: pass it as --var.
+      `pnpm --filter @elacharger/web exec opennextjs-cloudflare preview --port ${PORT} ` +
+      Object.entries(ORS_ENV)
+        .map(([key, value]) => `--var ${key}:${value}`)
+        .join(" ")
+    : `pnpm --filter @elacharger/web start --port ${PORT}`;
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -38,9 +49,9 @@ export default defineConfig({
       timeout: 30_000,
     },
     {
-      command: `pnpm --filter @elacharger/web start --port ${PORT}`,
+      command: webCommand,
       url: `${baseURL}/api/v1/meta`,
-      env: { ORS_API_KEY: "e2e-mock-key", ORS_BASE_URL: `http://localhost:${ORS_MOCK_PORT}` },
+      env: ORS_ENV,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

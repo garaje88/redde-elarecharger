@@ -1467,6 +1467,17 @@
           "default_charger_id": {
             "type": ["string", "null"],
             "format": "uuid"
+          },
+          "store_route_geometry": {
+            "type": "boolean",
+            "description": "When false, saved trips keep endpoints and results but no route line."
+          },
+          "privacy_accepted_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "privacy_version": {
+            "type": ["string", "null"]
           }
         },
         "required": [
@@ -1477,7 +1488,10 @@
           "tariff_per_kwh",
           "reserve_pct",
           "default_vehicle_id",
-          "default_charger_id"
+          "default_charger_id",
+          "store_route_geometry",
+          "privacy_accepted_at",
+          "privacy_version"
         ]
       },
       "UpdateProfile": {
@@ -1505,6 +1519,9 @@
           "default_charger_id": {
             "type": ["string", "null"],
             "format": "uuid"
+          },
+          "store_route_geometry": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2758,6 +2775,102 @@
           }
         },
         "additionalProperties": false
+      },
+      "AccountExport": {
+        "type": "object",
+        "properties": {
+          "format_version": {
+            "type": "number",
+            "enum": [1]
+          },
+          "exported_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "email": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["id", "email"]
+          },
+          "profile": {
+            "type": ["object", "null"],
+            "additionalProperties": {}
+          },
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "chargers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "trip_calculations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "charge_calculations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "charging_sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "catalog_submissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        },
+        "required": [
+          "format_version",
+          "exported_at",
+          "user",
+          "profile",
+          "vehicles",
+          "chargers",
+          "trip_calculations",
+          "charge_calculations",
+          "charging_sessions",
+          "catalog_submissions"
+        ]
+      },
+      "DeleteAccount": {
+        "type": "object",
+        "properties": {
+          "confirmation": {
+            "type": "string",
+            "enum": ["BORRAR"],
+            "description": "The user typed \"BORRAR\" to confirm."
+          }
+        },
+        "required": ["confirmation"],
+        "additionalProperties": false
       }
     },
     "parameters": {}
@@ -3192,6 +3305,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3223,8 +3350,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -3328,6 +3465,18 @@
             "required": true,
             "name": "id",
             "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
           }
         ],
         "requestBody": {
@@ -3382,7 +3531,7 @@
             }
           },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -3444,6 +3593,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3485,8 +3648,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -3739,6 +3912,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -3780,8 +3967,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -4150,6 +4347,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -4191,8 +4402,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -4600,6 +4821,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -4641,8 +4876,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -4912,6 +5157,20 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -4953,8 +5212,18 @@
               }
             }
           },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
           "422": {
-            "description": "The request did not pass validation.",
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -5211,6 +5480,95 @@
           },
           "404": {
             "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/export": {
+      "get": {
+        "summary": "Download everything stored about the user (JSON)",
+        "tags": ["account"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user's data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountExport"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/account/delete": {
+      "post": {
+        "summary": "Delete the account and all its data; cannot be undone",
+        "tags": ["account"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccount"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Deleted; the session is closed."
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
             "content": {
               "application/problem+json": {
                 "schema": {

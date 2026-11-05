@@ -5,10 +5,10 @@ import type { Route } from "@elacharger/schemas";
 import { getVersion, setWorkerUrl } from "maplibre-gl";
 import { useEffect, useRef } from "react";
 import Map, { Layer, type MapRef, Marker, NavigationControl, Source } from "react-map-gl/maplibre";
+import { DEFAULT_MAP_STYLE_URL } from "@/lib/security-headers";
 
 // Free OpenStreetMap vector tiles without a key; NEXT_PUBLIC_MAP_STYLE_URL (e.g. MapTiler) wins.
-const STYLE =
-  process.env.NEXT_PUBLIC_MAP_STYLE_URL || "https://tiles.openfreemap.org/styles/liberty";
+const STYLE = process.env.NEXT_PUBLIC_MAP_STYLE_URL || DEFAULT_MAP_STYLE_URL;
 const BOGOTA = { longitude: -74.0721, latitude: 4.711, zoom: 9 };
 
 // Copied to /vendor by scripts/copy-map-worker.mjs: the bundler does not emit MapLibre's worker.

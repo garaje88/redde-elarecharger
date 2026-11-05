@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { GoogleSignInButton, GoogleSignInButtonFallback } from "./google-sign-in-button";
 
@@ -51,15 +50,7 @@ export default function LoginPage() {
             <GoogleSignInButton />
           </Suspense>
           <p className="text-center text-xs leading-normal text-inverse-muted">
-            Solo cuentas Gmail o Google. Al continuar aceptas los{" "}
-            <Link href="/terminos" className="text-brand-soft underline-offset-2 hover:underline">
-              términos
-            </Link>{" "}
-            y el{" "}
-            <Link href="/privacidad" className="text-brand-soft underline-offset-2 hover:underline">
-              aviso de privacidad
-            </Link>{" "}
-            (Ley 1581 de 2012).
+            Solo cuentas Gmail o Google.
           </p>
         </div>
       </div>

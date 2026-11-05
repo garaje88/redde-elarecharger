@@ -1,7 +1,6 @@
 import { Route as RouteIcon, Zap } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { durationLabel } from "@/features/charge/explain";
 import { DeleteButton } from "@/features/garage/delete-button";
 import { chargeRepeatHref, tripRepeatHref } from "@/features/history/repeat-links";
@@ -17,11 +16,7 @@ export default function HistoryPage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 md:max-w-2xl">
       <h1 className="font-heading text-[26px] font-semibold">Historial</h1>
-      <Suspense
-        fallback={<div aria-hidden="true" className="h-96 animate-pulse rounded-[20px] bg-muted" />}
-      >
-        <Content />
-      </Suspense>
+      <Content />
     </main>
   );
 }

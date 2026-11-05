@@ -13,6 +13,11 @@ export const ProfileSchema = z
     reserve_pct: z.number().int(),
     default_vehicle_id: z.uuid().nullable(),
     default_charger_id: z.uuid().nullable(),
+    store_route_geometry: z.boolean().meta({
+      description: "When false, saved trips keep endpoints and results but no route line.",
+    }),
+    privacy_accepted_at: z.iso.datetime({ offset: true }).nullable(),
+    privacy_version: z.string().nullable(),
   })
   .meta({ id: "Profile" });
 
@@ -23,6 +28,7 @@ export const UpdateProfileSchema = z
     reserve_pct: z.number().int().min(0).max(50),
     default_vehicle_id: z.uuid().nullable(),
     default_charger_id: z.uuid().nullable(),
+    store_route_geometry: z.boolean(),
   })
   .partial()
   .strict()
