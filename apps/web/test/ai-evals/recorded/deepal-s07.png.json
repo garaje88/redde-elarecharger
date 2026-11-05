@@ -1,0 +1,81 @@
+{
+  "raw": {
+    "found": true,
+    "brand": "Deepal",
+    "model": "S07",
+    "trim": "纯电版",
+    "year_from": {
+      "value": 2025,
+      "confidence": 0.9
+    },
+    "year_to": {
+      "value": null,
+      "confidence": 0.5
+    },
+    "battery_gross_kwh": {
+      "value": 66.8,
+      "confidence": 0.95
+    },
+    "battery_usable_kwh": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "chemistry": {
+      "value": "LFP",
+      "confidence": 0.95
+    },
+    "range_km": {
+      "value": 520,
+      "confidence": 0.95
+    },
+    "range_cycle": {
+      "value": "CLTC",
+      "confidence": 0.95
+    },
+    "consumption_kwh_100km": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "curb_weight_kg": {
+      "value": 1980,
+      "confidence": 0.9
+    },
+    "ac_onboard_kw": {
+      "value": 6.6,
+      "confidence": 0.95
+    },
+    "ac_phases": {
+      "value": null,
+      "confidence": 0.9
+    },
+    "dc_max_kw": {
+      "value": 90,
+      "confidence": 0.95
+    },
+    "connector_ac": {
+      "value": "GBT_AC",
+      "confidence": 0.95
+    },
+    "connector_dc": {
+      "value": "GBT_DC",
+      "confidence": 0.95
+    }
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3997,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 935,
+    "output_tokens_details": {
+      "thinking_tokens": 558
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  }
+}

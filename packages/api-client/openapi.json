@@ -1472,6 +1472,10 @@
             "type": "boolean",
             "description": "When false, saved trips keep endpoints and results but no route line."
           },
+          "store_ai_conversations": {
+            "type": "boolean",
+            "description": "When false, the assistant keeps no history on the server."
+          },
           "privacy_accepted_at": {
             "type": ["string", "null"],
             "format": "date-time"
@@ -1490,6 +1494,7 @@
           "default_vehicle_id",
           "default_charger_id",
           "store_route_geometry",
+          "store_ai_conversations",
           "privacy_accepted_at",
           "privacy_version"
         ]
@@ -1521,6 +1526,9 @@
             "format": "uuid"
           },
           "store_route_geometry": {
+            "type": "boolean"
+          },
+          "store_ai_conversations": {
             "type": "boolean"
           }
         },
@@ -2845,6 +2853,27 @@
               "type": "object",
               "additionalProperties": {}
             }
+          },
+          "ai_extractions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "ai_conversations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "ai_usage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
           }
         },
         "required": [
@@ -2857,7 +2886,10 @@
           "trip_calculations",
           "charge_calculations",
           "charging_sessions",
-          "catalog_submissions"
+          "catalog_submissions",
+          "ai_extractions",
+          "ai_conversations",
+          "ai_usage"
         ]
       },
       "DeleteAccount": {
@@ -2871,6 +2903,882 @@
         },
         "required": ["confirmation"],
         "additionalProperties": false
+      },
+      "AiUsageSummary": {
+        "type": "object",
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "description": "false without an API key or over the budget."
+          },
+          "extractions_today": {
+            "type": "integer"
+          },
+          "extractions_limit": {
+            "type": "integer"
+          },
+          "messages_today": {
+            "type": "integer"
+          },
+          "messages_limit": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "available",
+          "extractions_today",
+          "extractions_limit",
+          "messages_today",
+          "messages_limit"
+        ]
+      },
+      "AiUpload": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Pass to POST /ai/extractions after uploading."
+          },
+          "signed_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "PUT the file here (Supabase Storage signed upload)."
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["path", "signed_url", "token"]
+      },
+      "AiUploadRequest": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/AiExtractionKind"
+          },
+          "content_type": {
+            "$ref": "#/components/schemas/AiUploadContentType"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": ["kind", "content_type", "size_bytes"]
+      },
+      "AiExtractionKind": {
+        "type": "string",
+        "enum": ["vehicle_spec", "charging_receipt"],
+        "description": "vehicle_spec: a technical sheet (IA1). charging_receipt: a photo of a charge (IA2)."
+      },
+      "AiUploadContentType": {
+        "type": "string",
+        "enum": ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+      },
+      "AiExtraction": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["charging_receipt"]
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pending", "confirmed", "discarded"]
+              },
+              "model": {
+                "type": "string"
+              },
+              "confidence": {
+                "$ref": "#/components/schemas/FieldConfidence"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "draft": {
+                "$ref": "#/components/schemas/ReceiptDraft"
+              }
+            },
+            "required": ["kind", "id", "status", "model", "confidence", "created_at", "draft"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["vehicle_spec"]
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["pending", "confirmed", "discarded"]
+              },
+              "model": {
+                "type": "string"
+              },
+              "confidence": {
+                "$ref": "#/components/schemas/FieldConfidence"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "submission": {
+                "type": ["object", "null"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "kind": {
+                    "$ref": "#/components/schemas/CatalogKind"
+                  },
+                  "query": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "rejected"]
+                  },
+                  "extracted": {
+                    "type": ["object", "null"],
+                    "properties": {
+                      "spec": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/VehicleSubmissionSpec"
+                          },
+                          {
+                            "$ref": "#/components/schemas/ChargerSubmissionSpec"
+                          }
+                        ]
+                      },
+                      "confidence": {
+                        "$ref": "#/components/schemas/FieldConfidence"
+                      },
+                      "field_urls": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "description": "Page each field was read from, when known."
+                      }
+                    },
+                    "required": ["spec", "confidence", "field_urls"]
+                  },
+                  "sources": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/LookupSource"
+                    }
+                  },
+                  "created_variant_id": {
+                    "type": ["string", "null"],
+                    "format": "uuid"
+                  },
+                  "created_charger_model_id": {
+                    "type": ["string", "null"],
+                    "format": "uuid"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "query",
+                  "status",
+                  "extracted",
+                  "sources",
+                  "created_variant_id",
+                  "created_charger_model_id",
+                  "created_at"
+                ],
+                "description": "Confirm it with POST /catalog/submissions/{id}/confirm."
+              }
+            },
+            "required": ["kind", "id", "status", "model", "confidence", "created_at", "submission"]
+          }
+        ]
+      },
+      "ReceiptDraft": {
+        "type": "object",
+        "properties": {
+          "energy_kwh": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 999999
+          },
+          "cost": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 9999999999
+          },
+          "currency": {
+            "type": ["string", "null"],
+            "pattern": "^[A-Z]{3}$"
+          },
+          "start_soc": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "end_soc": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 100
+          },
+          "started_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "ended_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "odometer_km": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 9999999
+          },
+          "location_label": {
+            "type": ["string", "null"],
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "energy_kwh",
+          "cost",
+          "currency",
+          "start_soc",
+          "end_soc",
+          "started_at",
+          "ended_at",
+          "odometer_km",
+          "location_label"
+        ]
+      },
+      "CreateExtraction": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/AiExtractionKind"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": ["kind", "path"]
+      },
+      "UpdateExtraction": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["confirmed", "discarded"]
+          }
+        },
+        "required": ["status"]
+      },
+      "AssistantEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["text"]
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["type", "text"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["tool"]
+              },
+              "name": {
+                "type": "string",
+                "description": "The tool the assistant is running."
+              }
+            },
+            "required": ["type", "name"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["card"]
+              },
+              "card": {
+                "$ref": "#/components/schemas/AssistantCard"
+              }
+            },
+            "required": ["type", "card"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["done"]
+              },
+              "conversation_id": {
+                "type": ["string", "null"],
+                "format": "uuid"
+              },
+              "history": {
+                "type": ["array", "null"],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": ["user", "assistant"]
+                    },
+                    "content": {}
+                  },
+                  "required": ["role"]
+                },
+                "description": "Only when conversations are not saved; send it back next turn."
+              }
+            },
+            "required": ["type", "conversation_id", "history"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["error"]
+              },
+              "status": {
+                "type": "integer"
+              },
+              "detail": {
+                "type": "string"
+              }
+            },
+            "required": ["type", "status", "detail"]
+          }
+        ]
+      },
+      "AssistantCard": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["trip"]
+              },
+              "trip": {
+                "type": "object",
+                "properties": {
+                  "vehicle_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "origin": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "lng": {
+                        "type": "number",
+                        "minimum": -180,
+                        "maximum": 180
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 300
+                      }
+                    },
+                    "required": ["lat", "lng"]
+                  },
+                  "destination": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "lng": {
+                        "type": "number",
+                        "minimum": -180,
+                        "maximum": 180
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 300
+                      }
+                    },
+                    "required": ["lat", "lng"]
+                  },
+                  "start_soc": {
+                    "type": "number"
+                  },
+                  "energy_kwh": {
+                    "type": "number"
+                  },
+                  "energy_range_kwh": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "number"
+                      },
+                      "max": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["min", "max"],
+                    "description": "±10 %."
+                  },
+                  "consumed_pct": {
+                    "type": "number"
+                  },
+                  "arrival_soc": {
+                    "type": "number",
+                    "description": "Negative when the destination is out of reach."
+                  },
+                  "arrival_soc_range": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "number"
+                      },
+                      "max": {
+                        "type": "number"
+                      }
+                    },
+                    "required": ["min", "max"]
+                  },
+                  "remaining_range_km": {
+                    "type": "number"
+                  },
+                  "reachable": {
+                    "type": "boolean"
+                  },
+                  "below_reserve": {
+                    "type": "boolean"
+                  },
+                  "reserve_pct": {
+                    "type": "number"
+                  },
+                  "breakdown": {
+                    "type": "object",
+                    "properties": {
+                      "base_consumption_kwh_100km": {
+                        "type": "number"
+                      },
+                      "usable_kwh": {
+                        "type": "number"
+                      },
+                      "mass_kg": {
+                        "type": "number"
+                      },
+                      "curb_weight_estimated": {
+                        "type": "boolean"
+                      },
+                      "style_factor": {
+                        "type": "number"
+                      },
+                      "climate_factor": {
+                        "type": "number"
+                      },
+                      "air_conditioning_factor": {
+                        "type": "number"
+                      },
+                      "driving_kwh": {
+                        "type": "number"
+                      },
+                      "climb_kwh": {
+                        "type": "number"
+                      },
+                      "regen_kwh": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "base_consumption_kwh_100km",
+                      "usable_kwh",
+                      "mass_kg",
+                      "curb_weight_estimated",
+                      "style_factor",
+                      "climate_factor",
+                      "air_conditioning_factor",
+                      "driving_kwh",
+                      "climb_kwh",
+                      "regen_kwh"
+                    ],
+                    "description": "\"¿Cómo se calculó?\""
+                  },
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "start_soc": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "passengers": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9,
+                        "default": 1,
+                        "description": "Including the driver."
+                      },
+                      "cargo_kg": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 2000,
+                        "default": 0
+                      },
+                      "air_conditioning": {
+                        "type": "boolean",
+                        "default": false
+                      },
+                      "style": {
+                        "$ref": "#/components/schemas/DrivingStyle"
+                      },
+                      "outside_temp_c": {
+                        "type": ["number", "null"],
+                        "minimum": -40,
+                        "maximum": 60,
+                        "default": null
+                      },
+                      "reserve_pct": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 50,
+                        "description": "Defaults to the user's reserve (10 %)."
+                      }
+                    },
+                    "required": ["start_soc"]
+                  },
+                  "engine_version": {
+                    "type": "string"
+                  },
+                  "distance_km": {
+                    "type": "number"
+                  },
+                  "duration_min": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "vehicle_id",
+                  "origin",
+                  "destination",
+                  "start_soc",
+                  "energy_kwh",
+                  "energy_range_kwh",
+                  "consumed_pct",
+                  "arrival_soc",
+                  "arrival_soc_range",
+                  "remaining_range_km",
+                  "reachable",
+                  "below_reserve",
+                  "reserve_pct",
+                  "breakdown",
+                  "options",
+                  "engine_version",
+                  "distance_km",
+                  "duration_min"
+                ]
+              }
+            },
+            "required": ["kind", "trip"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["charge"]
+              },
+              "charge": {
+                "type": "object",
+                "properties": {
+                  "vehicle_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "charger_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "start_soc": {
+                    "type": "number"
+                  },
+                  "target_soc": {
+                    "type": "number"
+                  },
+                  "grid_power_kw": {
+                    "type": "number",
+                    "description": "Power drawn from the grid."
+                  },
+                  "effective_kw": {
+                    "type": "number",
+                    "description": "Power reaching the battery."
+                  },
+                  "limited_by": {
+                    "$ref": "#/components/schemas/ChargeLimit"
+                  },
+                  "efficiency": {
+                    "type": "number"
+                  },
+                  "duration_min": {
+                    "type": "number"
+                  },
+                  "ends_at": {
+                    "type": ["string", "null"],
+                    "format": "date-time"
+                  },
+                  "battery_kwh": {
+                    "type": "number"
+                  },
+                  "grid_kwh": {
+                    "type": "number"
+                  },
+                  "tariff_per_kwh": {
+                    "type": ["number", "null"],
+                    "description": "The user's tariff; null hides the cost."
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "cost": {
+                    "type": ["number", "null"]
+                  },
+                  "range_gained_km": {
+                    "type": ["number", "null"]
+                  },
+                  "warnings": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChargeWarning"
+                    }
+                  },
+                  "engine_version": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "vehicle_id",
+                  "charger_id",
+                  "start_soc",
+                  "target_soc",
+                  "grid_power_kw",
+                  "effective_kw",
+                  "limited_by",
+                  "efficiency",
+                  "duration_min",
+                  "ends_at",
+                  "battery_kwh",
+                  "grid_kwh",
+                  "tariff_per_kwh",
+                  "currency",
+                  "cost",
+                  "range_gained_km",
+                  "warnings",
+                  "engine_version"
+                ]
+              }
+            },
+            "required": ["kind", "charge"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["stats"]
+              },
+              "stats": {
+                "type": "object",
+                "properties": {
+                  "vehicle_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "month": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "real_consumption_kwh_100km": {
+                    "type": ["number", "null"]
+                  },
+                  "estimated_consumption_kwh_100km": {
+                    "type": ["number", "null"]
+                  },
+                  "cost_per_km": {
+                    "type": ["number", "null"]
+                  },
+                  "avg_km_between_charges": {
+                    "type": ["number", "null"]
+                  },
+                  "month_km": {
+                    "type": ["number", "null"]
+                  },
+                  "month_energy_kwh": {
+                    "type": "number"
+                  },
+                  "month_sessions": {
+                    "type": "integer"
+                  },
+                  "month_cost": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "vehicle_id",
+                  "month",
+                  "currency",
+                  "real_consumption_kwh_100km",
+                  "estimated_consumption_kwh_100km",
+                  "cost_per_km",
+                  "avg_km_between_charges",
+                  "month_km",
+                  "month_energy_kwh",
+                  "month_sessions",
+                  "month_cost"
+                ]
+              }
+            },
+            "required": ["kind", "stats"]
+          }
+        ]
+      },
+      "AssistantRequest": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "conversation_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Continue a saved conversation."
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["user", "assistant"]
+                },
+                "content": {}
+              },
+              "required": ["role"]
+            },
+            "maxItems": 60,
+            "description": "When the user does not save conversations: the `history` of the previous `done` event, unchanged."
+          }
+        },
+        "required": ["message"]
+      },
+      "ConversationList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationSummary"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "ConversationSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "title", "updated_at"]
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "turns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssistantTurn"
+            }
+          }
+        },
+        "required": ["id", "title", "updated_at", "turns"]
+      },
+      "AssistantTurn": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["user", "assistant"]
+          },
+          "text": {
+            "type": "string"
+          },
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssistantCard"
+            }
+          }
+        },
+        "required": ["role", "text", "cards"]
       }
     },
     "parameters": {}
@@ -5569,6 +6477,611 @@
           },
           "401": {
             "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/usage": {
+      "get": {
+        "summary": "AI availability and today's usage against the daily limits",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiUsageSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/uploads": {
+      "post": {
+        "summary": "Signed URL to upload a technical sheet or a charging photo (private, deleted after reading)",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload the file with PUT to signed_url.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiUpload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Daily AI limit reached; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "AI is not configured or the monthly budget is spent.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/extractions": {
+      "post": {
+        "summary": "Read an uploaded sheet (IA1) or charging photo (IA2) into a draft to confirm",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "description": "Retries with the same key replay the first response for 24 h."
+            },
+            "required": false,
+            "description": "Retries with the same key replay the first response for 24 h.",
+            "name": "Idempotency-Key",
+            "in": "header"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExtraction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The draft; nothing is saved to the garage or sessions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiExtraction"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The upload does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with this Idempotency-Key is still in progress.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation, or the Idempotency-Key was used with another request.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Daily AI limit reached; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "AI is not configured or the monthly budget is spent.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/extractions/{id}": {
+      "get": {
+        "summary": "One extraction draft",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiExtraction"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Mark a draft as confirmed or discarded",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExtraction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The draft.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiExtraction"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/assistant": {
+      "post": {
+        "summary": "Ask the assistant (IA3); answers stream as Server-Sent Events",
+        "description": "Each event is `data: <AssistantEvent JSON>`. Text arrives in pieces; cards carry results computed by the app's engine. The stream ends with `done` or `error`.",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "An event stream.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantEvent"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The conversation does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Daily AI limit reached; see Retry-After.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "AI is not configured or the monthly budget is spent.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/conversations": {
+      "get": {
+        "summary": "Saved assistant conversations, newest first",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Up to 20 conversations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/conversations/{id}": {
+      "get": {
+        "summary": "One conversation as text and cards",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The conversation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a conversation",
+        "tags": ["ai"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted."
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found.",
             "content": {
               "application/problem+json": {
                 "schema": {

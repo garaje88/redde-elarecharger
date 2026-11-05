@@ -8,6 +8,7 @@ import {
 } from "@elacharger/schemas";
 import type { Json } from "@elacharger/types";
 import { getServerEnv } from "@/env";
+import { recordUsage, underMonthlyBudget } from "../ai/client";
 import { getSpecLookupProvider } from "../ai/spec-lookup";
 import { type Db, unwrap } from "../db";
 import { ApiError } from "../http";
@@ -67,9 +68,10 @@ export async function lookupMissing(
   let extracted: Submission["extracted"] = null;
   let sources: Submission["sources"] = [];
   const provider = getSpecLookupProvider();
-  if (provider) {
+  if (provider && (await underMonthlyBudget(db))) {
     try {
-      const result = await provider.lookup(input.kind, input.query);
+      const { result, model, usage } = await provider.lookup(input.kind, input.query);
+      await recordUsage(db, "catalog_lookup", model, usage);
       if (result) {
         extracted = {
           spec: result.spec,

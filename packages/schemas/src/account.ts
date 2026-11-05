@@ -15,6 +15,9 @@ export const AccountExportSchema = z
     charge_calculations: Rows,
     charging_sessions: Rows,
     catalog_submissions: Rows,
+    ai_extractions: Rows,
+    ai_conversations: Rows,
+    ai_usage: Rows,
   })
   .meta({ id: "AccountExport" });
 

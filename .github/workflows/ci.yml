@@ -76,8 +76,8 @@ jobs:
       - uses: supabase/setup-cli@v1
         with:
           version: 3.0.0
-      # Auth, REST and Postgres are enough: signed-in tests use a test user, not Google.
-      - run: supabase start -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,realtime,storage-api,postgres-meta,mailpit
+      # Auth, REST, Storage (AI uploads) and Postgres: signed-in tests use a test user, not Google.
+      - run: supabase start -x studio,imgproxy,vector,logflare,supavisor,edge-runtime,realtime,postgres-meta,mailpit
       - name: Use the local Supabase keys
         run: |
           supabase status -o json | node -e '

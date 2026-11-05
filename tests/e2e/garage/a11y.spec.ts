@@ -12,6 +12,8 @@ const PAGES = [
   "/sessions/new",
   "/history",
   "/settings",
+  "/assistant",
+  "/garage/import",
 ];
 
 for (const path of PAGES) {

@@ -3,7 +3,7 @@ import type { Profile, UpdateProfile } from "@elacharger/schemas";
 import { type Db, check, unwrap } from "../db";
 
 const PROFILE_SELECT =
-  "id, display_name, units, currency, tariff_per_kwh, reserve_pct, default_vehicle_id, default_charger_id, store_route_geometry, privacy_accepted_at, privacy_version";
+  "id, display_name, units, currency, tariff_per_kwh, reserve_pct, default_vehicle_id, default_charger_id, store_route_geometry, store_ai_conversations, privacy_accepted_at, privacy_version";
 
 export async function getProfile(db: Db, userId: string): Promise<Profile> {
   return unwrap(

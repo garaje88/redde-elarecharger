@@ -16,6 +16,9 @@ export const ProfileSchema = z
     store_route_geometry: z.boolean().meta({
       description: "When false, saved trips keep endpoints and results but no route line.",
     }),
+    store_ai_conversations: z.boolean().meta({
+      description: "When false, the assistant keeps no history on the server.",
+    }),
     privacy_accepted_at: z.iso.datetime({ offset: true }).nullable(),
     privacy_version: z.string().nullable(),
   })
@@ -29,6 +32,7 @@ export const UpdateProfileSchema = z
     default_vehicle_id: z.uuid().nullable(),
     default_charger_id: z.uuid().nullable(),
     store_route_geometry: z.boolean(),
+    store_ai_conversations: z.boolean(),
   })
   .partial()
   .strict()

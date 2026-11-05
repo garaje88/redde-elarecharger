@@ -1,0 +1,81 @@
+{
+  "raw": {
+    "found": true,
+    "brand": "Volvo",
+    "model": "EX30",
+    "trim": "Single Motor Extended Range",
+    "year_from": {
+      "value": 2025,
+      "confidence": 0.9
+    },
+    "year_to": {
+      "value": null,
+      "confidence": 0
+    },
+    "battery_gross_kwh": {
+      "value": 69,
+      "confidence": 0.95
+    },
+    "battery_usable_kwh": {
+      "value": 64,
+      "confidence": 0.95
+    },
+    "chemistry": {
+      "value": "NMC",
+      "confidence": 0.95
+    },
+    "range_km": {
+      "value": 476,
+      "confidence": 0.95
+    },
+    "range_cycle": {
+      "value": "WLTP",
+      "confidence": 0.95
+    },
+    "consumption_kwh_100km": {
+      "value": 17,
+      "confidence": 0.95
+    },
+    "curb_weight_kg": {
+      "value": 1850,
+      "confidence": 0.9
+    },
+    "ac_onboard_kw": {
+      "value": 11,
+      "confidence": 0.95
+    },
+    "ac_phases": {
+      "value": 3,
+      "confidence": 0.9
+    },
+    "dc_max_kw": {
+      "value": 153,
+      "confidence": 0.95
+    },
+    "connector_ac": {
+      "value": "TYPE2",
+      "confidence": 0.95
+    },
+    "connector_dc": {
+      "value": "CCS2",
+      "confidence": 0.95
+    }
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 4773,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 919,
+    "output_tokens_details": {
+      "thinking_tokens": 542
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  }
+}

@@ -5,6 +5,12 @@ import { getPublicEnv } from "./env.public";
 const optional = <T extends z.ZodType>(schema: T) =>
   z.preprocess((value) => (value === "" ? undefined : value), schema.optional());
 
+const count = (fallback: number) =>
+  z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.coerce.number().min(0).default(fallback),
+  );
+
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: optional(z.string().min(1)),
   ORS_API_KEY: optional(z.string().min(1)),
@@ -15,11 +21,14 @@ const serverEnvSchema = z.object({
   SENTRY_DSN: optional(z.url()),
   // AI lookup of missing catalog models (phase 3) and the phase 8 features.
   ANTHROPIC_API_KEY: optional(z.string().min(1)),
+  // Only for tests that point at a simulated Claude API.
+  ANTHROPIC_BASE_URL: optional(z.url()),
   AI_MODEL_EXTRACTION: optional(z.string().min(1)),
-  AI_DAILY_LIMIT_EXTRACTIONS: z.preprocess(
-    (value) => (value === "" ? undefined : value),
-    z.coerce.number().int().min(0).default(20),
-  ),
+  AI_MODEL_ASSISTANT: optional(z.string().min(1)),
+  AI_DAILY_LIMIT_EXTRACTIONS: count(20),
+  AI_DAILY_LIMIT_MESSAGES: count(50),
+  // Global cap on estimated AI spend per calendar month (UTC), in USD.
+  AI_MONTHLY_BUDGET_USD: count(50),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & ReturnType<typeof getPublicEnv>;

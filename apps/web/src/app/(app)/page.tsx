@@ -1,4 +1,13 @@
-import { BarChart3, Car, ChevronRight, History, Route, Settings, Zap } from "lucide-react";
+import {
+  BarChart3,
+  Car,
+  ChevronRight,
+  History,
+  Route,
+  Settings,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { getCurrentUser } from "@/server/session";
 
@@ -15,6 +24,12 @@ const SHORTCUTS = [
     label: "Registrar una recarga",
     hint: "Tu consumo real",
     icon: BarChart3,
+  },
+  {
+    href: "/assistant",
+    label: "Preguntarle al asistente",
+    hint: "«¿Llego a Medellín con 70 %?»",
+    icon: Sparkles,
   },
   { href: "/history", label: "Historial", hint: "Repite un cálculo guardado", icon: History },
   { href: "/garage", label: "Garaje", hint: "Tus carros y cargadores", icon: Car },

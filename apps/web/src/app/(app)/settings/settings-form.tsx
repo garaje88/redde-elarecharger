@@ -20,6 +20,7 @@ export function SettingsForm({ profile }: { profile: Profile }) {
   );
   const [reserve, setReserve] = useState(profile.reserve_pct);
   const [storeRoutes, setStoreRoutes] = useState(profile.store_route_geometry);
+  const [storeChats, setStoreChats] = useState(profile.store_ai_conversations);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, startSaving] = useTransition();
 
@@ -32,7 +33,12 @@ export function SettingsForm({ profile }: { profile: Profile }) {
     setMessage(null);
     startSaving(async () => {
       const { data, response } = await api.PATCH("/profile", {
-        body: { tariff_per_kwh: value, reserve_pct: reserve, store_route_geometry: storeRoutes },
+        body: {
+          tariff_per_kwh: value,
+          reserve_pct: reserve,
+          store_route_geometry: storeRoutes,
+          store_ai_conversations: storeChats,
+        },
       });
       if (!data) return setMessage({ ok: false, text: apiErrorMessage(response.status) });
       setMessage({ ok: true, text: "Ajustes guardados." });
@@ -90,6 +96,21 @@ export function SettingsForm({ profile }: { profile: Profile }) {
           <span className="text-[13px] font-normal text-muted-foreground">
             Si lo desactivas, el historial guarda el origen, el destino y los resultados, pero no la
             línea de la ruta.
+          </span>
+        </span>
+      </label>
+
+      <label className="flex min-h-11 items-start gap-3 text-sm font-semibold">
+        <input
+          type="checkbox"
+          checked={storeChats}
+          onChange={(e) => setStoreChats(e.target.checked)}
+          className="mt-0.5 size-5 shrink-0 accent-primary"
+        />
+        <span className="flex flex-col gap-1">
+          Guardar mis conversaciones con el asistente
+          <span className="text-[13px] font-normal text-muted-foreground">
+            Si lo desactivas, cada conversación vive solo en esta pantalla y se pierde al salir.
           </span>
         </span>
       </label>

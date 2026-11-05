@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { FileUp, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChargerRow } from "@/features/garage/charger-row";
@@ -100,6 +100,10 @@ async function GarageContent({ searchParams }: Pick<PageProps<"/garage">, "searc
                 strokeWidth={1.75}
               />
               No encuentro mi carro: buscar con IA
+            </Link>
+            <Link href="/garage/import" className={dashedLink}>
+              <FileUp aria-hidden="true" className="mr-2 size-5" strokeWidth={1.75} />
+              Importar ficha técnica (PDF o foto)
             </Link>
             <div className="grid grid-cols-2 gap-2.5">
               <Link href="/garage/vehicles/new" className={dashedLink}>
