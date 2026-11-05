@@ -25,7 +25,7 @@ jobs:
       - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
         uses: actions/checkout@v4
       - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
       - if: env.SUPABASE_URL != '' && env.SUPABASE_SERVICE_ROLE_KEY != ''
         uses: actions/setup-node@v4
         with:
