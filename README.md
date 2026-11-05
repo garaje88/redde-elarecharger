@@ -38,6 +38,13 @@ pnpm catalog:import open-ev-data   # solo una fuente: open-ev-data, epa u ocm
 - El workflow `Catalog sync` lo corre cada lunes si existen los secretos `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`.
 - «No encuentro mi carro» busca la ficha en la web con Claude si `ANTHROPIC_API_KEY` está definida (modelo en `AI_MODEL_EXTRACTION`, límite diario en `AI_DAILY_LIMIT_EXTRACTIONS`). Sin llave, la búsqueda queda registrada y el usuario completa la ficha. Los aportes quedan `pending` hasta que un administrador los verifica.
 
+## Trayectos y mapa
+
+- `ORS_API_KEY` (gratuita en openrouteservice.org) activa rutas con elevación, búsqueda de direcciones y nombres de puntos en `/trip`. El servidor la usa detrás de `/api/v1/routing/*`, con caché de 24 h por par A→B redondeado y límite de 30 rutas/min y 300/día por usuario.
+- `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN` (opcionales) hacen que ese límite se comparta entre instancias; sin ellos se lleva en memoria.
+- `NEXT_PUBLIC_MAP_STYLE_URL` (opcional, p. ej. MapTiler) cambia el estilo del mapa; por defecto usa OpenFreeMap, sin llave.
+- Las pruebas E2E usan un OpenRouteService simulado (`tests/e2e/mocks/ors-server.mjs`) y las unitarias, MSW; ninguna llama al servicio real.
+
 ## Motor de cálculo
 
 ```bash

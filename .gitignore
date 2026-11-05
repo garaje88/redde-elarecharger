@@ -31,3 +31,6 @@ supabase/.temp/
 
 # vitest cache
 .vitest/
+
+# MapLibre worker copied at build time
+apps/web/public/vendor/

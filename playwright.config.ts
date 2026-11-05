@@ -6,6 +6,7 @@ if (existsSync("apps/web/.env.local")) process.loadEnvFile("apps/web/.env.local"
 
 const PORT = Number(process.env.PORT ?? 3100);
 const baseURL = `http://localhost:${PORT}`;
+const ORS_MOCK_PORT = 3201;
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -27,10 +28,21 @@ export default defineConfig({
       use: { ...devices["Pixel 7"], storageState: "playwright/.auth/user.json" },
     },
   ],
-  webServer: {
-    command: `pnpm --filter @elacharger/web start --port ${PORT}`,
-    url: `${baseURL}/api/v1/meta`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      // Simulated OpenRouteService (docs/PLAN.md phase 5): the app reaches it via ORS_BASE_URL.
+      command: `node tests/e2e/mocks/ors-server.mjs`,
+      url: `http://localhost:${ORS_MOCK_PORT}/health`,
+      env: { ORS_MOCK_PORT: String(ORS_MOCK_PORT) },
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+    {
+      command: `pnpm --filter @elacharger/web start --port ${PORT}`,
+      url: `${baseURL}/api/v1/meta`,
+      env: { ORS_API_KEY: "e2e-mock-key", ORS_BASE_URL: `http://localhost:${ORS_MOCK_PORT}` },
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });

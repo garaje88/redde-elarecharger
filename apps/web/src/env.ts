@@ -8,6 +8,8 @@ const optional = <T extends z.ZodType>(schema: T) =>
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: optional(z.string().min(1)),
   ORS_API_KEY: optional(z.string().min(1)),
+  // Only for tests that point at a simulated OpenRouteService.
+  ORS_BASE_URL: optional(z.url()),
   UPSTASH_REDIS_REST_URL: optional(z.url()),
   UPSTASH_REDIS_REST_TOKEN: optional(z.string().min(1)),
   SENTRY_DSN: optional(z.url()),

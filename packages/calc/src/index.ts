@@ -10,5 +10,6 @@ export * from "./charging";
 export * from "./constants";
 export * from "./consumption";
 export * from "./curves";
+export * from "./route";
 export * from "./errors";
 export * from "./trip";

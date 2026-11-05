@@ -38,6 +38,20 @@ import {
 } from "./charge";
 import { PROBLEM_CONTENT_TYPE, ProblemDetailsSchema } from "./problem";
 import { ProfileSchema, UpdateProfileSchema } from "./profile";
+import {
+  DirectionsRequestSchema,
+  GeocodeQuerySchema,
+  PlaceListSchema,
+  PlaceSchema,
+  ReverseQuerySchema,
+  RouteSchema,
+} from "./routing";
+import {
+  TripCalculationListSchema,
+  TripCalculationSchema,
+  TripEstimateSchema,
+  TripRequestSchema,
+} from "./trip";
 import { HealthResponseSchema, MetaResponseSchema } from "./system";
 
 const problemResponse = (description: string) => ({
@@ -328,6 +342,73 @@ function buildRegistry(): OpenAPIRegistry {
     summary: "Recent saved charge calculations",
     tags: ["calc"],
     responses: { 200: json(ChargeCalculationListSchema, "Newest first, up to 50.") },
+  });
+
+  // Routing (OpenRouteService behind our proxy) -------------------------------------------
+  const routingErrors = {
+    429: problemResponse("Too many routing requests; see Retry-After."),
+    503: problemResponse("Routing is not configured or the provider is unavailable."),
+  };
+  route({
+    method: "get",
+    path: "/routing/geocode",
+    summary: "Search addresses and places (Colombia first)",
+    tags: ["routing"],
+    request: { query: GeocodeQuerySchema },
+    responses: { 200: json(PlaceListSchema, "Matching places."), ...routingErrors },
+  });
+  route({
+    method: "get",
+    path: "/routing/reverse",
+    summary: "Name of a point on the map",
+    tags: ["routing"],
+    request: { query: ReverseQuerySchema },
+    responses: { 200: json(PlaceSchema, "The closest place."), ...routingErrors },
+  });
+  route({
+    method: "post",
+    path: "/routing/directions",
+    summary: "Driving route with elevation, split in ~10 km segments",
+    tags: ["routing"],
+    request: { body: body(DirectionsRequestSchema) },
+    responses: {
+      200: json(RouteSchema, "The route."),
+      404: problemResponse("No drivable route between the points."),
+      ...routingErrors,
+    },
+  });
+
+  // Trips (F1) ------------------------------------------------------------------------------
+  route({
+    method: "post",
+    path: "/calc/trip",
+    summary: "Estimate battery use from A to B (not saved)",
+    tags: ["calc"],
+    request: { body: body(TripRequestSchema) },
+    responses: {
+      200: json(TripEstimateSchema, "The estimate with its route."),
+      404: problemResponse("The vehicle does not exist or there is no route."),
+      ...routingErrors,
+    },
+  });
+  route({
+    method: "post",
+    path: "/trip-calculations",
+    summary: "Estimate and save to the history",
+    tags: ["calc"],
+    request: { body: body(TripRequestSchema) },
+    responses: {
+      201: json(TripCalculationSchema, "The saved trip."),
+      404: problemResponse("The vehicle does not exist or there is no route."),
+      ...routingErrors,
+    },
+  });
+  route({
+    method: "get",
+    path: "/trip-calculations",
+    summary: "Recent saved trips",
+    tags: ["calc"],
+    responses: { 200: json(TripCalculationListSchema, "Newest first, up to 50.") },
   });
 
   return registry;

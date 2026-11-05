@@ -2,5 +2,7 @@ export * from "./catalog";
 export * from "./charge";
 export * from "./garage";
 export * from "./profile";
+export * from "./routing";
+export * from "./trip";
 export * from "./problem";
 export * from "./system";
