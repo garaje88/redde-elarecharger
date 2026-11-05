@@ -9,7 +9,7 @@ const ITEMS = [
   { href: "/trip", label: "Trayecto", icon: Route, ready: true },
   { href: "/charge", label: "Carga", icon: Zap, ready: true },
   { href: "/garage", label: "Garaje", icon: Car, ready: true },
-  { href: "/sessions", label: "Recargas", icon: BarChart3, ready: false },
+  { href: "/sessions", label: "Recargas", icon: BarChart3, ready: true },
 ] as const;
 
 /** Mobile tab bar; becomes a side rail from md up. */

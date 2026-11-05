@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { parseChargeParams } from "@/features/history/repeat-links";
 import { listChargers } from "@/server/services/chargers";
 import { getProfile } from "@/server/services/profile";
 import { listVehicles } from "@/server/services/vehicles";
@@ -9,7 +10,7 @@ import { ChargeCalculator } from "./charge-calculator";
 
 export const metadata: Metadata = { title: "Tiempo de carga" };
 
-export default function ChargePage() {
+export default function ChargePage({ searchParams }: PageProps<"/charge">) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 md:max-w-xl">
       <Suspense
@@ -17,13 +18,14 @@ export default function ChargePage() {
           <div aria-hidden="true" className="h-[600px] animate-pulse rounded-[20px] bg-muted" />
         }
       >
-        <Content />
+        <Content searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-async function Content() {
+async function Content({ searchParams }: Pick<PageProps<"/charge">, "searchParams">) {
+  const initial = parseChargeParams(await searchParams);
   const { userId, supabase } = await getSession();
   const [vehicles, chargers, profile] = await Promise.all([
     listVehicles(supabase, userId),
@@ -50,5 +52,7 @@ async function Content() {
     );
   }
 
-  return <ChargeCalculator vehicles={vehicles} chargers={chargers} profile={profile} />;
+  return (
+    <ChargeCalculator vehicles={vehicles} chargers={chargers} profile={profile} initial={initial} />
+  );
 }

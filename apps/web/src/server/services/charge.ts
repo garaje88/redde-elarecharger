@@ -8,6 +8,7 @@ import {
 import type { Json } from "@elacharger/types";
 import { estimateForSetup } from "@/features/charge/estimate";
 import { type Db, check, unwrap } from "../db";
+import { notFound } from "../http";
 import { getCharger } from "./chargers";
 import { getProfile } from "./profile";
 import { getVehicle } from "./vehicles";
@@ -82,4 +83,12 @@ export async function listChargeCalculations(db: Db): Promise<ChargeCalculation[
     const parsed = ChargeEstimateSchema.safeParse((row.inputs as { estimate?: unknown }).estimate);
     return parsed.success ? [{ ...parsed.data, id: row.id, created_at: row.created_at }] : [];
   });
+}
+
+export async function deleteChargeCalculation(db: Db, id: string): Promise<void> {
+  const deleted = unwrap(
+    await db.from("charge_calculations").delete().eq("id", id).select("id"),
+    "Charge calculation",
+  );
+  if (deleted.length === 0) throw notFound("The charge calculation does not exist.");
 }
