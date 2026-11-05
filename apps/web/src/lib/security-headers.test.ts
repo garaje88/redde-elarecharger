@@ -1,5 +1,12 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { buildCsp, createNonce } from "./security-headers";
+import {
+  buildCsp,
+  createNonce,
+  SERVICE_WORKER_HEADERS,
+  STATIC_SECURITY_HEADERS,
+} from "./security-headers";
 
 const base = {
   nonce: "abc123",
@@ -47,5 +54,27 @@ describe("createNonce", () => {
   it("is fresh on every call", () => {
     expect(createNonce()).not.toBe(createNonce());
     expect(createNonce()).toMatch(/^[A-Za-z0-9+/]{22}==$/);
+  });
+});
+
+describe("public/_headers (Cloudflare static files)", () => {
+  // Rules of the form "/path\n  Name: value", keyed by path.
+  const rules = new Map<string, string[]>();
+  let current: string[] = [];
+  for (const line of readFileSync(join(import.meta.dirname, "../../public/_headers"), "utf8").split(
+    "\n",
+  )) {
+    if (line.startsWith("/")) rules.set(line.trim(), (current = []));
+    else if (line.startsWith("  ")) current.push(line.trim());
+  }
+  const lines = (headers: { key: string; value: string }[]) =>
+    headers.map(({ key, value }) => `${key}: ${value}`);
+
+  it("repeats the security headers for every file", () => {
+    expect(rules.get("/*")).toEqual(lines(STATIC_SECURITY_HEADERS));
+  });
+
+  it("repeats the service worker headers", () => {
+    expect(rules.get("/sw.js")).toEqual(lines(SERVICE_WORKER_HEADERS));
   });
 });

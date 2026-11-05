@@ -6,6 +6,8 @@
     "dev": "node scripts/copy-map-worker.mjs && next dev",
     "build": "node scripts/copy-map-worker.mjs && next build",
     "start": "next start",
+    "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:cf": "opennextjs-cloudflare build && node scripts/check-worker-env.mjs && opennextjs-cloudflare deploy",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run"
@@ -16,6 +18,7 @@
     "@elacharger/calc": "workspace:*",
     "@elacharger/schemas": "workspace:*",
     "@elacharger/types": "workspace:*",
+    "@opennextjs/cloudflare": "^1.20.16",
     "@sentry/nextjs": "^11.10.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
@@ -51,6 +54,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "4.157.0"
   }
 }

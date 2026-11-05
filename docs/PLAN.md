@@ -42,8 +42,9 @@ Next.js 16 (App Router) con TypeScript estricto, Tailwind CSS v4 y Supabase (Pos
 | Rate limiting | Upstash Redis + `@upstash/ratelimit` | Protege la cuota de ORS |
 | Pruebas | Vitest (unitarias del motor de cálculo), Playwright (E2E), Testing Library | El cálculo es el núcleo: cobertura ≥ 90 % |
 | Calidad | ESLint (next + typescript-eslint), Prettier, Husky + lint-staged, commitlint | Consistencia y commits convencionales |
-| CI/CD | GitHub Actions (lint, typecheck, test, build) + Vercel previews | Cada PR desplegado y probado |
-| Observabilidad | Sentry + Vercel Analytics | Errores y Web Vitals |
+| CI/CD | GitHub Actions (lint, typecheck, test, build, E2E sobre el Worker) + Cloudflare Workers Builds | Cada PR probado en el runtime que se despliega |
+| Hosting | Cloudflare Workers con el adaptador OpenNext (`@opennextjs/cloudflare`) | Decisión del proyecto (nov-2026); ver `docs/DEPLOY.md` |
+| Observabilidad | Sentry + Workers Observability | Errores y registros |
 
 Alternativa al mapa: Mapbox o Google Routes si se requiere tráfico real; el motor de cálculo no cambia porque el proveedor queda detrás de una interfaz `RoutingProvider`.
 
@@ -55,7 +56,7 @@ Alternativa al mapa: Mapbox o Google Routes si se requiere tráfico real; el mot
 flowchart TB
   web["App web (MVP) · Next.js PWA"] -->|HTTPS · cookies| ui
   mob["App móvil (después del MVP) · Expo"] -.->|HTTPS · Bearer JWT| api
-  subgraph vercel["Vercel · Next.js 16 (apps/web)"]
+  subgraph cf["Cloudflare Workers · Next.js 16 vía OpenNext (apps/web)"]
     ui["UI web"] --> sa["Server Actions"]
     api["API REST /api/v1"]
     sa --> svc["server/services"]
@@ -139,7 +140,7 @@ Toda la app requiere iniciar sesión con una cuenta Google (Gmail); no hay usuar
 
 1. Google Cloud Console: crear proyecto, pantalla de consentimiento (nombre Elacharger, logo, enlaces a privacidad y términos) y un cliente OAuth tipo "Aplicación web" con URI de redirección `https://<proyecto>.supabase.co/auth/v1/callback`.
 2. Supabase → Authentication → Providers → Google: pegar Client ID y Client Secret (viven solo en Supabase, nunca en el repo). Scopes mínimos: `openid email profile`.
-3. Supabase → URL Configuration: Site URL de producción y lista de redirecciones permitidas (`http://localhost:3000/**`, previews de Vercel, dominio final).
+3. Supabase → URL Configuration: Site URL de producción y lista de redirecciones permitidas (`http://localhost:3000/**`, dominio `*.workers.dev` o dominio final).
 4. Página `/login` con un único botón "Continuar con Google" que llama `signInWithOAuth({ provider: 'google', options: { redirectTo: <origen>/auth/callback } })`.
 5. Route Handler `/auth/callback` que hace `exchangeCodeForSession(code)` y redirige a la página que el usuario intentaba abrir (validando que sea una ruta interna, para evitar open redirect).
 6. `middleware.ts` refresca la sesión y redirige a `/login` cualquier ruta del grupo `(app)` sin usuario; las páginas además verifican con `getUser()` en servidor.
@@ -316,7 +317,7 @@ La ubicación (origen y destino) es dato personal bajo la Ley 1581 de 2012, por 
 | Autenticación | Inicio de sesión obligatorio con cuenta Google (Gmail) vía Supabase Auth y Google OAuth 2.0 con PKCE; scopes mínimos; sin contraseñas propias; la verificación en dos pasos la aporta la cuenta Google |
 | Sesión | Cookies `HttpOnly`, `Secure`, `SameSite=Lax` vía `@supabase/ssr`; en servidor usar `getUser()`/`getClaims()`, nunca confiar en `getSession()` |
 | Autorización | RLS en todas las tablas + verificación de usuario en cada Server Action; `service_role` solo en servidor y nunca con prefijo `NEXT_PUBLIC_` |
-| Secretos | `.env.local` fuera de git, variables en Vercel; validación de env al arrancar con Zod (`env.ts`); `server-only` en módulos con secretos |
+| Secretos | `.env.local` fuera de git, secretos del Worker (`wrangler secret put`), nunca empaquetados desde archivos `.env`; validación de env al arrancar con Zod (`env.ts`); `server-only` en módulos con secretos |
 | API externas | ORS solo desde Route Handler; rate limit por usuario/IP (ej. 30 rutas/min, 300/día); caché de rutas 24 h por par A→B redondeado |
 | Validación | Zod en toda entrada (Server Actions, Route Handlers, formularios); límites numéricos iguales a los `CHECK` de BD |
 | Cabeceras | CSP estricta con nonce (permitir teselas y ORS), HSTS, `X-Content-Type-Options`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (geolocation=self) |
@@ -430,7 +431,7 @@ Cómo usarlo: exporta este doc a Markdown como `docs/PLAN.md`, crea `CLAUDE.md` 
 | 4. Carga | /charge | "Construye /charge (F2) mobile-first: sliders, resultado en vivo, hora de fin, costo, curva con Recharts, guardar en charge\_calculations." | E2E: 20→80 % a 220 V da \~5 h 40 min |
 | 5. Trayecto | /trip + proxy ORS | "Construye /trip (F1): mapa MapLibre, A/B por toque o búsqueda, RoutingProvider ORS en un Route Handler con rate limit y caché, bottom sheet en móvil, desglose '¿Cómo se calculó?', guardar en trip\_calculations." | E2E con ORS simulado (MSW) |
 | 6. Historial y recargas | /history, /sessions | "Construye historial y el registro de recargas reales con estadísticas: kWh/100 km real vs estimado, costo por km, km entre cargas, gráfica mensual." | Estadísticas correctas con datos semilla |
-| 7. Endurecimiento | Seguridad, a11y, PWA, deploy | "Aplica la tabla de Seguridad: CSP con nonce, cabeceras, Sentry sin PII, borrar/exportar cuenta, PWA, auditoría Lighthouse y axe; despliega en Vercel." | Lighthouse ≥ 90 en las 4 categorías; 0 issues axe |
+| 7. Endurecimiento | Seguridad, a11y, PWA, deploy | "Aplica la tabla de Seguridad: CSP con nonce, cabeceras, Sentry sin PII, borrar/exportar cuenta, PWA, auditoría Lighthouse y axe; despliega en Cloudflare Workers (OpenNext)." | Lighthouse ≥ 90 en las 4 categorías; 0 issues axe |
 | 8. IA | Importar ficha, recarga por foto, asistente | "Implementa la sección Funcionalidades de IA de docs/PLAN.md: tablas ai\_extractions, ai\_conversations y ai\_usage con RLS; IA1 e IA2 con visión y salida validada por Zod con confirmación del usuario; IA3 como asistente con tool use sobre lib/calc y streaming; límites diarios, bucket privado con borrado a 24 h y evals con respuestas grabadas." | Evals ≥ 90 % de campos correctos; el asistente responde el trayecto de prueba con el mismo número que /trip |
 
 Decisiones tomadas antes de la fase 2 (3-nov-2026):

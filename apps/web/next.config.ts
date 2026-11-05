@@ -1,19 +1,14 @@
 import type { NextConfig } from "next";
-import { STATIC_SECURITY_HEADERS } from "./src/lib/security-headers";
+import { SERVICE_WORKER_HEADERS, STATIC_SECURITY_HEADERS } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // The nonce CSP is set per request in src/proxy.ts; these apply to every response.
+  // The nonce CSP is set per request in src/proxy.ts; these apply to every response the server
+  // renders. On Cloudflare, static files skip the server: public/_headers repeats them.
   async headers() {
     return [
       { source: "/:path*", headers: STATIC_SECURITY_HEADERS },
-      {
-        source: "/sw.js",
-        headers: [
-          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
-          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
-        ],
-      },
+      { source: "/sw.js", headers: SERVICE_WORKER_HEADERS },
     ];
   },
   transpilePackages: [

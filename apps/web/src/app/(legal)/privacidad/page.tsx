@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Aviso de privacidad" };
 
 const PROCESSORS = [
   ["Supabase", "base de datos e inicio de sesión"],
-  ["Vercel", "alojamiento de la aplicación"],
+  ["Cloudflare", "alojamiento de la aplicación"],
   ["Google", "inicio de sesión con tu cuenta"],
   ["OpenRouteService (HeiGIT)", "cálculo de rutas y búsqueda de direcciones"],
   ["OpenFreeMap / MapTiler", "imágenes del mapa"],

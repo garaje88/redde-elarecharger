@@ -67,6 +67,12 @@ export const STATIC_SECURITY_HEADERS: { key: string; value: string }[] = [
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
+/** The service worker must revalidate on every load and only runs its own code. */
+export const SERVICE_WORKER_HEADERS: { key: string; value: string }[] = [
+  { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+  { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+];
+
 /** A fresh, unguessable nonce per request. */
 export function createNonce(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));

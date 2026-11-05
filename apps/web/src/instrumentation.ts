@@ -10,7 +10,7 @@ export async function register() {
         await import("./lib/sentry-scrub");
       Sentry.init({
         dsn: env.SENTRY_DSN,
-        environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV,
+        environment: process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
         dataCollection: { ...SENTRY_DATA_COLLECTION, httpBodies: [] },
         tracesSampleRate: 0,
         beforeSend: (event) => scrubEvent(event),

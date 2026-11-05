@@ -26,8 +26,10 @@ playwright/.auth/
 supabase/.branches/
 supabase/.temp/
 
-# vercel
-.vercel
+# cloudflare (OpenNext build, Wrangler state, local Worker secrets)
+.open-next/
+.wrangler/
+.dev.vars*
 
 # vitest cache
 .vitest/
