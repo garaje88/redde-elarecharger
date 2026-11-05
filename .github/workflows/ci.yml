@@ -53,7 +53,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: 3.0.0
       # Only Postgres is needed for migrations, pgTAP and type generation.
@@ -73,7 +73,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: 3.0.0
       # Auth, REST, Storage (AI uploads) and Postgres: signed-in tests use a test user, not Google.
