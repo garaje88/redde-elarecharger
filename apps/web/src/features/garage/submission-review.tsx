@@ -161,7 +161,13 @@ export function SubmissionReview({
   const [missingRequired] = useState(
     () =>
       new Set(
-        FIELDS[kind].filter((f) => f.required && !(values[f.key] ?? "").trim()).map((f) => f.key),
+        FIELDS[kind]
+          .filter(
+            (f) =>
+              f.required &&
+              (!(values[f.key] ?? "").trim() || submission.extracted?.confidence[f.key] === 0),
+          )
+          .map((f) => f.key),
       ),
   );
   const [error, setError] = useState<string | null>(null);
@@ -216,7 +222,7 @@ export function SubmissionReview({
             ? `Esta es la ficha que encontramos en internet. Si algo no coincide con tu ${noun}, edítala antes de confirmar.`
             : submission.extracted
               ? "Corrige lo que no coincida con tu " + noun + "."
-              : `No pudimos extraer la ficha automáticamente. Guardamos tu búsqueda para que la revisemos; si conoces los datos, complétalos y tu ${noun} queda listo para usar mientras lo verificamos.`}
+              : `No encontramos una ficha confiable para «${submission.query}». Prueba de nuevo con marca, modelo y año (por ejemplo «Deepal S07 2025»). Si conoces los datos, complétalos aquí y tu ${noun} queda listo para usar mientras lo verificamos.`}
         </p>
         {!editing ? (
           <dl className="grid grid-cols-2 gap-x-3 gap-y-2.5">
@@ -227,7 +233,7 @@ export function SubmissionReview({
                   {missingRequired.has(field.key) ? (
                     <dd>
                       <label className="flex flex-col gap-1 text-xs font-semibold text-warning">
-                        {field.label} * · no aparece en la ficha
+                        {field.label} * · confírmalo
                         <input
                           className={inputClass}
                           inputMode={field.type === "number" ? "decimal" : undefined}

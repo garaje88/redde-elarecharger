@@ -11,18 +11,24 @@ import { ApiError } from "../http";
 
 export type AiFeature = "catalog_lookup" | "vehicle_spec" | "charging_receipt" | "assistant";
 
-/** IA1 and IA2: fast vision extraction. IA3: the more capable model. */
+/**
+ * IA1 and IA2: fast vision extraction. Web lookup: searching and reading several pages needs a
+ * more capable model than extraction. IA3: the most capable one.
+ */
 export const DEFAULT_MODELS = {
   extraction: "claude-haiku-5-5",
+  lookup: "claude-sonnet-5-5",
   assistant: "claude-opus-5-5",
 } as const;
 
 export function aiModel(kind: keyof typeof DEFAULT_MODELS): string {
   const env = getServerEnv();
-  return (
-    (kind === "extraction" ? env.AI_MODEL_EXTRACTION : env.AI_MODEL_ASSISTANT) ??
-    DEFAULT_MODELS[kind]
-  );
+  const configured = {
+    extraction: env.AI_MODEL_EXTRACTION,
+    lookup: env.AI_MODEL_LOOKUP,
+    assistant: env.AI_MODEL_ASSISTANT,
+  }[kind];
+  return configured ?? DEFAULT_MODELS[kind];
 }
 
 let client: Anthropic | null | undefined;

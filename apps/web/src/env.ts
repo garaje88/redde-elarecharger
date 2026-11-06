@@ -25,6 +25,7 @@ const serverEnvSchema = z.object({
   ANTHROPIC_BASE_URL: optional(z.url()),
   AI_MODEL_EXTRACTION: optional(z.string().min(1)),
   AI_MODEL_ASSISTANT: optional(z.string().min(1)),
+  AI_MODEL_LOOKUP: optional(z.string().min(1)),
   AI_DAILY_LIMIT_EXTRACTIONS: count(20),
   AI_DAILY_LIMIT_MESSAGES: count(50),
   // Global cap on estimated AI spend per calendar month (UTC), in USD.

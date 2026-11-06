@@ -53,7 +53,8 @@ Cada push a `main` despliega. Las ramas pueden generar versiones de vista previa
 | `SENTRY_ENVIRONMENT` | Variable | Opcional | Por defecto `production` |
 | `ANTHROPIC_API_KEY` | Secret | Opcional | IA: búsqueda de fichas, importar ficha, recarga con foto y asistente. Sin ella, esas funciones responden 503 |
 | `AI_MODEL_EXTRACTION` | Variable | Opcional | Lectura de fichas y fotos; por defecto `claude-haiku-5-5` |
-| `AI_MODEL_ASSISTANT` | Variable | Opcional | Asistente y búsqueda web de fichas; por defecto `claude-opus-5-5` |
+| `AI_MODEL_LOOKUP` | Variable | Opcional | Búsqueda web de fichas faltantes; por defecto `claude-sonnet-5-5` (~USD 0,15 por búsqueda) |
+| `AI_MODEL_ASSISTANT` | Variable | Opcional | Asistente; por defecto `claude-opus-5-5` |
 | `AI_DAILY_LIMIT_EXTRACTIONS`, `AI_DAILY_LIMIT_MESSAGES` | Variable | Opcional | Por usuario y día; por defecto 20 y 50 |
 | `AI_MONTHLY_BUDGET_USD` | Variable | Opcional | Tope global de gasto estimado en IA por mes; por defecto 50 |
 
