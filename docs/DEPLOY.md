@@ -2,6 +2,24 @@
 
 La app corre como un Cloudflare Worker generado por OpenNext (`@opennextjs/cloudflare`). La configuración está en `apps/web/wrangler.jsonc`, `apps/web/open-next.config.ts` y `apps/web/worker.ts` (la entrada del Worker, envuelta por Sentry).
 
+## Lista para salir a producción
+
+En orden. «Tú» = necesita tus cuentas; «Claude» = lo hago con el acceso que me des.
+
+1. **Supabase** (tú: `supabase login`; Claude: el resto, con tu confirmación antes de `db push`)
+   - `supabase link --project-ref <project-ref>` y `supabase db push` (crea tablas, RLS y el bucket `ai-uploads`).
+   - Catálogo inicial: `SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=… pnpm catalog:import` (una vez; después lo mantiene `catalog-sync.yml`).
+   - Auth → URL Configuration y proveedor Google (sección 1).
+2. **Google Cloud** (tú): pantalla de consentimiento OAuth en «En producción» (solo pide nombre, correo y foto, no necesita verificación de Google) y la URI de redirección de Supabase.
+3. **Upstash Redis** (tú): crear una base gratuita y pasar `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`. Obligatorio en Cloudflare: sin Redis el límite de peticiones no protege la cuota de OpenRouteService ni de la IA.
+4. **Cloudflare** (tú): plan Workers Paid, conectar el repositorio con Workers Builds (sección 2), variables de build y secretos del Worker, dominio.
+5. **GitHub** (tú o Claude con `gh`): secretos `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` del repositorio para `catalog-sync.yml` y `ai-uploads-purge.yml`.
+6. **Orígenes permitidos** (tú): agregar el dominio en MapTiler (Allowed HTTP Origins) y en Supabase (Redirect URLs).
+7. **Verificación** (Claude): `node scripts/smoke-prod.mjs https://<tu-dominio>` (cabeceras, CSP con nonce, rutas públicas, 401 de la API) y Lighthouse en móvil.
+8. **Primer uso real** (tú): iniciar sesión con Google, crear un vehículo, calcular carga y trayecto, registrar una recarga con foto y preguntarle al asistente.
+
+Antes de abrir al público: revisión legal de `/privacidad` y `/terminos`, y `NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL` con un buzón que alguien lea (Ley 1581).
+
 ## 1. Supabase de producción
 
 1. Crea el proyecto en Supabase (región `us-east-1` o la más cercana a tus usuarios).
@@ -81,6 +99,8 @@ E2E_RUNTIME=cloudflare PORT=8787 pnpm test:e2e     # la suite E2E contra el Work
 En local sí se usan tus `.env` (es tu máquina). Para variables puntuales: `pnpm --filter @elacharger/web exec opennextjs-cloudflare preview --var CLAVE:valor`.
 
 ## 4. Verificación después de desplegar
+
+`node scripts/smoke-prod.mjs https://<tu-dominio>` revisa automáticamente lo que no necesita sesión. Además:
 
 - `GET /api/v1/meta` responde 200.
 - La cabecera `Content-Security-Policy` de `/login` trae `'nonce-…'` y `upgrade-insecure-requests`; `/sw.js` y `/icons/icon-192.png` traen `Strict-Transport-Security`.
