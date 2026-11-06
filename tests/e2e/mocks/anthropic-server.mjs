@@ -10,8 +10,8 @@ const recorded = (file) =>
   JSON.parse(
     readFileSync(new URL(`../../../apps/web/test/ai-evals/recorded/${file}.json`, import.meta.url)),
   ).raw;
-const SHEET = recorded("byd-dolphin.png");
-const RECEIPT = recorded("celsia-receipt.jpg");
+const SHEET = recorded("byd-dolphin.webp");
+const RECEIPT = recorded("celsia-receipt.webp");
 
 const usage = { input_tokens: 1200, output_tokens: 80 };
 const message = (content, stopReason) => ({

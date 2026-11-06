@@ -31,7 +31,7 @@ Antes de abrir al público: revisión legal de `/privacidad` y `/terminos`, y `N
 3. Auth → Providers → Google: Client ID y Secret de Google Cloud.
 4. Auth → URL Configuration:
    - Site URL: `https://<tu-dominio>`
-   - Redirect URLs: `https://<tu-dominio>/auth/callback` y, mientras no tengas dominio propio, `https://elacharger.<tu-subdominio>.workers.dev/auth/callback`.
+   - Redirect URLs: `https://<tu-dominio>/auth/callback` y, mientras no tengas dominio propio, `https://redde-elacharger.garaje88-dev.workers.dev/auth/callback`.
 5. Google Cloud → Credenciales → cliente OAuth: agrega `https://<project-ref>.supabase.co/auth/v1/callback` como URI de redirección autorizada.
 
 ## 2. Cloudflare
@@ -49,7 +49,7 @@ Cloudflare compila en una máquina limpia, sin archivos `.env`, que es lo que ex
    - Root directory: `/` (la raíz del monorepo, donde está `pnpm-lock.yaml`).
    - Build command: `pnpm --filter @elacharger/web exec opennextjs-cloudflare build && node apps/web/scripts/check-worker-env.mjs`
    - Deploy command: `pnpm --filter @elacharger/web exec wrangler deploy`
-   - El nombre del Worker debe ser `elacharger` (el de `wrangler.jsonc`).
+   - El nombre del Worker debe ser `redde-elacharger` (el de `wrangler.jsonc`); queda en `https://redde-elacharger.garaje88-dev.workers.dev`.
 3. Build variables (Settings → Build → Variables): las `NEXT_PUBLIC_*` de la tabla. Next las incrusta en el código del navegador durante el build, así que tienen que existir en ese momento.
 4. Variables and Secrets del Worker (Settings → Variables and Secrets): las de servidor de la tabla, como **Secret**.
 5. Settings → Domains & Routes: agrega tu dominio propio si lo tienes.

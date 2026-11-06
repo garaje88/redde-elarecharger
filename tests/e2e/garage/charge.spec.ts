@@ -1,15 +1,19 @@
-import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
+import { createTestSession, secretKey } from "../support/session";
 
 // docs/PLAN.md phase 4 exit criterion: 20 → 80 % at 220 V gives ~5 h 40 min.
+// Its own user: it needs a known garage (one car, one charger) and no tariff, which the suites
+// sharing the default user change while it runs.
 
 test("20 → 80 % at 220 V 32 A with a 6.6 kW on-board charger takes about 5 h 40 min", async ({
-  page,
+  browser,
+  baseURL,
   request,
 }) => {
-  const headers = {
-    Authorization: `Bearer ${readFileSync("playwright/.auth/token.txt", "utf8").trim()}`,
-  };
+  test.skip(!secretKey, "Needs E2E_SUPABASE_SECRET_KEY.");
+  const session = await createTestSession(baseURL);
+  const page = await (await browser.newContext({ storageState: session.storageState })).newPage();
+  const headers = { Authorization: `Bearer ${session.accessToken}` };
   const models = await (
     await request.get("/api/v1/catalog/models?q=deepal%20s05", { headers })
   ).json();
@@ -29,7 +33,8 @@ test("20 → 80 % at 220 V 32 A with a 6.6 kW on-board charger takes about 5 h 4
   expect(charger.status()).toBe(201);
 
   await page.goto("/charge");
-  await page.getByLabel("Vehículo").selectOption({ label: `${nickname} · 56,12 kWh` });
+  // With a single car the screen names it instead of offering a choice.
+  await expect(page.getByText(`${nickname} · 56,12 kWh`)).toBeVisible();
   await page.getByRole("button", { name: new RegExp(`220 ${nickname}`) }).click();
 
   const start = page.getByLabel("Batería actual");

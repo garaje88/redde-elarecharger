@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   // Cloudflare Worker built by OpenNext (`pnpm --filter @elacharger/web deploy:cf`).
-  "name": "elacharger",
+  "name": "redde-elacharger",
   "main": "worker.ts",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -10,6 +10,6 @@
     "binding": "ASSETS",
   },
   // OpenNext calls the Worker itself for revalidation; must match "name".
-  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "elacharger" }],
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "redde-elacharger" }],
   "observability": { "enabled": true },
 }

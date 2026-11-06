@@ -5,8 +5,8 @@ import { createTestSession, secretKey, type TestSession } from "../support/sessi
 // as /trip. Also IA1 and IA2 end to end, against the simulated Claude API and OpenRouteService.
 // Its own user, so the sessions and stats of the other suites stay untouched.
 
-const PHOTO = "apps/web/test/ai-evals/photos/celsia-receipt.jpg";
-const SHEET = "apps/web/test/ai-evals/sheets/byd-dolphin.png";
+const PHOTO = "apps/web/test/ai-evals/photos/celsia-receipt.webp";
+const SHEET = "apps/web/test/ai-evals/sheets/byd-dolphin.webp";
 
 let session: TestSession;
 
@@ -40,7 +40,10 @@ test("a charging photo fills the session form, and nothing is saved until the us
   await page.goto("/sessions/new");
   await page.locator('input[type="file"]').setInputFiles(PHOTO);
 
-  await expect(page.getByRole("status").filter({ hasText: "desde la foto" })).toBeVisible();
+  // Upload plus extraction: slower than a page load, especially on the Worker.
+  await expect(page.getByRole("status").filter({ hasText: "desde la foto" })).toBeVisible({
+    timeout: 20_000,
+  });
   await expect(page.getByLabel("kWh cargados")).toHaveValue("28,46");
   await expect(page.getByLabel("% inicial")).toHaveValue("18");
   await expect(page.getByLabel("% final")).toHaveValue("76");
@@ -70,6 +73,7 @@ test("a technical sheet becomes a vehicle after the user reviews it", async ({ b
   await page.locator('input[type="file"]').setInputFiles(SHEET);
 
   const form = page.locator("form").filter({ hasText: "Confirmar y agregar" });
+  await expect(form).toBeVisible({ timeout: 20_000 });
   // Shown as read: the user edits only if they choose to.
   await expect(form.getByText("BYD", { exact: true })).toBeVisible();
   await expect(form.getByText("44,9", { exact: true })).toBeVisible();

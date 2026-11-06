@@ -6,15 +6,15 @@
     "trim": "Versión batería de largo alcance",
     "year_from": {
       "value": 2025,
-      "confidence": 0.9
+      "confidence": 0.8
     },
     "year_to": {
       "value": null,
-      "confidence": 0
+      "confidence": 0.9
     },
     "battery_gross_kwh": {
       "value": null,
-      "confidence": 0
+      "confidence": 0.9
     },
     "battery_usable_kwh": {
       "value": 64.8,
@@ -22,7 +22,7 @@
     },
     "chemistry": {
       "value": null,
-      "confidence": 0
+      "confidence": 0.9
     },
     "range_km": {
       "value": 454,
@@ -54,11 +54,11 @@
     },
     "connector_ac": {
       "value": null,
-      "confidence": 0
+      "confidence": 0.9
     },
     "connector_dc": {
       "value": null,
-      "confidence": 0
+      "confidence": 0.9
     }
   },
   "model": "claude-haiku-5-5",
@@ -70,9 +70,9 @@
       "ephemeral_5m_input_tokens": 0,
       "ephemeral_1h_input_tokens": 0
     },
-    "output_tokens": 669,
+    "output_tokens": 557,
     "output_tokens_details": {
-      "thinking_tokens": 297
+      "thinking_tokens": 175
     },
     "service_tier": "standard",
     "inference_geo": "global",
