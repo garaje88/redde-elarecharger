@@ -5,8 +5,8 @@ import { createTestSession, secretKey, type TestSession } from "../support/sessi
 // as /trip. Also IA1 and IA2 end to end, against the simulated Claude API and OpenRouteService.
 // Its own user, so the sessions and stats of the other suites stay untouched.
 
-const PHOTO = "apps/web/test/ai-evals/photos/celsia-receipt.jpg";
-const SHEET = "apps/web/test/ai-evals/sheets/byd-dolphin.png";
+const PHOTO = "apps/web/test/ai-evals/photos/celsia-receipt.webp";
+const SHEET = "apps/web/test/ai-evals/sheets/byd-dolphin.webp";
 
 let session: TestSession;
 

@@ -4,6 +4,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
+import sharp from "sharp";
 
 const root = join(import.meta.dirname, "../test/ai-evals");
 mkdirSync(join(root, "sheets"), { recursive: true });
@@ -315,28 +316,23 @@ const photos = [
 const browser = await chromium.launch();
 const context = await browser.newContext({ deviceScaleFactor: 1.5 });
 const tab = await context.newPage();
+// Images are stored as WebP (smaller in the repo); the PDFs stay PDFs.
+const webp = async (png, file) =>
+  writeFileSync(file, await sharp(png).webp({ quality: 82 }).toBuffer());
 for (const sheet of sheets) {
   await tab.setContent(sheet.html);
-  const file = join(
-    root,
-    "sheets",
-    `${sheet.id}.${sheet.format === "jpeg" ? "jpg" : sheet.format}`,
-  );
-  if (sheet.format === "pdf") writeFileSync(file, await tab.pdf({ format: "A4" }));
-  else
-    await tab.locator("body > div").screenshot({
-      path: file,
-      type: sheet.format,
-      ...(sheet.format === "jpeg" ? { quality: 75 } : {}),
-    });
+  if (sheet.format === "pdf") {
+    writeFileSync(join(root, "sheets", `${sheet.id}.pdf`), await tab.pdf({ format: "A4" }));
+  } else {
+    await webp(
+      await tab.locator("body > div").screenshot(),
+      join(root, "sheets", `${sheet.id}.webp`),
+    );
+  }
 }
 for (const item of photos) {
   await tab.setContent(item.html);
-  await tab.locator("body > div").screenshot({
-    path: join(root, "photos", `${item.id}.jpg`),
-    type: "jpeg",
-    quality: 72,
-  });
+  await webp(await tab.locator("body > div").screenshot(), join(root, "photos", `${item.id}.webp`));
 }
 await browser.close();
 console.log(`Wrote ${sheets.length} sheets and ${photos.length} photos to ${root}`);

@@ -1,0 +1,81 @@
+{
+  "raw": {
+    "found": false,
+    "brand": "",
+    "model": "",
+    "trim": "",
+    "year_from": {
+      "value": null,
+      "confidence": 0
+    },
+    "year_to": {
+      "value": null,
+      "confidence": 0
+    },
+    "battery_gross_kwh": {
+      "value": null,
+      "confidence": 0
+    },
+    "battery_usable_kwh": {
+      "value": null,
+      "confidence": 0
+    },
+    "chemistry": {
+      "value": null,
+      "confidence": 0
+    },
+    "range_km": {
+      "value": null,
+      "confidence": 0
+    },
+    "range_cycle": {
+      "value": null,
+      "confidence": 0
+    },
+    "consumption_kwh_100km": {
+      "value": null,
+      "confidence": 0
+    },
+    "curb_weight_kg": {
+      "value": null,
+      "confidence": 0
+    },
+    "ac_onboard_kw": {
+      "value": null,
+      "confidence": 0
+    },
+    "ac_phases": {
+      "value": null,
+      "confidence": 0
+    },
+    "dc_max_kw": {
+      "value": null,
+      "confidence": 0
+    },
+    "connector_ac": {
+      "value": null,
+      "confidence": 0
+    },
+    "connector_dc": {
+      "value": null,
+      "confidence": 0
+    }
+  },
+  "model": "claude-haiku-5-5",
+  "usage": {
+    "input_tokens": 3645,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 428,
+    "output_tokens_details": {
+      "thinking_tokens": 110
+    },
+    "service_tier": "standard",
+    "inference_geo": "global",
+    "speed": "standard"
+  }
+}

@@ -22,8 +22,7 @@ const TODAY = "2026-11-05";
 
 const MEDIA: Record<string, AiUploadContentType> = {
   pdf: "application/pdf",
-  png: "image/png",
-  jpg: "image/jpeg",
+  webp: "image/webp",
 };
 
 const recordedPath = (file: string) => join(dir, "recorded", `${file}.json`);

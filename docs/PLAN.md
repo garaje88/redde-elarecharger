@@ -50,7 +50,7 @@ Alternativa al mapa: Mapbox o Google Routes si se requiere tráfico real; el mot
 
 ## Diagrama de arquitectura
 
-![Diagrama de arquitectura](diagrams/arquitectura.png)
+![Diagrama de arquitectura](diagrams/arquitectura.webp)
 
 ```mermaid
 flowchart TB
@@ -81,7 +81,7 @@ La web entra con cookies y la futura app móvil con token Bearer; ambas llegan a
 
 ## Diagrama de componentes y conectores
 
-![Diagrama de componentes y conectores](diagrams/componentes-conectores.png)
+![Diagrama de componentes y conectores](diagrams/componentes-conectores.webp)
 
 ```mermaid
 flowchart TB
