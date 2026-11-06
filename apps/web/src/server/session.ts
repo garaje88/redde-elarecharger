@@ -7,6 +7,7 @@ import type { Db } from "./db";
 export interface SessionUser {
   id: string;
   name: string | null;
+  email: string | null;
   avatarUrl: string | null;
 }
 
@@ -40,6 +41,7 @@ export async function getCurrentUser(): Promise<SessionUser> {
   return {
     id: data.claims.sub,
     name: profile?.display_name ?? null,
+    email: typeof data.claims.email === "string" ? data.claims.email : null,
     avatarUrl: profile?.avatar_url ?? null,
   };
 }

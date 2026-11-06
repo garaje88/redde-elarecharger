@@ -2275,6 +2275,76 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/sessions/totals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Energy and cost of the sessions between two days (both included) */
+    get: {
+      parameters: {
+        query: {
+          /** @description Omit for every vehicle. */
+          vehicle?: string;
+          /** @description YYYY-MM-DD in Colombian time. */
+          from: string;
+          /** @description YYYY-MM-DD in Colombian time. */
+          to: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Totals. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["SessionTotals"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/sessions/{id}": {
     parameters: {
       query?: never;
@@ -4008,6 +4078,18 @@ export interface components {
         cost: number;
         sessions: number;
       }[];
+    };
+    SessionTotals: {
+      from: string;
+      to: string;
+      /** Format: uuid */
+      vehicle_id: string | null;
+      currency: string;
+      sessions: number;
+      energy_kwh: number;
+      cost: number;
+      /** @description Sessions in the period with no cost; the total leaves them out. */
+      sessions_without_cost: number;
     };
     UpdateSession: {
       /** Format: uuid */

@@ -155,9 +155,24 @@ export function SubmissionReview({
   const [values, setValues] = useState<Values>(() =>
     toValues(submission.extracted?.spec as Record<string, unknown> | undefined),
   );
+  // A found sheet is shown as read and edited only if the user chooses to; a required value the
+  // sheet does not give is asked for right there. Without a sheet there is nothing to show.
+  const [editing, setEditing] = useState(!submission.extracted);
+  const [missingRequired] = useState(
+    () =>
+      new Set(
+        FIELDS[kind].filter((f) => f.required && !(values[f.key] ?? "").trim()).map((f) => f.key),
+      ),
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, startSave] = useTransition();
   const noun = kind === "vehicle" ? "carro" : "cargador";
+
+  const shown = (field: Field) => {
+    const value = values[field.key] ?? "";
+    if (!value) return "Por confirmar";
+    return field.options?.find((option) => option.value === value)?.label ?? value;
+  };
 
   const confirm = (event: React.FormEvent) => {
     event.preventDefault();
@@ -197,66 +212,113 @@ export function SubmissionReview({
       )}
       <form onSubmit={confirm} className="flex flex-col gap-4 rounded-[20px] bg-card p-4">
         <p aria-live="polite" className="text-sm">
-          {submission.extracted
-            ? "Revisa la ficha que encontramos. Corrige lo que no coincida con tu " + noun + "."
-            : `No pudimos extraer la ficha automáticamente. Guardamos tu búsqueda para que la revisemos; si conoces los datos, complétalos y tu ${noun} queda listo para usar mientras lo verificamos.`}
+          {submission.extracted && !editing
+            ? `Esta es la ficha que encontramos en internet. Si algo no coincide con tu ${noun}, edítala antes de confirmar.`
+            : submission.extracted
+              ? "Corrige lo que no coincida con tu " + noun + "."
+              : `No pudimos extraer la ficha automáticamente. Guardamos tu búsqueda para que la revisemos; si conoces los datos, complétalos y tu ${noun} queda listo para usar mientras lo verificamos.`}
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {FIELDS[kind].map((field) => {
-            const confidence = confidenceLabel(submission.extracted?.confidence[field.key]);
-            const url = submission.extracted?.field_urls[field.key];
-            return (
-              <label key={field.key} className="flex flex-col gap-1 text-sm font-medium">
-                <span>
-                  {field.label}
-                  {field.required && <span aria-hidden="true"> *</span>}
-                </span>
-                {field.type === "select" ? (
-                  <select
-                    className={inputClass}
-                    value={values[field.key] ?? ""}
-                    onChange={(event) => setValues({ ...values, [field.key]: event.target.value })}
-                    required={field.required}
-                  >
-                    <option value="">Por confirmar</option>
-                    {field.options?.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    className={inputClass}
-                    inputMode={field.type === "number" ? "decimal" : undefined}
-                    value={values[field.key] ?? ""}
-                    placeholder="Por confirmar"
-                    onChange={(event) => setValues({ ...values, [field.key]: event.target.value })}
-                    required={field.required}
-                  />
-                )}
-                {confidence && values[field.key] && (
-                  <span className={`text-xs ${confidence.tone}`}>
-                    {confidence.text}
-                    {url && (
-                      <>
-                        {" · "}
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline-offset-2 hover:underline"
-                        >
-                          fuente
-                        </a>
-                      </>
-                    )}
+        {!editing ? (
+          <dl className="grid grid-cols-2 gap-x-3 gap-y-2.5">
+            {FIELDS[kind].map((field) => {
+              const confidence = confidenceLabel(submission.extracted?.confidence[field.key]);
+              return (
+                <div key={field.key} className="flex flex-col">
+                  {missingRequired.has(field.key) ? (
+                    <dd>
+                      <label className="flex flex-col gap-1 text-xs font-semibold text-warning">
+                        {field.label} * · no aparece en la ficha
+                        <input
+                          className={inputClass}
+                          inputMode={field.type === "number" ? "decimal" : undefined}
+                          value={values[field.key] ?? ""}
+                          placeholder="Escríbelo"
+                          onChange={(event) =>
+                            setValues({ ...values, [field.key]: event.target.value })
+                          }
+                          required
+                        />
+                      </label>
+                    </dd>
+                  ) : (
+                    <>
+                      <dt className="text-xs text-muted-foreground">{field.label}</dt>
+                      <dd
+                        className={`text-[15px] ${values[field.key] ? "font-semibold" : "text-muted-foreground"}`}
+                      >
+                        {shown(field)}
+                      </dd>
+                    </>
+                  )}
+                  {confidence && values[field.key] && !missingRequired.has(field.key) && (
+                    <dd className={`text-xs ${confidence.tone}`}>{confidence.text}</dd>
+                  )}
+                </div>
+              );
+            })}
+          </dl>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {FIELDS[kind].map((field) => {
+              const confidence = confidenceLabel(submission.extracted?.confidence[field.key]);
+              const url = submission.extracted?.field_urls[field.key];
+              return (
+                <label key={field.key} className="flex flex-col gap-1 text-sm font-medium">
+                  <span>
+                    {field.label}
+                    {field.required && <span aria-hidden="true"> *</span>}
                   </span>
-                )}
-              </label>
-            );
-          })}
-        </div>
+                  {field.type === "select" ? (
+                    <select
+                      className={inputClass}
+                      value={values[field.key] ?? ""}
+                      onChange={(event) =>
+                        setValues({ ...values, [field.key]: event.target.value })
+                      }
+                      required={field.required}
+                    >
+                      <option value="">Por confirmar</option>
+                      {field.options?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      className={inputClass}
+                      inputMode={field.type === "number" ? "decimal" : undefined}
+                      value={values[field.key] ?? ""}
+                      placeholder="Por confirmar"
+                      onChange={(event) =>
+                        setValues({ ...values, [field.key]: event.target.value })
+                      }
+                      required={field.required}
+                    />
+                  )}
+                  {confidence && values[field.key] && (
+                    <span className={`text-xs ${confidence.tone}`}>
+                      {confidence.text}
+                      {url && (
+                        <>
+                          {" · "}
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline-offset-2 hover:underline"
+                          >
+                            fuente
+                          </a>
+                        </>
+                      )}
+                    </span>
+                  )}
+                </label>
+              );
+            })}
+          </div>
+        )}
 
         {submission.sources.length > 0 && (
           <details className="text-sm">
@@ -292,6 +354,15 @@ export function SubmissionReview({
               ? "Confirmar y agregar a mi garaje"
               : "Confirmar cargador"}
         </button>
+        {!editing && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="min-h-11 rounded-2xl border border-border text-sm font-semibold hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            Editar datos
+          </button>
+        )}
         <p className="text-xs text-muted-foreground">
           Queda como aporte pendiente: solo tú lo ves hasta que un administrador lo verifique para
           todos.

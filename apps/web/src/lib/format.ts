@@ -29,3 +29,22 @@ export function formatSourceDate(isoDate: string | undefined): string | null {
   const year = parts.find((part) => part.type === "year")?.value;
   return `${month} ${year}`;
 }
+
+const COLOMBIAN_DECIMAL = /^(\d{1,3}(\.\d{3})+|\d+)(,\d{1,2})?$/;
+
+/**
+ * Parses a Colombian amount: comma decimals and optional dot thousands ("1.234,56").
+ * A dot used as the decimal mark ("912.35") is rejected instead of being read as thousands.
+ */
+export function parseColombianDecimal(text: string): { value: number | null } | { error: string } {
+  const trimmed = text.trim();
+  if (trimmed === "") return { value: null };
+  if (!COLOMBIAN_DECIMAL.test(trimmed)) {
+    return {
+      error: trimmed.includes(".")
+        ? "Usa coma para los decimales, por ejemplo 912,35."
+        : "Escribe solo números, con coma para los decimales (máximo 2), por ejemplo 912,35.",
+    };
+  }
+  return { value: Number(trimmed.replace(/\./g, "").replace(",", ".")) };
+}

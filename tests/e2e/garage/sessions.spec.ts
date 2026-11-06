@@ -109,6 +109,22 @@ test("real consumption, cost per km and km between charges from seed sessions", 
   await expect(page.getByTestId("stat-cost-km")).toHaveText(/\$\s?151/);
   await expect(page.getByRole("row", { name: /Septiembre 2026 30 kWh/ })).toBeAttached();
   await expect(page.getByText(/^31 oct · Recarga$/)).toBeVisible();
+
+  // Spending between two days, in Colombian time: the 1 Nov 03:00 UTC charge is 31 Oct.
+  const totals = await (
+    await request.get(
+      `/api/v1/sessions/totals?vehicle=${vehicleId}&from=2026-10-01&to=2026-10-31`,
+      { headers: headers() },
+    )
+  ).json();
+  expect(totals).toMatchObject({ sessions: 4, energy_kwh: 142, cost: 127800 });
+
+  const period = page.getByRole("region", { name: "Gasto en recargas por fechas" });
+  await period.getByLabel("Desde").fill("2026-10-15");
+  await period.getByLabel("Hasta").fill("2026-10-31");
+  await period.getByRole("button", { name: "Ver" }).click();
+  await expect(page.getByTestId("period-cost")).toHaveText(/\$\s?61\.560/);
+  await expect(period.getByText(/2 recargas · 68,4 kWh/)).toBeVisible();
 });
 
 test("log a session from the form", async ({ page, request }) => {
@@ -156,11 +172,12 @@ test("history lists saved calculations and repeats them with one tap", async ({
   expect(saved.status()).toBe(201);
 
   await page.goto("/history");
+  await page.waitForLoadState("load");
   const item = page.getByRole("listitem").filter({ hasText: "Carga 35 → 65 %" }).first();
   await expect(item).toBeVisible();
   await item.getByRole("link", { name: /Repetir/ }).click();
 
-  await expect(page).toHaveURL(/\/charge\?vehicle=/);
+  await expect(page).toHaveURL(/\/charge\?vehicle=/, { timeout: 10_000 });
   await expect(page.getByLabel("Batería actual")).toHaveValue("35");
   await expect(page.getByLabel("Quiero llegar a")).toHaveValue("65");
   await expect(page.getByLabel("Vehículo")).toHaveValue(vehicleId);

@@ -2728,6 +2728,47 @@
           "monthly"
         ]
       },
+      "SessionTotals": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "vehicle_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "sessions": {
+            "type": "integer"
+          },
+          "energy_kwh": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "sessions_without_cost": {
+            "type": "integer",
+            "description": "Sessions in the period with no cost; the total leaves them out."
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "vehicle_id",
+          "currency",
+          "sessions",
+          "energy_kwh",
+          "cost",
+          "sessions_without_cost"
+        ]
+      },
       "UpdateSession": {
         "type": "object",
         "properties": {
@@ -6181,6 +6222,94 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SessionStats"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions/totals": {
+      "get": {
+        "summary": "Energy and cost of the sessions between two days (both included)",
+        "tags": ["sessions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "Omit for every vehicle."
+            },
+            "required": false,
+            "description": "Omit for every vehicle.",
+            "name": "vehicle",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "YYYY-MM-DD in Colombian time."
+            },
+            "required": true,
+            "description": "YYYY-MM-DD in Colombian time.",
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "YYYY-MM-DD in Colombian time."
+            },
+            "required": true,
+            "description": "YYYY-MM-DD in Colombian time.",
+            "name": "to",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Totals.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionTotals"
                 }
               }
             }

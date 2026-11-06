@@ -153,3 +153,50 @@ export function sessionStats(
     })),
   };
 }
+
+export interface PeriodTotals {
+  sessions: number;
+  energyKwh: number;
+  cost: number;
+  /** Sessions in the period without a cost; the total leaves them out. */
+  sessionsWithoutCost: number;
+}
+
+/** Local calendar day "YYYY-MM-DD" of a date (Colombia by default). */
+export function dayKey(date: Date, utcOffsetMin = -300): string {
+  return new Date(date.getTime() + utcOffsetMin * 60_000).toISOString().slice(0, 10);
+}
+
+/** Totals of the sessions started between two local days, both included. */
+export function periodTotals(
+  sessions: SessionRecord[],
+  from: string,
+  to: string,
+  utcOffsetMin = -300,
+): PeriodTotals {
+  const inPeriod = sessions.filter((s) => {
+    const day = dayKey(s.startedAt, utcOffsetMin);
+    return day >= from && day <= to;
+  });
+  let energy = 0;
+  let cost = 0;
+  let withoutCost = 0;
+  for (const s of inPeriod) {
+    if (s.energyKwh != null) {
+      assertNonNegative("energyKwh", s.energyKwh);
+      energy += s.energyKwh;
+    }
+    if (s.cost != null) {
+      assertNonNegative("cost", s.cost);
+      cost += s.cost;
+    } else {
+      withoutCost += 1;
+    }
+  }
+  return {
+    sessions: inPeriod.length,
+    energyKwh: round(energy, 2),
+    cost: round(cost, 2),
+    sessionsWithoutCost: withoutCost,
+  };
+}

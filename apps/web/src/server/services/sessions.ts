@@ -1,6 +1,19 @@
 import "server-only";
-import { CalcInputError, baseConsumptionKwh100km, monthKey, sessionStats } from "@elacharger/calc";
-import type { CreateSession, Session, SessionStats, UpdateSession } from "@elacharger/schemas";
+import {
+  CalcInputError,
+  baseConsumptionKwh100km,
+  monthKey,
+  periodTotals,
+  sessionStats,
+} from "@elacharger/calc";
+import type {
+  CreateSession,
+  Session,
+  SessionStats,
+  SessionTotals,
+  SessionTotalsQuery,
+  UpdateSession,
+} from "@elacharger/schemas";
 import { type Db, unwrap } from "../db";
 import { notFound } from "../http";
 import { getCharger } from "./chargers";
@@ -181,5 +194,48 @@ export async function getSessionStats(
       cost: m.cost,
       sessions: m.sessions,
     })),
+  };
+}
+
+/** Shifts a Colombian day by whole days ("2026-11-30", 1 → "2026-12-01"). */
+const addDays = (day: string, days: number) =>
+  new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+
+/** What the user spent on charging between two days; the sum comes from packages/calc. */
+export async function getSessionTotals(
+  db: Db,
+  userId: string,
+  query: SessionTotalsQuery,
+): Promise<SessionTotals> {
+  let request = db
+    .from("charging_sessions")
+    .select("started_at, energy_kwh, cost")
+    // Colombia is UTC-5: a local day runs from 05:00 UTC to 05:00 UTC the next day.
+    .gte("started_at", `${query.from}T05:00:00Z`)
+    .lt("started_at", `${addDays(query.to, 1)}T05:00:00Z`);
+  if (query.vehicle) request = request.eq("vehicle_id", query.vehicle);
+  const [rows, profile] = await Promise.all([
+    request,
+    getProfile(db, userId),
+    query.vehicle ? getVehicle(db, userId, query.vehicle) : null,
+  ]);
+  const totals = periodTotals(
+    unwrap(rows, "Sessions").map((row) => ({
+      startedAt: new Date(row.started_at),
+      energyKwh: row.energy_kwh,
+      cost: row.cost,
+    })),
+    query.from,
+    query.to,
+  );
+  return {
+    from: query.from,
+    to: query.to,
+    vehicle_id: query.vehicle ?? null,
+    currency: profile.currency,
+    sessions: totals.sessions,
+    energy_kwh: totals.energyKwh,
+    cost: totals.cost,
+    sessions_without_cost: totals.sessionsWithoutCost,
   };
 }
