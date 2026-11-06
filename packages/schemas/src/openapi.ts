@@ -66,6 +66,8 @@ import {
   SessionSchema,
   SessionStatsQuerySchema,
   SessionStatsSchema,
+  SessionTotalsQuerySchema,
+  SessionTotalsSchema,
   UpdateSessionSchema,
 } from "./sessions";
 import {
@@ -488,6 +490,17 @@ function buildRegistry(): OpenAPIRegistry {
     request: { query: SessionStatsQuerySchema },
     responses: {
       200: json(SessionStatsSchema, "Statistics."),
+      404: problemResponse("The vehicle does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/sessions/totals",
+    summary: "Energy and cost of the sessions between two days (both included)",
+    tags: ["sessions"],
+    request: { query: SessionTotalsQuerySchema },
+    responses: {
+      200: json(SessionTotalsSchema, "Totals."),
       404: problemResponse("The vehicle does not exist."),
     },
   });

@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Car, House, Route, Zap } from "lucide-react";
+import { BarChart3, Car, House, Route, UserRound, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: "/charge", label: "Carga", icon: Zap, ready: true },
   { href: "/garage", label: "Garaje", icon: Car, ready: true },
   { href: "/sessions", label: "Recargas", icon: BarChart3, ready: true },
+  { href: "/settings", label: "Cuenta", icon: UserRound, ready: true },
 ] as const;
 
 /** Mobile tab bar; becomes a side rail from md up. */
@@ -39,7 +40,7 @@ function NavBar({ pathname }: { pathname: string | null }) {
             </>
           );
           const base =
-            "flex min-h-11 min-w-16 flex-col items-center gap-1 rounded-xl px-1 pb-2 text-[11px] md:w-full";
+            "flex min-h-11 min-w-14 flex-col items-center gap-1 rounded-xl px-1 pb-2 text-[11px] md:w-full";
           return (
             <li key={href} className="md:w-full">
               {ready ? (

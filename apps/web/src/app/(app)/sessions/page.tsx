@@ -1,4 +1,5 @@
-import { monthKey } from "@elacharger/calc";
+import { dayKey, monthKey } from "@elacharger/calc";
+import { SessionTotalsQuerySchema } from "@elacharger/schemas";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,7 +13,7 @@ import {
 } from "@/features/sessions/format";
 import { MonthlyChart } from "@/features/sessions/monthly-chart";
 import { formatNumber } from "@/lib/format";
-import { getSessionStats, listSessions } from "@/server/services/sessions";
+import { getSessionStats, getSessionTotals, listSessions } from "@/server/services/sessions";
 import { getProfile } from "@/server/services/profile";
 import { listVehicles } from "@/server/services/vehicles";
 import { getSession } from "@/server/session";
@@ -115,9 +116,21 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
     );
   }
 
-  const [stats, sessions] = await Promise.all([
+  // Spending between two days; by default, the current month so far.
+  const today = dayKey(new Date());
+  const period = SessionTotalsQuerySchema.safeParse({
+    vehicle: vehicle.id,
+    from: params.from,
+    to: params.to,
+  });
+  const range = period.success
+    ? period.data
+    : { vehicle: vehicle.id, from: `${today.slice(0, 7)}-01`, to: today };
+
+  const [stats, sessions, totals] = await Promise.all([
     getSessionStats(supabase, userId, vehicle.id, month),
     listSessions(supabase, { vehicle: vehicle.id, limit: 20 }),
+    getSessionTotals(supabase, userId, range),
   ]);
 
   return (
@@ -188,10 +201,71 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
             stats.cost_per_km !== null
               ? `${cop(stats.month_cost, stats.currency)} este mes`
               : profile.tariff_per_kwh === null
-                ? "configura tu tarifa en Carga"
+                ? "configura tu tarifa en Cuenta"
                 : "registra costo y odómetro"
           }
         />
+      </section>
+
+      <section
+        aria-labelledby="period-title"
+        className="flex flex-col gap-3 rounded-[20px] bg-card p-4"
+      >
+        <h2 id="period-title" className="text-sm font-semibold">
+          Gasto en recargas por fechas
+        </h2>
+        <form className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
+          <input type="hidden" name="vehicle" value={vehicle.id} />
+          <input type="hidden" name="month" value={month} />
+          <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+            Desde
+            <input
+              type="date"
+              name="from"
+              defaultValue={range.from}
+              max={today}
+              required
+              className="min-h-11 w-full rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+            Hasta
+            <input
+              type="date"
+              name="to"
+              defaultValue={range.to}
+              required
+              className="min-h-11 w-full rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+            />
+          </label>
+          <button
+            type="submit"
+            className="min-h-11 rounded-xl border border-input bg-background px-3 text-sm font-semibold hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            Ver
+          </button>
+        </form>
+        {!period.success && (params.from !== undefined || params.to !== undefined) && (
+          <p role="alert" className="text-sm text-destructive">
+            Revisa las fechas: la final no puede ser anterior a la inicial. Mostramos este mes.
+          </p>
+        )}
+        <div className="flex items-baseline justify-between gap-3">
+          <span data-testid="period-cost" className="font-heading text-[28px] font-semibold">
+            {cop(totals.cost, totals.currency)}
+          </span>
+          <span className="text-right text-sm text-muted-foreground">
+            {totals.sessions} {totals.sessions === 1 ? "recarga" : "recargas"} ·{" "}
+            {formatNumber(totals.energy_kwh, 1)} kWh
+          </span>
+        </div>
+        {totals.sessions_without_cost > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {totals.sessions_without_cost}{" "}
+            {totals.sessions_without_cost === 1 ? "recarga no tiene" : "recargas no tienen"} costo
+            registrado y no suman al total.
+          </p>
+        )}
       </section>
 
       <section aria-labelledby="monthly-title" className="rounded-[20px] bg-card p-4">

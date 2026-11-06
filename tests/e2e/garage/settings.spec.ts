@@ -18,6 +18,39 @@ test("settings save the tariff and the route privacy option", async ({ page }) =
   await expect(page.getByRole("status").filter({ hasText: "Ajustes guardados." })).toBeVisible();
 });
 
+test("the account is one tap away and the tariff takes comma decimals only", async ({ page }) => {
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await page
+    .getByRole("navigation", { name: "Principal" })
+    .getByRole("link", { name: "Cuenta" })
+    .click();
+  await expect(page).toHaveURL(/\/settings$/, { timeout: 10_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "Tu cuenta" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Tus datos", exact: true })).toContainText(
+    "@elacharger.test",
+  );
+
+  const tariff = page.getByLabel(/Tarifa de energía/);
+  await tariff.fill("912.35");
+  await expect(
+    page.getByText("Usa coma para los decimales, por ejemplo 912,35.").last(),
+  ).toBeVisible();
+  await expect(tariff).toHaveAttribute("aria-invalid", "true");
+  await page.getByRole("button", { name: "Guardar ajustes" }).click();
+  await expect(page.getByRole("status")).toContainText("Usa coma para los decimales");
+
+  await tariff.fill("912,35");
+  await page.getByRole("button", { name: "Guardar ajustes" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Ajustes guardados." })).toBeVisible();
+  await page.reload();
+  await expect(tariff).toHaveValue("912,35");
+  // Leave the shared user as the other suites expect it.
+  await tariff.fill("950");
+  await page.getByRole("button", { name: "Guardar ajustes" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Ajustes guardados." })).toBeVisible();
+});
+
 test("a user deletes their account from settings", async ({ browser, baseURL }) => {
   test.skip(!secretKey, "Needs E2E_SUPABASE_SECRET_KEY.");
   const session = await createTestSession(baseURL);

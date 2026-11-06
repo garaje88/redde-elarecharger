@@ -54,6 +54,25 @@ describe("toResult", () => {
     expect(result?.fieldUrls.battery_usable_kwh).toBe("https://maker.example/sheet");
   });
 
+  it("keeps an unsure web lookup that still read enough values", () => {
+    const unsure = { ...vehicle, found: false };
+    expect(__test.toResult("vehicle", unsure, [], { minValuesWhenUnsure: 3 })?.spec).toMatchObject({
+      brand: "Deepal",
+      battery_usable_kwh: 66.8,
+    });
+    expect(__test.toResult("vehicle", unsure, [], { minValuesWhenUnsure: 50 })).toBeNull();
+    expect(__test.toResult("vehicle", { ...vehicle, model: "" }, [])).toBeNull();
+  });
+
+  it("uses the year the user typed when the sheet gives none, or asks for it", () => {
+    const noYear = { ...vehicle, year_from: f(null) };
+    const typed = __test.toResult("vehicle", noYear, [], { fallbackYear: 2025 });
+    expect(typed?.spec).toMatchObject({ year_from: 2025 });
+    expect(typed?.confidence.year_from).toBe(0.6);
+    const unknown = __test.toResult("vehicle", noYear, []);
+    expect(unknown?.confidence.year_from).toBe(0);
+  });
+
   it("returns null when nothing reliable was found", () => {
     expect(__test.toResult("vehicle", { ...vehicle, found: false }, [])).toBeNull();
   });

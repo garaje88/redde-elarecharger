@@ -70,11 +70,13 @@ test("a technical sheet becomes a vehicle after the user reviews it", async ({ b
   await page.locator('input[type="file"]').setInputFiles(SHEET);
 
   const form = page.locator("form").filter({ hasText: "Confirmar y agregar" });
-  await expect(form.getByLabel("Marca *")).toHaveValue("BYD");
-  await expect(form.getByLabel("Batería bruta (kWh)")).toHaveValue("44,9");
+  // Shown as read: the user edits only if they choose to.
+  await expect(form.getByText("BYD", { exact: true })).toBeVisible();
+  await expect(form.getByText("44,9", { exact: true })).toBeVisible();
   await expect(form.getByText("Confianza alta").first()).toBeVisible();
-  // The sheet only gives one capacity, so the usable one is for the user to confirm.
-  await form.getByLabel("Batería útil (kWh) *").fill("42");
+  await expect(form.getByRole("button", { name: "Editar datos" })).toBeVisible();
+  // The sheet only gives one capacity: the required usable one is asked for in place.
+  await form.getByLabel(/Batería útil \(kWh\) \*/).fill("42");
   await form.getByRole("button", { name: "Confirmar y agregar a mi garaje" }).click();
 
   await expect(page).toHaveURL(/\/garage$/);

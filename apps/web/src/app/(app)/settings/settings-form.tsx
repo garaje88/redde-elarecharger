@@ -4,14 +4,10 @@ import type { Profile } from "@elacharger/schemas";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { api, apiErrorMessage } from "@/lib/api";
+import { parseColombianDecimal } from "@/lib/format";
 
 const inputClass =
   "min-h-11 w-full rounded-xl border border-input bg-card px-3 text-[15px] font-normal focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
-
-const decimal = (text: string): number | null => {
-  const value = Number(text.trim().replace(/\./g, "").replace(",", "."));
-  return text.trim() === "" || !Number.isFinite(value) ? null : value;
-};
 
 export function SettingsForm({ profile }: { profile: Profile }) {
   const router = useRouter();
@@ -23,13 +19,13 @@ export function SettingsForm({ profile }: { profile: Profile }) {
   const [storeChats, setStoreChats] = useState(profile.store_ai_conversations);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [saving, startSaving] = useTransition();
+  const parsedTariff = parseColombianDecimal(tariff);
+  const tariffError = "error" in parsedTariff ? parsedTariff.error : null;
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    const value = decimal(tariff);
-    if (tariff.trim() !== "" && (value === null || value < 0)) {
-      return setMessage({ ok: false, text: "La tarifa debe ser un número, por ejemplo 900." });
-    }
+    if ("error" in parsedTariff) return setMessage({ ok: false, text: parsedTariff.error });
+    const { value } = parsedTariff;
     setMessage(null);
     startSaving(async () => {
       const { data, response } = await api.PATCH("/profile", {
@@ -50,16 +46,23 @@ export function SettingsForm({ profile }: { profile: Profile }) {
     <form onSubmit={submit} className="flex flex-col gap-4 rounded-[20px] bg-card p-4">
       <label className="flex flex-col gap-1 text-sm font-semibold">
         Tarifa de energía (COP/kWh)
-        <span className="text-[13px] font-normal text-muted-foreground">
-          Búscala en tu factura de energía. Se usa para el costo de cada carga.
+        <span id="tariff-hint" className="text-[13px] font-normal text-muted-foreground">
+          Búscala en tu factura de energía. Usa coma para los decimales, por ejemplo 912,35.
         </span>
         <input
           inputMode="decimal"
           value={tariff}
           placeholder="Sin tarifa"
+          aria-invalid={tariffError !== null}
+          aria-describedby={tariffError ? "tariff-hint tariff-error" : "tariff-hint"}
           onChange={(e) => setTariff(e.target.value)}
-          className={inputClass}
+          className={`${inputClass} aria-invalid:border-destructive`}
         />
+        {tariffError && (
+          <span id="tariff-error" className="text-[13px] font-normal text-destructive">
+            {tariffError}
+          </span>
+        )}
       </label>
 
       <label className="flex flex-col gap-1 text-sm font-semibold">

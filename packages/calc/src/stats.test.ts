@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CalcInputError } from "./errors";
-import { type SessionRecord, monthKey, sessionStats } from "./stats";
+import { type SessionRecord, monthKey, periodTotals, sessionStats } from "./stats";
 
 // Seed data: four home charges of a 56.12 kWh car in October 2026 and one in September.
 // Odometer: 10 000 → 10 210 → 10 420 → 10 640 → 10 845 km.
@@ -136,5 +136,42 @@ describe("sessionStats", () => {
     expect(() =>
       sessionStats([{ startedAt: new Date(), odometerKm: -1 }], { month: "2026-10" }),
     ).toThrow(CalcInputError);
+  });
+});
+
+describe("periodTotals", () => {
+  const at = (iso: string, energyKwh: number | null, cost: number | null): SessionRecord => ({
+    startedAt: new Date(iso),
+    energyKwh,
+    cost,
+  });
+  const sessions = [
+    at("2026-10-31T23:30:00-05:00", 20, 18000), // October in Colombia, November in UTC
+    at("2026-11-01T08:00:00-05:00", 30.5, 27450),
+    at("2026-11-15T21:00:00-05:00", 12, null),
+    at("2026-11-30T23:59:00-05:00", 10, 9000),
+    at("2026-12-01T00:10:00-05:00", 40, 36000),
+  ];
+
+  it("adds the sessions between two local days, both included", () => {
+    expect(periodTotals(sessions, "2026-11-01", "2026-11-30")).toEqual({
+      sessions: 3,
+      energyKwh: 52.5,
+      cost: 36450,
+      sessionsWithoutCost: 1,
+    });
+  });
+
+  it("uses Colombian days, not UTC ones", () => {
+    expect(periodTotals(sessions, "2026-10-31", "2026-10-31").cost).toBe(18000);
+  });
+
+  it("is zero for an empty period", () => {
+    expect(periodTotals(sessions, "2027-01-01", "2027-01-31")).toEqual({
+      sessions: 0,
+      energyKwh: 0,
+      cost: 0,
+      sessionsWithoutCost: 0,
+    });
   });
 });

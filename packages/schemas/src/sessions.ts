@@ -128,7 +128,39 @@ export const SessionStatsSchema = z
   })
   .meta({ id: "SessionStats" });
 
+const day = z.iso.date().meta({ description: "YYYY-MM-DD in Colombian time." });
+
+export const SessionTotalsQuerySchema = z
+  .object({
+    vehicle: z.uuid().optional().meta({ description: "Omit for every vehicle." }),
+    from: day,
+    to: day,
+  })
+  .refine((q) => q.to >= q.from, { path: ["to"], message: "The end must not be before the start." })
+  .refine((q) => new Date(q.to).getTime() - new Date(q.from).getTime() <= 3 * 366 * 86_400_000, {
+    path: ["to"],
+    message: "The period can be at most three years.",
+  });
+
+export const SessionTotalsSchema = z
+  .object({
+    from: z.string(),
+    to: z.string(),
+    vehicle_id: z.uuid().nullable(),
+    currency: z.string(),
+    sessions: z.number().int(),
+    energy_kwh: z.number(),
+    cost: z.number(),
+    sessions_without_cost: z
+      .number()
+      .int()
+      .meta({ description: "Sessions in the period with no cost; the total leaves them out." }),
+  })
+  .meta({ id: "SessionTotals" });
+
 export type CreateSession = z.infer<typeof CreateSessionSchema>;
 export type UpdateSession = z.infer<typeof UpdateSessionSchema>;
 export type Session = z.infer<typeof SessionSchema>;
 export type SessionStats = z.infer<typeof SessionStatsSchema>;
+export type SessionTotalsQuery = z.infer<typeof SessionTotalsQuerySchema>;
+export type SessionTotals = z.infer<typeof SessionTotalsSchema>;
