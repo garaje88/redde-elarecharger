@@ -1,14 +1,21 @@
 version: 2
 updates:
+  # One pull request per ecosystem and run instead of one per package: majors stay in their own
+  # group so they can be reviewed apart from the routine bumps.
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 2
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+      major:
+        update-types: [major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns: ["*"]
