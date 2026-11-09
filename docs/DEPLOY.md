@@ -57,6 +57,17 @@ Cloudflare compila en una máquina limpia, sin archivos `.env`, que es lo que ex
 
 Cada push a `main` despliega. Las ramas pueden generar versiones de vista previa (Settings → Build → Branch control).
 
+### Despliegue con GitHub Actions (el que usa producción)
+
+`.github/workflows/deploy.yml` compila y despliega el Worker cada vez que la CI pasa en `main`. También se puede lanzar a mano desde Actions → Deploy → Run workflow. Al final corre `scripts/smoke-prod.mjs`.
+
+En GitHub → Settings → Secrets and variables → Actions:
+
+- **Secrets:** `CLOUDFLARE_API_TOKEN` (Cloudflare → My Profile → API Tokens → plantilla «Edit Cloudflare Workers») y `CLOUDFLARE_ACCOUNT_ID` (Workers & Pages, columna derecha).
+- **Variables:** las `NEXT_PUBLIC_*` de la tabla. Reemplazan a las variables de build de Workers Builds.
+
+Las variables y los secretos de servidor siguen en Cloudflare (Settings → Variables and Secrets). `keep_vars` en `wrangler.jsonc` evita que el deploy borre las variables de texto. Si Workers Builds sigue conectado, desconéctalo (Settings → Build → Disconnect) para no tener dos despliegues por cada push.
+
 ### Variables
 
 | Variable | Dónde | Obligatoria | Nota |

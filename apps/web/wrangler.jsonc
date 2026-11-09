@@ -12,4 +12,7 @@
   // OpenNext calls the Worker itself for revalidation; must match "name".
   "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "redde-elacharger" }],
   "observability": { "enabled": true },
+  // Deploys from CI keep the plain-text variables set in the dashboard (AI models and limits);
+  // without this, `wrangler deploy` removes every variable not listed here. Secrets are never touched.
+  "keep_vars": true,
 }
