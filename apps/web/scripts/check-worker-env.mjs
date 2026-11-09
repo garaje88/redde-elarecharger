@@ -19,13 +19,27 @@ for (const key of keys) {
 }
 
 const LOCAL = /(?:localhost|127\.0\.0\.1):54321/;
+// Next inlines NEXT_PUBLIC_* only when they exist at build time. Missing, the browser bundle keeps
+// a `process.env.NEXT_PUBLIC_…` read that is undefined at runtime and sign-in fails silently.
+const UNSET_PUBLIC = /\.env\.(NEXT_PUBLIC_SUPABASE_URL|NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)\b/;
+const found = new Set();
 const scan = (dir) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
-    if (entry.isDirectory()) scan(path);
-    else if (entry.name.endsWith(".js") && LOCAL.test(readFileSync(path, "utf8"))) {
+    if (entry.isDirectory()) {
+      scan(path);
+      continue;
+    }
+    if (!entry.name.endsWith(".js")) continue;
+    const code = readFileSync(path, "utf8");
+    if (!found.has("local") && LOCAL.test(code)) {
+      found.add("local");
       problems.push(`local Supabase URL in ${path.slice(root.length + 1)}`);
-      return;
+    }
+    const unset = UNSET_PUBLIC.exec(code)?.[1];
+    if (unset && !found.has(unset)) {
+      found.add(unset);
+      problems.push(`${unset} was not set during the build`);
     }
   }
 };
@@ -40,4 +54,4 @@ if (problems.length > 0) {
   );
   process.exit(1);
 }
-console.log("Worker build: no secrets from .env files, no local Supabase URL.");
+console.log("Worker build: no secrets from .env files, Supabase URL and key inlined, not local.");

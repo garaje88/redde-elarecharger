@@ -62,7 +62,7 @@ export const STATIC_SECURITY_HEADERS: { key: string; value: string }[] = [
   { key: "X-Frame-Options", value: "DENY" },
   {
     key: "Permissions-Policy",
-    value: "geolocation=(self), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()",
+    value: "geolocation=(self), camera=(), microphone=(), payment=(), usb=()",
   },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
