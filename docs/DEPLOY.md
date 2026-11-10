@@ -31,7 +31,7 @@ Antes de abrir al público: revisión legal de `/privacidad` y `/terminos`, y `N
 3. Auth → Providers → Google: Client ID y Secret de Google Cloud.
 4. Auth → URL Configuration:
    - Site URL: `https://<tu-dominio>`
-   - Redirect URLs: `https://<tu-dominio>/auth/callback` y, mientras no tengas dominio propio, `https://redde-elacharger.garaje88-dev.workers.dev/auth/callback`.
+   - Redirect URLs: `https://<tu-dominio>/**` (con comodín: la app vuelve a `/auth/callback?next=…&consent=…`). Producción usa `https://elacharger.garaje88.dev`; el Worker también responde en `https://redde-elacharger.garaje88-dev.workers.dev`. Si la dirección no está en la lista, Supabase devuelve a la Site URL.
 5. Google Cloud → Credenciales → cliente OAuth: agrega `https://<project-ref>.supabase.co/auth/v1/callback` como URI de redirección autorizada.
 
 ## 2. Cloudflare
@@ -49,7 +49,7 @@ Cloudflare compila en una máquina limpia, sin archivos `.env`, que es lo que ex
    - Root directory: `/` (la raíz del monorepo, donde está `pnpm-lock.yaml`).
    - Build command: `pnpm --filter @elacharger/web exec opennextjs-cloudflare build && node apps/web/scripts/check-worker-env.mjs`
    - Deploy command: `pnpm --filter @elacharger/web exec wrangler deploy`
-   - El nombre del Worker debe ser `redde-elacharger` (el de `wrangler.jsonc`); queda en `https://redde-elacharger.garaje88-dev.workers.dev`.
+   - El nombre del Worker debe ser `redde-elacharger` (el de `wrangler.jsonc`); queda en `https://redde-elacharger.garaje88-dev.workers.dev` y en el dominio propio `https://elacharger.garaje88.dev` (Settings → Domains & Routes).
 3. Build variables (Settings → Build → Variables and secrets): las `NEXT_PUBLIC_*` de la tabla. Next las incrusta en el código del navegador durante el build, así que tienen que existir en ese momento. Configuradas solo como variables del Worker, el servidor las ve pero el navegador no: el botón de Google no hace nada. `check-worker-env.mjs` hace fallar ese build con `NEXT_PUBLIC_SUPABASE_URL was not set during the build`.
    - Después de agregar o cambiar una de ellas hay que volver a compilar (un push a `main`): el Worker ya publicado conserva los valores con los que se compiló.
 4. Variables and Secrets del Worker (Settings → Variables and Secrets): las de servidor de la tabla, como **Secret**.
