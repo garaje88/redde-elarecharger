@@ -43,11 +43,11 @@ export function GoogleSignInButton() {
         />
         <span>
           Acepto los{" "}
-          <Link href="/terminos" className="text-brand-soft underline underline-offset-2">
+          <Link href="/terminos" className="text-brand-bright underline underline-offset-2">
             términos
           </Link>{" "}
           y autorizo el tratamiento de mis datos según el{" "}
-          <Link href="/privacidad" className="text-brand-soft underline underline-offset-2">
+          <Link href="/privacidad" className="text-brand-bright underline underline-offset-2">
             aviso de privacidad
           </Link>{" "}
           (Ley 1581 de 2012).

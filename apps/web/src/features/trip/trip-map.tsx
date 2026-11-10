@@ -98,7 +98,7 @@ export default function TripMap({
           <Layer
             id="route-line"
             type="line"
-            paint={{ "line-color": "#0b7a4e", "line-width": 5 }}
+            paint={{ "line-color": "#3f5a00", "line-width": 5 }}
             layout={{ "line-cap": "round", "line-join": "round" }}
           />
         </Source>

@@ -21,15 +21,18 @@ export const metadata: Metadata = {
   applicationName: "Elacharger",
   appleWebApp: { capable: true, title: "Elacharger", statusBarStyle: "default" },
   icons: {
-    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f5f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1114" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f6f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#0e1116" },
   ],
 };
 

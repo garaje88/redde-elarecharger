@@ -8,5 +8,7 @@
 - Textos de UI en español (es-CO); código en inglés.
 - Antes de terminar: pnpm lint && pnpm typecheck && pnpm test && pnpm build.
 - Commits convencionales, una fase por rama.
+- No agregues líneas `Co-Authored-By` ni firmas de Claude en commits ni en descripciones de PR.
 - Mockups de referencia en docs/mockups (HTML con estilos en línea: úsalos como guía visual, no como código a copiar). Diagramas en docs/diagrams.
 - La ficha de docs/reference es solo un ejemplo para pruebas; el catálogo real cubre cualquier marca y modelo (PLAN.md, F3).
+- Marca: logo y paleta en docs/brand (GUIA-DE-MARCA.md). Tokens Tailwind en @theme: ink #0E1116, volt #C8F031, volt-dark #3F5A00, volt-soft #F1F8D9, paper #F5F6F1, graphite #5B6470. Volt nunca como texto sobre fondo claro. Usa los favicon/íconos PWA de docs/brand/dist/symbol.

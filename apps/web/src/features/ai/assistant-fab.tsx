@@ -15,7 +15,7 @@ export function AssistantFab() {
     <Link
       href="/assistant"
       aria-label="Abrir el asistente"
-      className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-40 flex size-14 items-center justify-center rounded-full bg-inverse shadow-lg hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:right-6 md:bottom-6"
+      className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-40 flex size-14 items-center justify-center rounded-full bg-inverse shadow-lg hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:right-6 md:bottom-6 dark:border dark:border-border"
     >
       <Sparkles aria-hidden="true" className="size-6 text-brand-bright" strokeWidth={1.75} />
     </Link>
