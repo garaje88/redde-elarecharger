@@ -214,7 +214,7 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
         <h2 id="period-title" className="text-sm font-semibold">
           Gasto en recargas por fechas
         </h2>
-        <form className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
+        <form className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2">
           <input type="hidden" name="vehicle" value={vehicle.id} />
           <input type="hidden" name="month" value={month} />
           <label className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -225,7 +225,7 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
               defaultValue={range.from}
               max={today}
               required
-              className="min-h-11 w-full rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="min-h-11 w-full min-w-0 rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -235,7 +235,7 @@ async function Content({ searchParams }: Pick<PageProps<"/sessions">, "searchPar
               name="to"
               defaultValue={range.to}
               required
-              className="min-h-11 w-full rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="min-h-11 w-full min-w-0 rounded-xl border border-input bg-background px-2 text-[15px] text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             />
           </label>
           <button

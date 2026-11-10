@@ -12,14 +12,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#0B7A4E}a:hover{color:#075C3A}
-input[type=range]{accent-color:#0B7A4E}
+a{color:#3F5A00}a:hover{color:#2E4200}
+input[type=range]{accent-color:#3F5A00}
 </style>
 </helmet>
-<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #111418; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 14px">
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F6F1; font-family: Inter, system-ui, sans-serif; color: #0E1116; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 14px">
   <header style="display: flex; align-items: center; gap: 12px">
     <a href="Main.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E3E6E1; display: flex; align-items: center; justify-content: center; box-sizing: border-box">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111418" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
     </a>
     <div style="display: flex; flex-direction: column">
       <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">Tiempo de carga</h1>
@@ -48,7 +48,7 @@ input[type=range]{accent-color:#0B7A4E}
     </label>
   </div>
 
-  <section aria-live="polite" aria-label="Resultado" style="background: #111418; color: #FFFFFF; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+  <section aria-live="polite" aria-label="Resultado" style="background: #0E1116; color: #FFFFFF; border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
     <sc-if value="{{ valid }}" hint-placeholder-val="{{ true }}">
       <div style="display: flex; flex-direction: column; gap: 2px">
         <span style="font-size: 13px; color: #A9B1BA">Necesitas</span>
@@ -61,7 +61,7 @@ input[type=range]{accent-color:#0B7A4E}
       </div>
       <svg width="322" height="96" viewBox="0 0 322 96" role="img" aria-label="Curva de carga: porcentaje contra tiempo">
         <line x1="0" y1="95" x2="322" y2="95" stroke="#3A424C" stroke-width="1"/>
-        <polyline points="{{ curve }}" fill="none" stroke="#34D399" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="{{ curve }}" fill="none" stroke="#C8F031" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
       </svg>
       <span style="font-size: 12px; color: #A9B1BA">Costo: configura tu tarifa por kWh en Ajustes.</span>
     </sc-if>
@@ -70,12 +70,12 @@ input[type=range]{accent-color:#0B7A4E}
     </sc-if>
   </section>
 
-  <button type="button" style="min-height: 52px; border-radius: 16px; border: 0; background: #0B7A4E; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600">Guardar cálculo</button>
+  <button type="button" style="min-height: 52px; border-radius: 16px; border: 0; background: #3F5A00; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600">Guardar cálculo</button>
 
   <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: flex; justify-content: space-around; align-items: flex-start; padding: 8px 4px 0 4px; box-sizing: border-box">
     <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
     <a href="Trip.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Trayecto</a>
-    <a href="Charge.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: #0B7A4E; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Carga</a>
+    <a href="Charge.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: #3F5A00; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Carga</a>
     <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
     <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Recargas</a>
   </nav>
@@ -121,8 +121,8 @@ class Component extends DCLogic {
     if (min === 60) { h += 1; min = 0; }
     var timeLabel = h > 0 ? h + ' h ' + min + ' min' : min + ' min';
     var fmt = function (n) { return n.toFixed(1).replace('.', ','); };
-    var on = 'min-height: 44px; border-radius: 12px; border: 1px solid #111418; background: #111418; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600';
-    var off = 'min-height: 44px; border-radius: 12px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #111418; font: inherit; font-size: 13px';
+    var on = 'min-height: 44px; border-radius: 12px; border: 1px solid #0E1116; background: #0E1116; color: #FFFFFF; font: inherit; font-size: 13px; font-weight: 600';
+    var off = 'min-height: 44px; border-radius: 12px; border: 1px solid #D3D8D0; background: #FFFFFF; color: #0E1116; font: inherit; font-size: 13px';
     var self = this;
     return {
       start: s0,

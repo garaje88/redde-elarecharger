@@ -1,6 +1,6 @@
 // Elacharger service worker: makes the app installable and shows /offline without a connection.
 // Pages and API responses are never cached (they hold personal data); only immutable build assets.
-const VERSION = "v1";
+const VERSION = "v2";
 const OFFLINE_CACHE = `offline-${VERSION}`;
 const ASSET_CACHE = `assets-${VERSION}`;
 const OFFLINE_URL = "/offline";

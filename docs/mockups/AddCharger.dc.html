@@ -12,20 +12,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#0B7A4E}a:hover{color:#075C3A}
+a{color:#3F5A00}a:hover{color:#2E4200}
 </style>
 </helmet>
-<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #111418; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F6F1; font-family: Inter, system-ui, sans-serif; color: #0E1116; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 12px">
   <header style="display: flex; align-items: center; gap: 12px">
     <a href="Garage.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E3E6E1; display: flex; align-items: center; justify-content: center; box-sizing: border-box">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111418" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
     </a>
     <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 600">Agregar cargador</h1>
   </header>
 
   <div role="tablist" aria-label="Dónde cargas" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #E7EAE4; border-radius: 14px; padding: 4px; gap: 4px">
-    <button type="button" role="tab" aria-selected="{{ homeSel }}" onClick="{{ goHome }}" style="min-height: 40px; border: 0; border-radius: 10px; background: {{ homeBg }}; font: inherit; font-size: 14px; font-weight: 600; color: #111418">En casa</button>
-    <button type="button" role="tab" aria-selected="{{ pubSel }}" onClick="{{ goPub }}" style="min-height: 40px; border: 0; border-radius: 10px; background: {{ pubBg }}; font: inherit; font-size: 14px; font-weight: 600; color: #111418">Estación pública</button>
+    <button type="button" role="tab" aria-selected="{{ homeSel }}" onClick="{{ goHome }}" style="min-height: 40px; border: 0; border-radius: 10px; background: {{ homeBg }}; font: inherit; font-size: 14px; font-weight: 600; color: #0E1116">En casa</button>
+    <button type="button" role="tab" aria-selected="{{ pubSel }}" onClick="{{ goPub }}" style="min-height: 40px; border: 0; border-radius: 10px; background: {{ pubBg }}; font: inherit; font-size: 14px; font-weight: 600; color: #0E1116">Estación pública</button>
   </div>
 
   <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
@@ -34,11 +34,11 @@ a{color:#0B7A4E}a:hover{color:#075C3A}
       <input id="cq" value="[MARCA] wallbox 7" aria-label="Buscar cargador por marca y modelo" style="flex: 1; border: 0; font: inherit; font-size: 15px; outline: none; background: transparent">
     </label>
     <div style="display: flex; flex-direction: column; gap: 8px">
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 2px solid #0B7A4E; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: #111418">
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 2px solid #3F5A00; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: #0E1116">
         <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">[MARCA] Wallbox 7 kW</span><span style="font-size: 13px; color: #5B6470">Monofásico · 32 A máx · Tipo 2 · catálogo</span></span>
         <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600">7,4 kW</span>
       </button>
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: #111418">
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; color: #0E1116">
         <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">Cargador portátil del carro</span><span style="font-size: 13px; color: #5B6470">Según la ficha de tu vehículo</span></span>
         <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 600">—</span>
       </button>
@@ -54,8 +54,8 @@ a{color:#0B7A4E}a:hover{color:#075C3A}
       <label for="amp" style="display: flex; justify-content: space-between; align-items: center; font-size: 14px">Amperaje del circuito
         <input id="amp" value="32 A" style="width: 84px; min-height: 40px; border-radius: 10px; border: 1px solid #D3D8D0; padding: 0 10px; font: inherit; font-size: 14px; text-align: right">
       </label>
-      <div aria-live="polite" style="background: #EAF6EF; border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center">
-        <span style="font-size: 13px; color: #35503F">{{ note }}</span>
+      <div aria-live="polite" style="background: #F1F8D9; border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 13px; color: #3F5A00">{{ note }}</span>
         <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">{{ kw }}</span>
       </div>
     </fieldset>
@@ -64,10 +64,10 @@ a{color:#0B7A4E}a:hover{color:#075C3A}
   <sc-if value="{{ isPub }}" hint-placeholder-val="{{ false }}">
     <span style="font-size: 13px; color: #5B6470">Tipo de conector (datos de referencia de Open Charge Map)</span>
     <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 2px solid #0B7A4E; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #111418"><span style="font-weight: 600">CCS2</span><span style="font-size: 12px; color: #5B6470">DC · compatible</span></button>
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #111418"><span style="font-weight: 600">Tipo 2</span><span style="font-size: 12px; color: #5B6470">AC · compatible</span></button>
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #111418"><span style="font-weight: 600">CHAdeMO</span><span style="font-size: 12px; color: #B45309">No compatible</span></button>
-      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #111418"><span style="font-weight: 600">GB/T</span><span style="font-size: 12px; color: #5B6470">Requiere adaptador</span></button>
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 2px solid #3F5A00; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #0E1116"><span style="font-weight: 600">CCS2</span><span style="font-size: 12px; color: #5B6470">DC · compatible</span></button>
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #0E1116"><span style="font-weight: 600">Tipo 2</span><span style="font-size: 12px; color: #5B6470">AC · compatible</span></button>
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #0E1116"><span style="font-weight: 600">CHAdeMO</span><span style="font-size: 12px; color: #B45309">No compatible</span></button>
+      <button type="button" style="min-height: 60px; border-radius: 14px; border: 1px solid #E3E6E1; background: #FFFFFF; font: inherit; text-align: left; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; color: #0E1116"><span style="font-weight: 600">GB/T</span><span style="font-size: 12px; color: #5B6470">Requiere adaptador</span></button>
     </div>
     <label for="pkw" style="display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 14px; padding: 8px 14px">Potencia de la estación
       <input id="pkw" value="60 kW" style="width: 84px; min-height: 40px; border-radius: 10px; border: 1px solid #D3D8D0; padding: 0 10px; font: inherit; font-size: 14px; text-align: right">
@@ -76,8 +76,8 @@ a{color:#0B7A4E}a:hover{color:#075C3A}
   </sc-if>
 
   <div style="margin-top: auto; margin-bottom: 28px; display: flex; flex-direction: column; gap: 8px">
-    <a href="Garage.dc.html" style="min-height: 52px; border-radius: 16px; background: #0B7A4E; color: #FFFFFF; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Guardar cargador</a>
-    <button type="button" style="min-height: 44px; border-radius: 14px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #0B7A4E">No encuentro mi cargador: buscar con IA</button>
+    <a href="Garage.dc.html" style="min-height: 52px; border-radius: 16px; background: #3F5A00; color: #FFFFFF; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Guardar cargador</a>
+    <button type="button" style="min-height: 44px; border-radius: 14px; border: 0; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #3F5A00">No encuentro mi cargador: buscar con IA</button>
   </div>
 </div>
 </x-dc>
@@ -93,7 +93,7 @@ class Component extends DCLogic {
     var list = [110, 120, 208, 220, 240];
     var volts = list.map(function (n) {
       var sel = st.v === n;
-      return { label: n + ' V', pressed: sel ? 'true' : 'false', bg: sel ? '#111418' : '#FFFFFF', fg: sel ? '#FFFFFF' : '#111418', border: sel ? '#111418' : '#D3D8D0', pick: function () { self.setState({ v: n }); } };
+      return { label: n + ' V', pressed: sel ? 'true' : 'false', bg: sel ? '#0E1116' : '#FFFFFF', fg: sel ? '#FFFFFF' : '#0E1116', border: sel ? '#0E1116' : '#D3D8D0', pick: function () { self.setState({ v: n }); } };
     });
     var amps = st.v <= 120 ? 12 : 32;
     var raw = st.v * amps / 1000;

@@ -3,6 +3,7 @@
 import { BarChart3, Car, House, Route, UserRound, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BrandSymbol } from "@/components/brand-logo";
 
 const ITEMS = [
   { href: "/", label: "Inicio", icon: House, ready: true },
@@ -29,6 +30,10 @@ function NavBar({ pathname }: { pathname: string | null }) {
       aria-label="Principal"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:inset-y-0 md:right-auto md:w-24 md:border-t-0 md:border-r md:pt-6"
     >
+      {/* The rail carries the mark on desktop; ink on light, the volt dot only on dark. */}
+      <div className="mb-4 hidden justify-center md:flex">
+        <BrandSymbol className="size-10 text-foreground" dotClassName="dark:fill-volt" />
+      </div>
       <ul className="mx-auto flex max-w-md items-start justify-around px-1 pt-2 md:h-full md:flex-col md:justify-start md:gap-2">
         {ITEMS.map(({ href, label, icon: Icon, ready }) => {
           const active =
