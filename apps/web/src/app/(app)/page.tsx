@@ -43,14 +43,12 @@ export default async function HomePage() {
           {vehicle && week?.last_charge && (
             <Link
               href="/garage"
-              aria-label={`${vehicle.nickname}: la última recarga terminó en ${week.last_charge.end_soc} %${
-                week.last_charge.range_km ? `, unos ${week.last_charge.range_km} km` : ""
-              }`}
               className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <span className="max-w-16 truncate text-[13px] font-semibold">
                 {shortName(vehicle)}
               </span>
+              <span className="sr-only">, batería </span>
               <span
                 aria-hidden="true"
                 className="inline-block h-2 w-6 overflow-hidden rounded-full bg-border"
@@ -63,14 +61,20 @@ export default async function HomePage() {
               <span className="text-[13px] font-semibold text-primary">
                 {Math.round(week.last_charge.end_soc)} %
               </span>
+              <span className="sr-only">
+                {` al terminar la última recarga${
+                  week.last_charge.range_km ? `, unos ${week.last_charge.range_km} km` : ""
+                }`}
+              </span>
             </Link>
           )}
           <Link
             href="/settings"
-            aria-label="Tu cuenta"
             className="flex size-11 items-center justify-center rounded-full bg-inverse font-heading text-sm font-semibold text-inverse-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:border dark:border-border"
           >
-            {userInitials(user.name, user.email)}
+            {/* Initials are decoration: the name must contain what is read aloud (WCAG 2.5.3). */}
+            <span aria-hidden="true">{userInitials(user.name, user.email)}</span>
+            <span className="sr-only">Tu cuenta</span>
           </Link>
         </div>
       </header>
