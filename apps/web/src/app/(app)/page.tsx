@@ -1,6 +1,8 @@
+import { weekStart } from "@elacharger/calc";
 import type { Vehicle } from "@elacharger/schemas";
-import { Camera, Route, Sparkles, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera, Route, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
+import { BatteryPill } from "@/features/home/battery-pill";
 import { WeeklyDashboard } from "@/features/home/weekly-dashboard";
 import { userInitials } from "@/lib/initials";
 import { getCurrentUser, getSession } from "@/server/session";
@@ -22,51 +24,59 @@ function weekLabel(start: string, end: string) {
 /** "S05" from the catalog model, or the nickname for a car outside the catalog. */
 const shortName = (vehicle: Vehicle) => vehicle.variant?.model ?? vehicle.nickname;
 
-export default async function HomePage() {
+/** Monday of the week before or after ("2026-11-09", -1 → "2026-11-02"). */
+const shiftWeek = (monday: string, weeks: number) =>
+  new Date(Date.parse(`${monday}T12:00:00Z`) + weeks * 7 * 86_400_000).toISOString().slice(0, 10);
+
+export default async function HomePage({ searchParams }: PageProps<"/">) {
+  const params = await searchParams;
+  const requested = typeof params.week === "string" ? params.week : undefined;
+  const thisWeek = weekStart(new Date());
+  // A malformed or future week falls back to the current one.
+  const weekParam =
+    requested && /^\d{4}-\d{2}-\d{2}$/.test(requested) && requested <= thisWeek
+      ? requested
+      : undefined;
   const { supabase, userId } = await getSession();
   const [user, vehicles] = await Promise.all([getCurrentUser(), listVehicles(supabase, userId)]);
   const vehicle = vehicles.find((v) => v.is_default) ?? vehicles[0];
-  const week = vehicle ? await getWeeklySummary(supabase, userId, { vehicle: vehicle.id }) : null;
+  const week = vehicle
+    ? await getWeeklySummary(supabase, userId, { vehicle: vehicle.id, week: weekParam })
+    : null;
+  const isCurrent = week?.week_start === thisWeek;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 px-4 pt-8 pb-6">
       <header className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-col gap-0.5">
           {week && (
-            <span className="text-[13px] text-muted-foreground">
-              {weekLabel(week.week_start, week.week_end)}
-            </span>
+            <nav aria-label="Semana" className="-ml-2 flex items-center">
+              <Link
+                href={`/?week=${shiftWeek(week.week_start, -1)}`}
+                aria-label="Semana anterior"
+                className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              >
+                <ChevronLeft aria-hidden="true" className="size-4" />
+              </Link>
+              <span className="text-[13px] text-muted-foreground">
+                {weekLabel(week.week_start, week.week_end)}
+              </span>
+              {!isCurrent && (
+                <Link
+                  href={`/?week=${shiftWeek(week.week_start, 1)}`}
+                  aria-label="Semana siguiente"
+                  className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                  <ChevronRight aria-hidden="true" className="size-4" />
+                </Link>
+              )}
+            </nav>
           )}
           <h1 className="font-heading text-2xl font-semibold">Tu semana</h1>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {vehicle && week?.last_charge && (
-            <Link
-              href="/garage"
-              className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              <span className="max-w-16 truncate text-[13px] font-semibold">
-                {shortName(vehicle)}
-              </span>
-              <span className="sr-only">, batería </span>
-              <span
-                aria-hidden="true"
-                className="inline-block h-2 w-6 overflow-hidden rounded-full bg-border"
-              >
-                <span
-                  className="block h-2 bg-primary"
-                  style={{ width: `${week.last_charge.end_soc}%` }}
-                />
-              </span>
-              <span className="text-[13px] font-semibold text-primary">
-                {Math.round(week.last_charge.end_soc)} %
-              </span>
-              <span className="sr-only">
-                {` al terminar la última recarga${
-                  week.last_charge.range_km ? `, unos ${week.last_charge.range_km} km` : ""
-                }`}
-              </span>
-            </Link>
+          {vehicle && week && (
+            <BatteryPill vehicleId={vehicle.id} name={shortName(vehicle)} battery={week.battery} />
           )}
           <Link
             href="/settings"

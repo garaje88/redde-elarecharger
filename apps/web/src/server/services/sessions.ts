@@ -285,19 +285,28 @@ export async function getWeeklySummary(
   );
   const estimated = estimatedConsumption(vehicle);
 
+  // The freshest battery level: what the owner reported, unless a charge ended after it.
   const last = sessions.findLast((row) => row.end_soc !== null);
-  const consumption = week.realConsumptionKwh100km ?? estimated;
-  const lastCharge =
-    last && last.end_soc !== null
-      ? {
-          end_soc: last.end_soc,
-          at: last.started_at,
-          range_km:
-            usableKwh && consumption
-              ? Math.round(((last.end_soc / 100) * usableKwh * 100) / consumption)
-              : null,
-        }
+  const reported =
+    vehicle.current_soc !== null && vehicle.current_soc_at !== null
+      ? { soc: vehicle.current_soc, at: vehicle.current_soc_at, source: "reported" as const }
       : null;
+  const charged =
+    last && last.end_soc !== null
+      ? { soc: last.end_soc, at: last.started_at, source: "last_charge" as const }
+      : null;
+  const latest =
+    reported && (!charged || Date.parse(reported.at) >= Date.parse(charged.at))
+      ? reported
+      : charged;
+  const consumption = week.realConsumptionKwh100km ?? estimated;
+  const battery = latest && {
+    ...latest,
+    range_km:
+      usableKwh && consumption
+        ? Math.round(((latest.soc / 100) * usableKwh * 100) / consumption)
+        : null,
+  };
 
   return {
     vehicle_id: vehicle.id,
@@ -315,6 +324,6 @@ export async function getWeeklySummary(
     estimated_consumption_kwh_100km: estimated,
     cost_per_km: week.costPerKm,
     km_per_day: week.kmPerDay,
-    last_charge: lastCharge,
+    battery,
   };
 }

@@ -3594,6 +3594,10 @@ export interface components {
       nickname: string;
       is_default: boolean;
       battery_health_pct: number;
+      /** @description Battery % the owner last reported; null if never. */
+      current_soc: number | null;
+      /** Format: date-time */
+      current_soc_at: string | null;
       variant: {
         /** Format: uuid */
         id: string;
@@ -3663,6 +3667,8 @@ export interface components {
     UpdateVehicle: {
       nickname?: string;
       battery_health_pct?: number;
+      /** @description Current battery %, reported by the owner; null clears it. */
+      current_soc?: number | null;
       overrides?: components["schemas"]["VehicleOverrides"];
       /**
        * @description Make this the default vehicle.
@@ -4188,11 +4194,13 @@ export interface components {
       estimated_consumption_kwh_100km: number | null;
       cost_per_km: number | null;
       km_per_day: number;
-      /** @description Battery when the last logged charge ended; the app does not track it live. */
-      last_charge: {
-        end_soc: number;
+      /** @description Latest known battery: the level the owner reported, or the end of the last logged charge if newer. */
+      battery: {
+        soc: number;
         /** Format: date-time */
         at: string;
+        /** @enum {string} */
+        source: "reported" | "last_charge";
         range_km: number | null;
       } | null;
     };

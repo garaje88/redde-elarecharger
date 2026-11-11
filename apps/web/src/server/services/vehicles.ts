@@ -7,7 +7,7 @@ import { resolveSpec } from "@/features/garage/resolve-spec";
 import { VARIANT_SELECT, getVariant, toVariant } from "./catalog";
 
 const VEHICLE_SELECT = `
-  id, nickname, battery_health_pct, overrides, created_at,
+  id, nickname, battery_health_pct, current_soc, current_soc_at, overrides, created_at,
   variant:ev_variants(${VARIANT_SELECT})
 `;
 
@@ -17,6 +17,8 @@ interface VehicleRow {
   id: string;
   nickname: string;
   battery_health_pct: number;
+  current_soc: number | null;
+  current_soc_at: string | null;
   overrides: unknown;
   created_at: string;
   variant: VariantRow | null;
@@ -37,6 +39,8 @@ function toVehicle(row: VehicleRow, defaultId: string | null): Vehicle {
     nickname: row.nickname,
     is_default: row.id === defaultId,
     battery_health_pct: row.battery_health_pct,
+    current_soc: row.current_soc,
+    current_soc_at: row.current_soc_at,
     variant: variant && {
       id: variant.id,
       brand: variant.brand.name,
@@ -126,7 +130,16 @@ export async function updateVehicle(
   id: string,
   input: UpdateVehicle,
 ): Promise<Vehicle> {
-  const { is_default, ...changes } = input;
+  const { is_default, current_soc, ...rest } = input;
+  // A reported level is stamped with the time it was reported (both or neither, per the table).
+  const changes =
+    current_soc === undefined
+      ? rest
+      : {
+          ...rest,
+          current_soc,
+          current_soc_at: current_soc === null ? null : new Date().toISOString(),
+        };
   if (Object.keys(changes).length > 0) {
     const updated = unwrap(
       await db.from("vehicles").update(changes).eq("id", id).select("id"),

@@ -181,15 +181,17 @@ export const WeeklySummarySchema = z
     estimated_consumption_kwh_100km: z.number().nullable(),
     cost_per_km: z.number().nullable(),
     km_per_day: z.number(),
-    last_charge: z
+    battery: z
       .object({
-        end_soc: z.number(),
+        soc: z.number(),
         at: z.iso.datetime({ offset: true }),
+        source: z.enum(["reported", "last_charge"]),
         range_km: z.number().nullable(),
       })
       .nullable()
       .meta({
-        description: "Battery when the last logged charge ended; the app does not track it live.",
+        description:
+          "Latest known battery: the level the owner reported, or the end of the last logged charge if newer.",
       }),
   })
   .meta({ id: "WeeklySummary" });

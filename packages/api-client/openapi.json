@@ -975,6 +975,14 @@
           "battery_health_pct": {
             "type": "number"
           },
+          "current_soc": {
+            "type": ["number", "null"],
+            "description": "Battery % the owner last reported; null if never."
+          },
+          "current_soc_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
           "variant": {
             "type": ["object", "null"],
             "properties": {
@@ -1039,6 +1047,8 @@
           "nickname",
           "is_default",
           "battery_health_pct",
+          "current_soc",
+          "current_soc_at",
           "variant",
           "spec",
           "overrides",
@@ -1225,6 +1235,12 @@
             "type": "number",
             "minimum": 50,
             "maximum": 100
+          },
+          "current_soc": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Current battery %, reported by the owner; null clears it."
           },
           "overrides": {
             "$ref": "#/components/schemas/VehicleOverrides"
@@ -2852,22 +2868,26 @@
           "km_per_day": {
             "type": "number"
           },
-          "last_charge": {
+          "battery": {
             "type": ["object", "null"],
             "properties": {
-              "end_soc": {
+              "soc": {
                 "type": "number"
               },
               "at": {
                 "type": "string",
                 "format": "date-time"
               },
+              "source": {
+                "type": "string",
+                "enum": ["reported", "last_charge"]
+              },
               "range_km": {
                 "type": ["number", "null"]
               }
             },
-            "required": ["end_soc", "at", "range_km"],
-            "description": "Battery when the last logged charge ended; the app does not track it live."
+            "required": ["soc", "at", "source", "range_km"],
+            "description": "Latest known battery: the level the owner reported, or the end of the last logged charge if newer."
           }
         },
         "required": [
@@ -2882,7 +2902,7 @@
           "estimated_consumption_kwh_100km",
           "cost_per_km",
           "km_per_day",
-          "last_charge"
+          "battery"
         ]
       },
       "UpdateSession": {

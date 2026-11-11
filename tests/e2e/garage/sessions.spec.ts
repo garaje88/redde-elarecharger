@@ -133,6 +133,20 @@ test("real consumption, cost per km and km between charges from seed sessions", 
     km_per_day: 30,
   });
   expect(week.days[0]).toMatchObject({ day: "2026-10-12", cost: 32580, km: 210 });
+  // The last charge ended at 80 %; a level reported afterwards takes its place.
+  expect(week.battery).toMatchObject({ soc: 80, source: "last_charge" });
+  const reported = await request.patch(`/api/v1/vehicles/${vehicleId}`, {
+    headers: headers(),
+    data: { current_soc: 64 },
+  });
+  expect(reported.status()).toBe(200);
+  expect(await reported.json()).toMatchObject({ current_soc: 64 });
+  const after = await (
+    await request.get(`/api/v1/sessions/weekly?vehicle=${vehicleId}&week=2026-10-14`, {
+      headers: headers(),
+    })
+  ).json();
+  expect(after.battery).toMatchObject({ soc: 64, source: "reported" });
 
   const period = page.getByRole("region", { name: "Gasto en recargas por fechas" });
   await period.getByLabel("Desde").fill("2026-10-15");

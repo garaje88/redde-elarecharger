@@ -924,6 +924,8 @@ export type Database = {
         Row: {
           battery_health_pct: number;
           created_at: string;
+          current_soc: number | null;
+          current_soc_at: string | null;
           id: string;
           nickname: string;
           overrides: NonNullable<Json>;
@@ -935,6 +937,8 @@ export type Database = {
         Insert: {
           battery_health_pct?: number;
           created_at?: string;
+          current_soc?: number | null;
+          current_soc_at?: string | null;
           id?: string;
           nickname: string;
           overrides?: NonNullable<Json>;
@@ -945,6 +949,8 @@ export type Database = {
         Update: {
           battery_health_pct?: number;
           created_at?: string;
+          current_soc?: number | null;
+          current_soc_at?: string | null;
           id?: string;
           nickname?: string;
           overrides?: NonNullable<Json>;
