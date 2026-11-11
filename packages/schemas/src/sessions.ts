@@ -158,9 +158,47 @@ export const SessionTotalsSchema = z
   })
   .meta({ id: "SessionTotals" });
 
+export const WeeklySummaryQuerySchema = z.object({
+  vehicle: z.uuid(),
+  week: day.optional().meta({ description: "Any day of the week; defaults to the current week." }),
+});
+
+const WeekTotalsSchema = z.object({ cost: z.number(), energy_kwh: z.number(), km: z.number() });
+
+export const WeeklySummarySchema = z
+  .object({
+    vehicle_id: z.uuid(),
+    week_start: z.string().meta({ description: "Monday, Colombian time." }),
+    week_end: z.string().meta({ description: "Sunday, Colombian time." }),
+    currency: z.string(),
+    days: z.array(WeekTotalsSchema.extend({ day: z.string() })).meta({
+      description:
+        "Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one.",
+    }),
+    totals: WeekTotalsSchema,
+    previous: WeekTotalsSchema.meta({ description: "The week before, for comparison." }),
+    real_consumption_kwh_100km: z.number().nullable(),
+    estimated_consumption_kwh_100km: z.number().nullable(),
+    cost_per_km: z.number().nullable(),
+    km_per_day: z.number(),
+    last_charge: z
+      .object({
+        end_soc: z.number(),
+        at: z.iso.datetime({ offset: true }),
+        range_km: z.number().nullable(),
+      })
+      .nullable()
+      .meta({
+        description: "Battery when the last logged charge ended; the app does not track it live.",
+      }),
+  })
+  .meta({ id: "WeeklySummary" });
+
 export type CreateSession = z.infer<typeof CreateSessionSchema>;
 export type UpdateSession = z.infer<typeof UpdateSessionSchema>;
 export type Session = z.infer<typeof SessionSchema>;
 export type SessionStats = z.infer<typeof SessionStatsSchema>;
 export type SessionTotalsQuery = z.infer<typeof SessionTotalsQuerySchema>;
 export type SessionTotals = z.infer<typeof SessionTotalsSchema>;
+export type WeeklySummaryQuery = z.infer<typeof WeeklySummaryQuerySchema>;
+export type WeeklySummary = z.infer<typeof WeeklySummarySchema>;

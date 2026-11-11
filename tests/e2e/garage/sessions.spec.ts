@@ -119,6 +119,21 @@ test("real consumption, cost per km and km between charges from seed sessions", 
   ).json();
   expect(totals).toMatchObject({ sessions: 4, energy_kwh: 142, cost: 127800 });
 
+  // Home dashboard: the week of Monday 12 October against the week before.
+  const week = await (
+    await request.get(`/api/v1/sessions/weekly?vehicle=${vehicleId}&week=2026-10-14`, {
+      headers: headers(),
+    })
+  ).json();
+  expect(week).toMatchObject({
+    week_start: "2026-10-12",
+    week_end: "2026-10-18",
+    totals: { cost: 32580, km: 210 },
+    previous: { cost: 33660, km: 210 },
+    km_per_day: 30,
+  });
+  expect(week.days[0]).toMatchObject({ day: "2026-10-12", cost: 32580, km: 210 });
+
   const period = page.getByRole("region", { name: "Gasto en recargas por fechas" });
   await period.getByLabel("Desde").fill("2026-10-15");
   await period.getByLabel("Hasta").fill("2026-10-31");

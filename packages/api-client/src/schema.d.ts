@@ -2345,6 +2345,73 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/sessions/weekly": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cost, energy and km of one week, day by day, with the week before */
+    get: {
+      parameters: {
+        query: {
+          vehicle: string;
+          /** @description Any day of the week; defaults to the current week. */
+          week?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The week. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["WeeklySummary"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/sessions/{id}": {
     parameters: {
       query?: never;
@@ -4090,6 +4157,44 @@ export interface components {
       cost: number;
       /** @description Sessions in the period with no cost; the total leaves them out. */
       sessions_without_cost: number;
+    };
+    WeeklySummary: {
+      /** Format: uuid */
+      vehicle_id: string;
+      /** @description Monday, Colombian time. */
+      week_start: string;
+      /** @description Sunday, Colombian time. */
+      week_end: string;
+      currency: string;
+      /** @description Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one. */
+      days: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+        day: string;
+      }[];
+      totals: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+      };
+      /** @description The week before, for comparison. */
+      previous: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+      };
+      real_consumption_kwh_100km: number | null;
+      estimated_consumption_kwh_100km: number | null;
+      cost_per_km: number | null;
+      km_per_day: number;
+      /** @description Battery when the last logged charge ended; the app does not track it live. */
+      last_charge: {
+        end_soc: number;
+        /** Format: date-time */
+        at: string;
+        range_km: number | null;
+      } | null;
     };
     UpdateSession: {
       /** Format: uuid */

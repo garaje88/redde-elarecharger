@@ -5,6 +5,8 @@ import {
   monthKey,
   periodTotals,
   sessionStats,
+  weekStart,
+  weeklySummary,
 } from "@elacharger/calc";
 import type {
   CreateSession,
@@ -13,6 +15,9 @@ import type {
   SessionTotals,
   SessionTotalsQuery,
   UpdateSession,
+  Vehicle,
+  WeeklySummary,
+  WeeklySummaryQuery,
 } from "@elacharger/schemas";
 import { type Db, unwrap } from "../db";
 import { notFound } from "../http";
@@ -126,6 +131,33 @@ export async function deleteSession(db: Db, id: string): Promise<void> {
   if (deleted.length === 0) throw notFound("The session does not exist.");
 }
 
+/** Usable kWh today: the sheet's usable capacity scaled by the battery health. */
+function usableBattery(vehicle: Vehicle): number | null {
+  const usable = vehicle.spec.battery_usable_kwh;
+  return usable === null ? null : usable * (vehicle.battery_health_pct / 100);
+}
+
+/** kWh/100 km the sheet implies, rounded to one decimal; null when it cannot be derived. */
+function estimatedConsumption(vehicle: Vehicle): number | null {
+  const { spec } = vehicle;
+  if (spec.battery_usable_kwh === null) return null;
+  try {
+    return (
+      Math.round(
+        baseConsumptionKwh100km({
+          usableKwh: spec.battery_usable_kwh,
+          consumptionKwh100km: spec.consumption_kwh_100km,
+          rangeKm: spec.range_km,
+          rangeCycle: spec.range_cycle,
+        }) * 10,
+      ) / 10
+    );
+  } catch (error) {
+    if (!(error instanceof CalcInputError)) throw error;
+    return null;
+  }
+}
+
 export async function getSessionStats(
   db: Db,
   userId: string,
@@ -141,28 +173,8 @@ export async function getSessionStats(
       .eq("vehicle_id", vehicleId)
       .order("started_at"),
   ]);
-  const { spec } = vehicle;
-  const usableKwh =
-    spec.battery_usable_kwh === null
-      ? null
-      : spec.battery_usable_kwh * (vehicle.battery_health_pct / 100);
-
-  let estimated: number | null = null;
-  if (spec.battery_usable_kwh !== null) {
-    try {
-      estimated =
-        Math.round(
-          baseConsumptionKwh100km({
-            usableKwh: spec.battery_usable_kwh,
-            consumptionKwh100km: spec.consumption_kwh_100km,
-            rangeKm: spec.range_km,
-            rangeCycle: spec.range_cycle,
-          }) * 10,
-        ) / 10;
-    } catch (error) {
-      if (!(error instanceof CalcInputError)) throw error;
-    }
-  }
+  const usableKwh = usableBattery(vehicle);
+  const estimated = estimatedConsumption(vehicle);
 
   const stats = sessionStats(
     unwrap(rows, "Sessions").map((row) => ({
@@ -237,5 +249,72 @@ export async function getSessionTotals(
     energy_kwh: totals.energyKwh,
     cost: totals.cost,
     sessions_without_cost: totals.sessionsWithoutCost,
+  };
+}
+
+/** One week of a vehicle, day by day, for the home dashboard; the numbers come from packages/calc. */
+export async function getWeeklySummary(
+  db: Db,
+  userId: string,
+  query: WeeklySummaryQuery,
+): Promise<WeeklySummary> {
+  const start = query.week
+    ? weekStart(new Date(`${query.week}T12:00:00Z`), 0)
+    : weekStart(new Date());
+  const [vehicle, profile, rows] = await Promise.all([
+    getVehicle(db, userId, query.vehicle),
+    getProfile(db, userId),
+    db
+      .from("charging_sessions")
+      .select("started_at, energy_kwh, cost, odometer_km, start_soc, end_soc")
+      .eq("vehicle_id", query.vehicle)
+      .order("started_at"),
+  ]);
+  const sessions = unwrap(rows, "Sessions");
+  const usableKwh = usableBattery(vehicle);
+  const week = weeklySummary(
+    sessions.map((row) => ({
+      startedAt: new Date(row.started_at),
+      energyKwh: row.energy_kwh,
+      cost: row.cost,
+      odometerKm: row.odometer_km,
+      startSocPct: row.start_soc,
+      endSocPct: row.end_soc,
+    })),
+    { weekStart: start, usableKwh },
+  );
+  const estimated = estimatedConsumption(vehicle);
+
+  const last = sessions.findLast((row) => row.end_soc !== null);
+  const consumption = week.realConsumptionKwh100km ?? estimated;
+  const lastCharge =
+    last && last.end_soc !== null
+      ? {
+          end_soc: last.end_soc,
+          at: last.started_at,
+          range_km:
+            usableKwh && consumption
+              ? Math.round(((last.end_soc / 100) * usableKwh * 100) / consumption)
+              : null,
+        }
+      : null;
+
+  return {
+    vehicle_id: vehicle.id,
+    week_start: week.weekStart,
+    week_end: addDays(week.weekStart, 6),
+    currency: profile.currency,
+    days: week.days.map((d) => ({ day: d.day, cost: d.cost, energy_kwh: d.energyKwh, km: d.km })),
+    totals: { cost: week.totals.cost, energy_kwh: week.totals.energyKwh, km: week.totals.km },
+    previous: {
+      cost: week.previous.cost,
+      energy_kwh: week.previous.energyKwh,
+      km: week.previous.km,
+    },
+    real_consumption_kwh_100km: week.realConsumptionKwh100km,
+    estimated_consumption_kwh_100km: estimated,
+    cost_per_km: week.costPerKm,
+    km_per_day: week.kmPerDay,
+    last_charge: lastCharge,
   };
 }

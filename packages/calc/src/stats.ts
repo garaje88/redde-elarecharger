@@ -200,3 +200,132 @@ export function periodTotals(
     sessionsWithoutCost: withoutCost,
   };
 }
+
+export interface WeekDay {
+  /** Local day "YYYY-MM-DD". */
+  day: string;
+  cost: number;
+  /** Energy used on the trips that end at this day's charge (see `energyBetween`). */
+  energyKwh: number;
+  /** Km driven since the previous charge, counted on the day of the charge. */
+  km: number;
+}
+
+export interface WeekTotals {
+  cost: number;
+  energyKwh: number;
+  km: number;
+}
+
+export interface WeeklySummary {
+  /** Monday of the week, local time. */
+  weekStart: string;
+  /** Monday to Sunday. */
+  days: WeekDay[];
+  totals: WeekTotals;
+  previous: WeekTotals;
+  /** Measured kWh/100 km this week; null without a km with known energy. */
+  realConsumptionKwh100km: number | null;
+  costPerKm: number | null;
+  kmPerDay: number;
+}
+
+const shiftDay = (day: string, days: number) =>
+  new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
+
+/** Monday "YYYY-MM-DD" of the local week that contains `date`. */
+export function weekStart(date: Date, utcOffsetMin = -300): string {
+  const day = dayKey(date, utcOffsetMin);
+  const weekday = (new Date(`${day}T00:00:00Z`).getUTCDay() + 6) % 7;
+  return shiftDay(day, -weekday);
+}
+
+/**
+ * One week of a vehicle's sessions, day by day, and the week before for comparison. Cost is
+ * counted on the day of each charge; km and energy come from the interval between consecutive
+ * odometer readings and are counted on the day of the charge that closes it.
+ */
+export function weeklySummary(
+  sessions: readonly SessionRecord[],
+  options: { weekStart: string; usableKwh?: number | null; utcOffsetMin?: number },
+): WeeklySummary {
+  const offset = options.utcOffsetMin ?? -300;
+  const start = options.weekStart;
+  const previousStart = shiftDay(start, -7);
+  const days = Array.from({ length: 7 }, (_, i) => ({
+    day: shiftDay(start, i),
+    cost: 0,
+    energyKwh: 0,
+    km: 0,
+  }));
+  const byDay = new Map(days.map((d) => [d.day, d]));
+  const previous: WeekTotals = { cost: 0, energyKwh: 0, km: 0 };
+  const inPrevious = (day: string) => day >= previousStart && day < start;
+
+  for (const [i, s] of sessions.entries()) {
+    if (s.cost == null) continue;
+    assertNonNegative(`sessions.${i}.cost`, s.cost);
+    const day = dayKey(s.startedAt, offset);
+    const bucket = byDay.get(day);
+    if (bucket) bucket.cost += s.cost;
+    else if (inPrevious(day)) previous.cost += s.cost;
+  }
+
+  const withOdometer = sessions
+    .filter((s) => s.odometerKm != null)
+    .sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime());
+  let energyKm = 0;
+  let energy = 0;
+  let costKm = 0;
+  let costOfKm = 0;
+  for (let i = 1; i < withOdometer.length; i++) {
+    const before = withOdometer[i - 1] as SessionRecord;
+    const current = withOdometer[i] as SessionRecord;
+    const driven = (current.odometerKm as number) - (before.odometerKm as number);
+    if (driven <= 0) continue;
+    const day = dayKey(current.startedAt, offset);
+    const used = energyBetween(before, current, options.usableKwh);
+    const bucket = byDay.get(day);
+    if (bucket) {
+      bucket.km += driven;
+      if (used != null) {
+        bucket.energyKwh += used;
+        energy += used;
+        energyKm += driven;
+      }
+      if (current.cost != null) {
+        costOfKm += current.cost;
+        costKm += driven;
+      }
+    } else if (inPrevious(day)) {
+      previous.km += driven;
+      previous.energyKwh += used ?? 0;
+    }
+  }
+
+  const rounded = days.map((d) => ({
+    day: d.day,
+    cost: round(d.cost, 0),
+    energyKwh: round(d.energyKwh, 1),
+    km: round(d.km, 0),
+  }));
+  const sum = (key: keyof WeekTotals) => days.reduce((total, d) => total + d[key], 0);
+  const totalKm = sum("km");
+  return {
+    weekStart: start,
+    days: rounded,
+    totals: {
+      cost: round(sum("cost"), 0),
+      energyKwh: round(sum("energyKwh"), 1),
+      km: round(totalKm, 0),
+    },
+    previous: {
+      cost: round(previous.cost, 0),
+      energyKwh: round(previous.energyKwh, 1),
+      km: round(previous.km, 0),
+    },
+    realConsumptionKwh100km: energyKm > 0 ? round((energy / energyKm) * 100, 1) : null,
+    costPerKm: costKm > 0 ? round(costOfKm / costKm, 1) : null,
+    kmPerDay: round(totalKm / 7, 0),
+  };
+}

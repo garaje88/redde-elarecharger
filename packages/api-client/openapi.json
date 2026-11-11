@@ -2769,6 +2769,122 @@
           "sessions_without_cost"
         ]
       },
+      "WeeklySummary": {
+        "type": "object",
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "week_start": {
+            "type": "string",
+            "description": "Monday, Colombian time."
+          },
+          "week_end": {
+            "type": "string",
+            "description": "Sunday, Colombian time."
+          },
+          "currency": {
+            "type": "string"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cost": {
+                  "type": "number"
+                },
+                "energy_kwh": {
+                  "type": "number"
+                },
+                "km": {
+                  "type": "number"
+                },
+                "day": {
+                  "type": "string"
+                }
+              },
+              "required": ["cost", "energy_kwh", "km", "day"]
+            },
+            "description": "Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one."
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "cost": {
+                "type": "number"
+              },
+              "energy_kwh": {
+                "type": "number"
+              },
+              "km": {
+                "type": "number"
+              }
+            },
+            "required": ["cost", "energy_kwh", "km"]
+          },
+          "previous": {
+            "type": "object",
+            "properties": {
+              "cost": {
+                "type": "number"
+              },
+              "energy_kwh": {
+                "type": "number"
+              },
+              "km": {
+                "type": "number"
+              }
+            },
+            "required": ["cost", "energy_kwh", "km"],
+            "description": "The week before, for comparison."
+          },
+          "real_consumption_kwh_100km": {
+            "type": ["number", "null"]
+          },
+          "estimated_consumption_kwh_100km": {
+            "type": ["number", "null"]
+          },
+          "cost_per_km": {
+            "type": ["number", "null"]
+          },
+          "km_per_day": {
+            "type": "number"
+          },
+          "last_charge": {
+            "type": ["object", "null"],
+            "properties": {
+              "end_soc": {
+                "type": "number"
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "range_km": {
+                "type": ["number", "null"]
+              }
+            },
+            "required": ["end_soc", "at", "range_km"],
+            "description": "Battery when the last logged charge ended; the app does not track it live."
+          }
+        },
+        "required": [
+          "vehicle_id",
+          "week_start",
+          "week_end",
+          "currency",
+          "days",
+          "totals",
+          "previous",
+          "real_consumption_kwh_100km",
+          "estimated_consumption_kwh_100km",
+          "cost_per_km",
+          "km_per_day",
+          "last_charge"
+        ]
+      },
       "UpdateSession": {
         "type": "object",
         "properties": {
@@ -6310,6 +6426,81 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SessionTotals"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The vehicle does not exist.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request did not pass validation.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions/weekly": {
+      "get": {
+        "summary": "Cost, energy and km of one week, day by day, with the week before",
+        "tags": ["sessions"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "vehicle",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Any day of the week; defaults to the current week."
+            },
+            "required": false,
+            "description": "Any day of the week; defaults to the current week.",
+            "name": "week",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The week.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklySummary"
                 }
               }
             }

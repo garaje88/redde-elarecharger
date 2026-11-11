@@ -13,79 +13,119 @@
 <style>
 body{margin:0}
 a{color:#3F5A00}a:hover{color:#2E4200}
-input[type=range]{accent-color:#3F5A00}
 </style>
 </helmet>
-<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F6F1; font-family: Inter, system-ui, sans-serif; color: #0E1116; box-sizing: border-box">
-  <header style="display: flex; justify-content: space-between; align-items: center; padding: 56px 20px 12px 20px">
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F6F1; font-family: Inter, system-ui, sans-serif; color: #0E1116; box-sizing: border-box; padding: 52px 16px 0 16px; display: flex; flex-direction: column; gap: 12px">
+  <header style="display: flex; justify-content: space-between; align-items: center">
     <div style="display: flex; flex-direction: column; gap: 2px">
-      <span style="font-size: 13px; color: #5B6470">Sábado, 31 de octubre</span>
-      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600">Hola</span>
+      <span style="font-size: 13px; color: #5B6470">Semana del 4 al 10 de nov</span>
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600">Tu semana</h1>
     </div>
-    <a href="Garage.dc.html" aria-label="Perfil y ajustes" style="width: 44px; height: 44px; border-radius: 22px; background: #0E1116; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none">C</a>
+    <a href="Garage.dc.html" aria-label="Deepal S05, batería al 64 por ciento, unos 226 km" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E3E6E1; text-decoration: none; color: #0E1116; box-sizing: border-box">
+      <span style="font-size: 13px; font-weight: 600">S05</span>
+      <span style="width: 24px; height: 8px; border-radius: 4px; background: #E3E6E1; overflow: hidden; display: inline-block"><span style="display: block; width: 64%; height: 8px; background: #3F5A00"></span></span>
+      <span style="font-size: 13px; font-weight: 600; color: #3F5A00">64 %</span>
+    </a>
   </header>
 
-  <section aria-label="Vehículo activo" style="margin: 8px 16px 0 16px; background: #0E1116; color: #FFFFFF; border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start">
-      <div style="display: flex; flex-direction: column; gap: 4px">
-        <span style="font-size: 13px; color: #A9B1BA">Vehículo activo</span>
-        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600">Deepal S05 E-Max</span>
-        <span style="font-size: 13px; color: #A9B1BA">56,12 kWh · LFP · 15,9 kWh/100 km</span>
-      </div>
-      <span style="font-size: 12px; background: #232A12; color: #C8F031; padding: 6px 10px; border-radius: 999px">Listo</span>
-    </div>
-    <div style="display: flex; align-items: flex-end; gap: 12px">
-      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 64px; font-weight: 700; line-height: 0.9">64<span style="font-size: 28px">%</span></span>
-      <span style="font-size: 14px; color: #CDD3D9; padding-bottom: 6px">≈ 226 km de autonomía</span>
-    </div>
-    <div style="height: 10px; background: #2A3038; border-radius: 999px; overflow: hidden">
-      <div style="width: 64%; height: 10px; background: #C8F031; border-radius: 999px"></div>
-    </div>
-    <label for="soc" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #A9B1BA">Ajustar batería actual
-      <input id="soc" type="range" min="0" max="100" step="1" value="64" style="width: 100%; height: 28px">
-    </label>
-  </section>
-
-  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 16px 0 16px">
-    <a href="Trip.dc.html" style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 20px; padding: 16px; min-height: 112px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: #0E1116">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3F5A00" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>
-      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 16px">Planear trayecto</span><span style="font-size: 13px; color: #5B6470">% de A a B</span></span>
-    </a>
-    <a href="Charge.dc.html" style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 20px; padding: 16px; min-height: 112px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; text-decoration: none; color: #0E1116">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3F5A00" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
-      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 16px">Calcular carga</span><span style="font-size: 13px; color: #5B6470">tiempo a tu %</span></span>
-    </a>
+  <div role="tablist" aria-label="Métrica de la semana" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: #E7EAE4; border-radius: 12px; padding: 4px; gap: 4px">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+      <button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.pick }}" style="min-height: 40px; border: 0; border-radius: 9px; background: {{ t.bg }}; color: #0E1116; font: inherit; font-size: 14px; font-weight: {{ t.weight }}">{{ t.label }}</button>
+    </sc-for>
   </div>
 
-  <section aria-label="Recientes" style="margin: 20px 16px 0 16px; display: flex; flex-direction: column; gap: 10px">
-    <h2 style="margin: 0; font-size: 14px; font-weight: 600; color: #5B6470">Recientes</h2>
-    <a href="Trip.dc.html" style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #0E1116; min-height: 44px">
-      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">Bogotá → Villeta</span><span style="font-size: 13px; color: #5B6470">92 km · usa 19 % · llegas con 61 %</span></span>
-      <span style="font-size: 13px; color: #3F5A00; font-weight: 600">Repetir</span>
-    </a>
-    <a href="Charge.dc.html" style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #0E1116; min-height: 44px">
-      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600; font-size: 15px">Casa · 220 V · 20 → 80 %</span><span style="font-size: 13px; color: #5B6470">5 h 40 min · 37,4 kWh</span></span>
-      <span style="font-size: 13px; color: #3F5A00; font-weight: 600">Repetir</span>
-    </a>
+  <section aria-live="polite" aria-label="Resumen" style="background: #0E1116; color: #FFFFFF; border-radius: 20px; padding: 16px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 13px; color: #A9B1BA">{{ m.caption }}</span>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 700; line-height: 1">{{ m.value }}</span>
+      <span style="font-size: 13px; color: #C8F031; font-weight: 600">{{ m.delta }}</span>
+    </div>
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; text-align: right">
+      <span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700">{{ m.side }}</span>
+      <span style="font-size: 12px; color: #A9B1BA">{{ m.sideLabel }}</span>
+    </div>
   </section>
 
-  <a href="Assistant.dc.html" aria-label="Abrir asistente IA" style="position: absolute; right: 20px; bottom: 96px; width: 56px; height: 56px; border-radius: 28px; background: #3F5A00; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(63,90,0,0.30)">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>
-  </a>
+  <section aria-label="Por día" style="background: #FFFFFF; border: 1px solid #E3E6E1; border-radius: 20px; padding: 14px 14px 10px 14px; display: flex; flex-direction: column; gap: 8px">
+    <h2 style="margin: 0; font-size: 14px; font-weight: 600">{{ m.chartTitle }}</h2>
+    <svg width="330" height="132" viewBox="0 0 330 132" role="img" aria-label="{{ m.aria }}">
+      <line x1="0" y1="110" x2="330" y2="110" stroke="#E3E6E1" stroke-width="1"/>
+      <sc-for list="{{ m.bars }}" as="b" hint-placeholder-count="7">
+        <rect x="{{ b.x }}" y="{{ b.y }}" width="32" height="{{ b.h }}" rx="7" fill="{{ b.fill }}"/>
+        <text x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle" font-size="11" font-weight="600" fill="#0E1116" font-family="Inter, sans-serif">{{ b.label }}</text>
+        <text x="{{ b.cx }}" y="127" text-anchor="middle" font-size="11" fill="#5B6470" font-family="Inter, sans-serif">{{ b.day }}</text>
+      </sc-for>
+    </svg>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5B6470"><span style="width: 10px; height: 10px; border-radius: 3px; background: #3F5A00"></span>{{ m.legend }}</span>
+  </section>
 
-  <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: flex; justify-content: space-around; align-items: flex-start; padding: 8px 4px 0 4px; box-sizing: border-box">
-    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: #3F5A00; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
-    <a href="Trip.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Trayecto</a>
-    <a href="Charge.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Carga</a>
-    <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
-    <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Recargas</a>
+  <section aria-label="Acciones" style="display: flex; flex-direction: column; gap: 8px">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <a href="Trip.dc.html" style="min-height: 56px; border-radius: 16px; background: #3F5A00; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Planear viaje</a>
+      <a href="Charge.dc.html" style="min-height: 56px; border-radius: 16px; background: #0E1116; color: #FFFFFF; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 15px">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C8F031" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Calcular carga</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <a href="Sessions.dc.html" style="min-height: 44px; border-radius: 14px; background: #FFFFFF; border: 1px solid #D3D8D0; color: #0E1116; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 14px; box-sizing: border-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Registrar recarga</a>
+      <a href="Assistant.dc.html" style="min-height: 44px; border-radius: 14px; background: #FFFFFF; border: 1px solid #D3D8D0; color: #0E1116; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 14px; box-sizing: border-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Preguntar a la IA</a>
+    </div>
+  </section>
+
+  <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 4px 0 4px; box-sizing: border-box">
+    <a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; font-weight: 600; color: #3F5A00; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
+    <a href="Trip.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Viajes</a>
+    <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Historial</a>
+    <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
   </nav>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { metric: 'cost' };
+  }
   renderVals() {
-    return {};
+    var self = this;
+    var days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    var sets = {
+      cost: { label: 'Costo', caption: 'Gastaste en recargas', value: '$59.470', delta: '6 % menos que la semana pasada',
+        side: '$191', sideLabel: 'por km', chartTitle: 'Costo de recargas por día', legend: 'Días con recarga · casa $950/kWh, DC $1.800/kWh',
+        data: [21280, 0, 0, 17670, 0, 20520, 0], hl: 'nonzero',
+        fmt: function (v) { return '$' + Math.round(v / 1000) + 'k'; },
+        aria: 'Tres recargas: lunes 21 mil, jueves 18 mil y sábado 21 mil pesos' },
+      energy: { label: 'Energía', caption: 'Energía consumida', value: '52,4 kWh', delta: '6 % sobre lo estimado',
+        side: '16,8', sideLabel: 'kWh/100 km', chartTitle: 'kWh consumidos por día', legend: 'Día de mayor consumo',
+        data: [6.4, 8.7, 6.9, 0, 10.8, 14.6, 5.0], hl: 'max',
+        fmt: function (v) { return String(v).replace('.', ','); },
+        aria: 'kWh por día; el sábado fue el mayor con 14,6' },
+      km: { label: 'Km', caption: 'Recorriste', value: '312 km', delta: '8 % más que la semana pasada',
+        side: '45', sideLabel: 'km por día', chartTitle: 'Kilómetros por día', legend: 'Día con más recorrido',
+        data: [38, 52, 41, 0, 64, 87, 30], hl: 'max',
+        fmt: function (v) { return String(v); },
+        aria: 'Kilómetros por día; el sábado fue el mayor con 87' }
+    };
+    var cur = sets[this.state.metric];
+    var max = Math.max.apply(null, cur.data);
+    var bars = cur.data.map(function (v, i) {
+      var h = v === 0 ? 3 : Math.round(v / max * 84);
+      var strong = cur.hl === 'max' ? v === max : v > 0;
+      return { x: 7 + i * 46, cx: 23 + i * 46, y: 110 - h, h: h, ly: 110 - h - 6, day: days[i],
+        label: v === 0 ? '' : cur.fmt(v), fill: v === 0 ? '#E3E6E1' : (strong ? '#3F5A00' : '#C9DB9A') };
+    });
+    var tabs = ['cost', 'energy', 'km'].map(function (k) {
+      var on = self.state.metric === k;
+      return { label: sets[k].label, sel: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500,
+        pick: function () { self.setState({ metric: k }); } };
+    });
+    return {
+      tabs: tabs,
+      m: { caption: cur.caption, value: cur.value, delta: cur.delta, side: cur.side, sideLabel: cur.sideLabel,
+           chartTitle: cur.chartTitle, legend: cur.legend, bars: bars, aria: cur.aria }
+    };
   }
 }
 </script>

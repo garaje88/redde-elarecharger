@@ -69,6 +69,8 @@ import {
   SessionTotalsQuerySchema,
   SessionTotalsSchema,
   UpdateSessionSchema,
+  WeeklySummaryQuerySchema,
+  WeeklySummarySchema,
 } from "./sessions";
 import {
   TripCalculationListSchema,
@@ -501,6 +503,17 @@ function buildRegistry(): OpenAPIRegistry {
     request: { query: SessionTotalsQuerySchema },
     responses: {
       200: json(SessionTotalsSchema, "Totals."),
+      404: problemResponse("The vehicle does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/sessions/weekly",
+    summary: "Cost, energy and km of one week, day by day, with the week before",
+    tags: ["sessions"],
+    request: { query: WeeklySummaryQuerySchema },
+    responses: {
+      200: json(WeeklySummarySchema, "The week."),
       404: problemResponse("The vehicle does not exist."),
     },
   });
