@@ -1,0 +1,126 @@
+<!doctype html>
+<!-- Fuente de docs/diagrams/arquitectura.webp. Para regenerarlo: abrir en Chromium a 1344 × 1420 px, capturar y convertir a WebP. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1344px; background: #fff; font-family: Inter, system-ui, sans-serif; color: #0E1116; }
+  .canvas { position: relative; width: 1344px; height: 1420px; }
+  .box { position: absolute; border: 2px solid #D3D8D0; border-radius: 14px; background: #fff;
+         display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .group { position: absolute; border: 2px solid #D3D8D0; border-radius: 14px; background: #EEEEEC; }
+  .group > .label { position: absolute; top: 18px; left: 28px; font-size: 23px; font-weight: 600; }
+  .group.center > .label { left: 0; right: 0; text-align: center; }
+  .t { font-size: 23px; font-weight: 600; }
+  .s { font-size: 20px; color: #5B6470; margin-top: 4px; line-height: 1.4; }
+  .dashed { border-style: dashed; }
+  .hl { background: #F1F8D9; border: 3px solid #3F5A00; }
+  .edge { position: absolute; font-size: 20px; color: #5B6470; }
+  svg.lines { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  h1 { position: absolute; top: 32px; left: 42px; font-size: 26px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <h1>Un solo backend sirve hoy a la web y mañana a la app móvil</h1>
+
+
+  <div class="box" style="left:42px;top:98px;width:602px;height:100px">
+    <div class="t">App web (MVP)</div><div class="s">Next.js · PWA · MapLibre</div>
+  </div>
+  <div class="box dashed" style="left:700px;top:98px;width:602px;height:100px">
+    <div class="t">App móvil (después del MVP)</div><div class="s">Expo + React Native</div>
+  </div>
+  <div class="edge" style="left:269px;top:242px">HTTPS · cookies · elacharger.garaje88.dev</div>
+  <div class="edge" style="left:1089px;top:242px">HTTPS · Bearer JWT</div>
+
+  <div class="group center" style="left:42px;top:310px;width:1260px;height:384px">
+    <div class="label">Cloudflare Workers · Next.js 16 vía OpenNext (apps/web)</div>
+  </div>
+  <div class="box" style="left:70px;top:381px;width:369px;height:100px">
+    <div class="t">UI web</div><div class="s">Server + Client Components</div>
+  </div>
+  <div class="box" style="left:481px;top:381px;width:354px;height:100px">
+    <div class="t">Server Actions</div><div class="s">formularios de la web</div>
+  </div>
+  <div class="box" style="left:877px;top:381px;width:397px;height:100px">
+    <div class="t">API REST /api/v1</div><div class="s">OpenAPI · problem+json</div>
+  </div>
+  <div class="box" style="left:70px;top:522px;width:242px;height:130px">
+    <div class="t">packages/calc</div><div class="s">motor puro<br>Zod + OpenAPI</div>
+  </div>
+  <div class="box hl" style="left:353px;top:522px;width:921px;height:130px">
+    <div class="t">server/services</div>
+    <div class="s" style="color:#0E1116">trayecto · carga · garaje · recargas · IA · cuenta</div>
+    <div class="s">una sola lógica para la web y para el móvil</div>
+  </div>
+
+  <div class="edge" style="left:509px;top:716px">supabase-js</div>
+  <div class="edge" style="left:778px;top:716px">HTTPS · llaves en el Worker</div>
+
+  <div class="group" style="left:42px;top:764px;width:609px;height:452px"><div class="label">Supabase</div></div>
+  <div class="box" style="left:70px;top:834px;width:553px;height:100px">
+    <div class="t">Auth</div><div class="s">Google OAuth · emite el JWT</div>
+  </div>
+  <div class="box" style="left:70px;top:961px;width:553px;height:100px">
+    <div class="t">Postgres + RLS</div><div class="s">catálogo + datos del usuario · pgTAP</div>
+  </div>
+  <div class="box" style="left:70px;top:1088px;width:553px;height:100px">
+    <div class="t">Storage</div><div class="s">bucket privado · borrado a 24 h</div>
+  </div>
+
+  <div class="group" style="left:693px;top:764px;width:609px;height:452px"><div class="label">Servicios externos</div></div>
+  <div class="box" style="left:721px;top:834px;width:262px;height:100px">
+    <div class="t">Google OAuth</div><div class="s">identidad Gmail</div>
+  </div>
+  <div class="box" style="left:1011px;top:834px;width:262px;height:100px">
+    <div class="t">Claude API</div><div class="s">IA: fotos y chat</div>
+  </div>
+  <div class="box" style="left:721px;top:961px;width:262px;height:100px">
+    <div class="t">OpenRouteService</div><div class="s">rutas y elevación</div>
+  </div>
+  <div class="box" style="left:1011px;top:961px;width:262px;height:100px">
+    <div class="t">MapTiler (OSM)</div><div class="s">teselas del mapa</div>
+  </div>
+  <div class="box" style="left:721px;top:1088px;width:262px;height:100px">
+    <div class="t">Upstash Redis</div><div class="s">rate limit y caché</div>
+  </div>
+  <div class="box" style="left:1011px;top:1088px;width:262px;height:100px">
+    <div class="t">Sentry</div><div class="s">errores sin PII</div>
+  </div>
+
+  <div class="group" style="left:42px;top:1248px;width:1260px;height:154px"><div class="label">Despliegue</div></div>
+  <div class="box" style="left:70px;top:1306px;width:490px;height:80px">
+    <div class="t" style="font-size:21px">GitHub · CI en main</div><div class="s" style="font-size:18px">lint · typecheck · pruebas · E2E sobre el Worker</div>
+  </div>
+  <div class="box" style="left:690px;top:1306px;width:258px;height:80px">
+    <div class="t" style="font-size:21px">Deploy</div><div class="s" style="font-size:18px">wrangler deploy</div>
+  </div>
+  <div class="box" style="left:1070px;top:1306px;width:204px;height:80px">
+    <div class="t" style="font-size:21px">Prueba de humo</div><div class="s" style="font-size:18px">smoke-prod.mjs</div>
+  </div>
+  <svg class="lines" width="1344" height="1420" aria-hidden="true">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="#B9BEB4"/>
+      </marker>
+    </defs>
+    <g stroke="#B9BEB4" stroke-width="2" fill="none">
+      <path d="M255 198V378" marker-end="url(#a)"/>
+      <path d="M1075 198V378" stroke-dasharray="6 6" marker-end="url(#a)"/>
+      <path d="M439 431H478" marker-end="url(#a)"/>
+      <path d="M657 481V520" marker-end="url(#a)"/>
+      <path d="M1075 481V520" marker-end="url(#a)"/>
+      <path d="M354 587H314" marker-end="url(#a)"/>
+      <path d="M495 651V760" marker-end="url(#a)"/>
+      <path d="M1061 651V760" marker-end="url(#a)"/>
+      <path d="M623 884H718" marker-end="url(#a)"/>
+      <path d="M560 1346H690" marker-end="url(#a)"/>
+      <path d="M948 1346H1070" marker-end="url(#a)"/>
+    </g>
+  </svg>
+</div>
+</body>
+</html>
