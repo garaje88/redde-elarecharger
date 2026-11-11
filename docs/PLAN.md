@@ -42,7 +42,7 @@ Next.js 16 (App Router) con TypeScript estricto, Tailwind CSS v4 y Supabase (Pos
 | Rate limiting | Upstash Redis + `@upstash/ratelimit` | Protege la cuota de ORS |
 | Pruebas | Vitest (unitarias del motor de cálculo), Playwright (E2E), Testing Library | El cálculo es el núcleo: cobertura ≥ 90 % |
 | Calidad | ESLint (next + typescript-eslint), Prettier, Husky + lint-staged, commitlint | Consistencia y commits convencionales |
-| CI/CD | GitHub Actions (lint, typecheck, test, build, E2E sobre el Worker) + Cloudflare Workers Builds | Cada PR probado en el runtime que se despliega |
+| CI/CD | GitHub Actions (lint, typecheck, test, build, E2E sobre el Worker); deploy con `wrangler` desde `deploy.yml` tras la CI en `main` | Cada PR probado en el runtime que se despliega; el deploy solo sale con la CI en verde |
 | Hosting | Cloudflare Workers con el adaptador OpenNext (`@opennextjs/cloudflare`) | Decisión del proyecto (nov-2026); ver `docs/DEPLOY.md` |
 | Observabilidad | Sentry + Workers Observability | Errores y registros |
 
