@@ -101,18 +101,24 @@ const LABEL_GAP = 26;
 const TICKS = [1, 8, 15, 22, 29];
 
 /**
- * Value labels over the bars. Two charges a few days apart would overlap, so a label that
- * would collide goes one row higher; when both rows are taken it is left out (the bar and the
- * chart's accessible description still carry the value).
+ * Where each value label goes. Two charges a few days apart would overlap, so a label that
+ * collides with the previous one sits a line above it, whatever the height of its own bar; when
+ * that is taken too it is left out (the bar and the chart description still carry the value).
  */
-function labelRows(centers: (number | null)[]) {
-  const lastX = [-Infinity, -Infinity];
-  return centers.map((x) => {
-    if (x === null) return null;
-    const row = lastX.findIndex((last) => x - last >= LABEL_GAP);
-    if (row === -1) return null;
-    lastX[row] = x;
-    return row;
+function placeLabels(bars: ({ x: number; top: number } | null)[]) {
+  const placed: { x: number; y: number; stacked: boolean }[] = [];
+  return bars.map((bar) => {
+    if (bar === null) return null;
+    let y = bar.top - 6;
+    const last = placed.at(-1);
+    if (last && bar.x - last.x < LABEL_GAP) {
+      if (last.stacked) return null;
+      y = Math.min(y, last.y - 13);
+      placed.push({ x: bar.x, y, stacked: true });
+    } else {
+      placed.push({ x: bar.x, y, stacked: false });
+    }
+    return y;
   });
 }
 
@@ -123,7 +129,11 @@ export function MonthlyDashboard({ month }: { month: MonthlySummary }) {
   const slot = WIDTH / view.values.length;
   const barWidth = Math.max(4, slot * 0.62);
   const center = (i: number) => i * slot + slot / 2;
-  const rows = labelRows(view.values.map((v, i) => (v > 0 ? center(i) : null)));
+  const barHeight = (v: number) =>
+    v === 0 || max === 0 ? 2 : Math.max(4, Math.round((v / max) * MAX_BAR));
+  const labelY = placeLabels(
+    view.values.map((v, i) => (v > 0 ? { x: center(i), top: BASELINE - barHeight(v) } : null)),
+  );
   const described = view.values
     .map((v, i) => (v > 0 ? `día ${i + 1}: ${view.format(v)}` : null))
     .filter(Boolean)
@@ -200,10 +210,10 @@ export function MonthlyDashboard({ month }: { month: MonthlySummary }) {
             strokeWidth="1"
           />
           {view.values.map((v, i) => {
-            const h = v === 0 || max === 0 ? 2 : Math.max(4, Math.round((v / max) * MAX_BAR));
+            const h = barHeight(v);
             const strong = view.highlight === "max" ? v === max : v > 0;
             const fill = v === 0 ? "fill-border" : strong ? "fill-primary" : "fill-brand-soft";
-            const row = rows[i];
+            const y = labelY[i];
             return (
               <g key={month.days[i]?.day ?? i}>
                 <rect
@@ -214,10 +224,10 @@ export function MonthlyDashboard({ month }: { month: MonthlySummary }) {
                   rx={Math.min(3, barWidth / 2)}
                   className={fill}
                 />
-                {row != null && (
+                {y != null && (
                   <text
                     x={center(i)}
-                    y={BASELINE - h - 6 - row * 13}
+                    y={y}
                     textAnchor="middle"
                     fontSize="10"
                     fontWeight="600"
