@@ -11,14 +11,14 @@ import { listVehicles } from "@/server/services/vehicles";
 
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 
-/** "Semana del 9 al 15 de nov", or "del 30 de nov al 6 de dic" across months. */
+/** "9 al 15 de nov", or "30 de nov al 6 de dic" across months. */
 function weekLabel(start: string, end: string) {
   const [, startMonth = 1, startDay = 1] = start.split("-").map(Number);
   const [, endMonth = 1, endDay = 1] = end.split("-").map(Number);
   const month = (m: number) => MONTHS[m - 1];
   return startMonth === endMonth
-    ? `Semana del ${startDay} al ${endDay} de ${month(endMonth)}`
-    : `Semana del ${startDay} de ${month(startMonth)} al ${endDay} de ${month(endMonth)}`;
+    ? `${startDay} al ${endDay} de ${month(endMonth)}`
+    : `${startDay} de ${month(startMonth)} al ${endDay} de ${month(endMonth)}`;
 }
 
 /** "S05" from the catalog model, or the nickname for a car outside the catalog. */
@@ -58,7 +58,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               >
                 <ChevronLeft aria-hidden="true" className="size-4" />
               </Link>
-              <span className="text-[13px] text-muted-foreground">
+              <span className="text-[13px] whitespace-nowrap text-muted-foreground">
                 {weekLabel(week.week_start, week.week_end)}
               </span>
               {!isCurrent && (
