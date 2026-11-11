@@ -1,70 +1,82 @@
-import { weekStart } from "@elacharger/calc";
+import { monthKey } from "@elacharger/calc";
 import type { Vehicle } from "@elacharger/schemas";
 import { ChevronLeft, ChevronRight, Camera, Route, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { BatteryPill } from "@/features/home/battery-pill";
-import { WeeklyDashboard } from "@/features/home/weekly-dashboard";
+import { MonthlyDashboard } from "@/features/home/monthly-dashboard";
 import { userInitials } from "@/lib/initials";
 import { getCurrentUser, getSession } from "@/server/session";
-import { getWeeklySummary } from "@/server/services/sessions";
+import { getMonthlySummary } from "@/server/services/sessions";
 import { listVehicles } from "@/server/services/vehicles";
 
-const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const MONTHS = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
 
-/** "9 al 15 de nov", or "30 de nov al 6 de dic" across months. */
-function weekLabel(start: string, end: string) {
-  const [, startMonth = 1, startDay = 1] = start.split("-").map(Number);
-  const [, endMonth = 1, endDay = 1] = end.split("-").map(Number);
-  const month = (m: number) => MONTHS[m - 1];
-  return startMonth === endMonth
-    ? `${startDay} al ${endDay} de ${month(endMonth)}`
-    : `${startDay} de ${month(startMonth)} al ${endDay} de ${month(endMonth)}`;
+/** "noviembre 2026". */
+function monthLabel(month: string) {
+  const [year, mon = 1] = month.split("-").map(Number);
+  return `${MONTHS[mon - 1]} ${year}`;
+}
+
+/** The month before or after ("2026-01", -1 → "2025-12"). */
+function shiftMonth(month: string, months: number) {
+  const [year = 0, mon = 1] = month.split("-").map(Number);
+  return new Date(Date.UTC(year, mon - 1 + months, 1)).toISOString().slice(0, 7);
 }
 
 /** "S05" from the catalog model, or the nickname for a car outside the catalog. */
 const shortName = (vehicle: Vehicle) => vehicle.variant?.model ?? vehicle.nickname;
 
-/** Monday of the week before or after ("2026-11-09", -1 → "2026-11-02"). */
-const shiftWeek = (monday: string, weeks: number) =>
-  new Date(Date.parse(`${monday}T12:00:00Z`) + weeks * 7 * 86_400_000).toISOString().slice(0, 10);
-
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
-  const requested = typeof params.week === "string" ? params.week : undefined;
-  const thisWeek = weekStart(new Date());
-  // A malformed or future week falls back to the current one.
-  const weekParam =
-    requested && /^\d{4}-\d{2}-\d{2}$/.test(requested) && requested <= thisWeek
-      ? requested
-      : undefined;
+  const thisMonth = monthKey(new Date());
+  // A malformed or future month falls back to the current one.
+  const month =
+    typeof params.month === "string" &&
+    /^\d{4}-(0[1-9]|1[0-2])$/.test(params.month) &&
+    params.month <= thisMonth
+      ? params.month
+      : thisMonth;
   const { supabase, userId } = await getSession();
   const [user, vehicles] = await Promise.all([getCurrentUser(), listVehicles(supabase, userId)]);
   const vehicle = vehicles.find((v) => v.is_default) ?? vehicles[0];
-  const week = vehicle
-    ? await getWeeklySummary(supabase, userId, { vehicle: vehicle.id, week: weekParam })
+  const summary = vehicle
+    ? await getMonthlySummary(supabase, userId, { vehicle: vehicle.id, month })
     : null;
-  const isCurrent = week?.week_start === thisWeek;
+  const isCurrent = month === thisMonth;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 px-4 pt-8 pb-6">
       <header className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-col gap-0.5">
-          {week && (
-            <nav aria-label="Semana" className="-ml-2 flex items-center">
+          {summary && (
+            <nav aria-label="Mes" className="-ml-2 flex items-center">
               <Link
-                href={`/?week=${shiftWeek(week.week_start, -1)}`}
-                aria-label="Semana anterior"
+                href={`/?month=${shiftMonth(month, -1)}`}
+                aria-label="Mes anterior"
                 className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
               >
                 <ChevronLeft aria-hidden="true" className="size-4" />
               </Link>
               <span className="text-[13px] whitespace-nowrap text-muted-foreground">
-                {weekLabel(week.week_start, week.week_end)}
+                {monthLabel(month)}
               </span>
               {!isCurrent && (
                 <Link
-                  href={`/?week=${shiftWeek(week.week_start, 1)}`}
-                  aria-label="Semana siguiente"
+                  href={`/?month=${shiftMonth(month, 1)}`}
+                  aria-label="Mes siguiente"
                   className="flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                 >
                   <ChevronRight aria-hidden="true" className="size-4" />
@@ -72,11 +84,15 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               )}
             </nav>
           )}
-          <h1 className="font-heading text-2xl font-semibold">Tu semana</h1>
+          <h1 className="font-heading text-2xl font-semibold">Tu mes</h1>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {vehicle && week && (
-            <BatteryPill vehicleId={vehicle.id} name={shortName(vehicle)} battery={week.battery} />
+          {vehicle && summary && (
+            <BatteryPill
+              vehicleId={vehicle.id}
+              name={shortName(vehicle)}
+              battery={summary.battery}
+            />
           )}
           <Link
             href="/settings"
@@ -89,14 +105,14 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         </div>
       </header>
 
-      {week ? (
-        <WeeklyDashboard week={week} />
+      {summary ? (
+        <MonthlyDashboard month={summary} />
       ) : (
         <section className="flex flex-col gap-3 rounded-[20px] bg-inverse p-5 text-inverse-foreground dark:border dark:border-border">
           <h2 className="font-heading text-xl font-semibold">Agrega tu carro</h2>
           <p className="text-sm text-inverse-subtle">
             Con tu vehículo en el garaje verás aquí cuánto gastas, cuánta energía consumes y cuántos
-            km recorres cada semana.
+            km recorres cada mes.
           </p>
           <Link
             href="/garage"

@@ -2785,20 +2785,15 @@
           "sessions_without_cost"
         ]
       },
-      "WeeklySummary": {
+      "MonthlySummary": {
         "type": "object",
         "properties": {
           "vehicle_id": {
             "type": "string",
             "format": "uuid"
           },
-          "week_start": {
-            "type": "string",
-            "description": "Monday, Colombian time."
-          },
-          "week_end": {
-            "type": "string",
-            "description": "Sunday, Colombian time."
+          "month": {
+            "type": "string"
           },
           "currency": {
             "type": "string"
@@ -2823,7 +2818,7 @@
               },
               "required": ["cost", "energy_kwh", "km", "day"]
             },
-            "description": "Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one."
+            "description": "Every day of the month. Cost on the day of each charge; km and energy used between two charges on the day of the second one."
           },
           "totals": {
             "type": "object",
@@ -2854,7 +2849,7 @@
               }
             },
             "required": ["cost", "energy_kwh", "km"],
-            "description": "The week before, for comparison."
+            "description": "The month before, for comparison."
           },
           "real_consumption_kwh_100km": {
             "type": ["number", "null"]
@@ -2866,7 +2861,8 @@
             "type": ["number", "null"]
           },
           "km_per_day": {
-            "type": "number"
+            "type": "number",
+            "description": "Over the days elapsed in the month."
           },
           "battery": {
             "type": ["object", "null"],
@@ -2892,8 +2888,7 @@
         },
         "required": [
           "vehicle_id",
-          "week_start",
-          "week_end",
+          "month",
           "currency",
           "days",
           "totals",
@@ -6483,9 +6478,9 @@
         }
       }
     },
-    "/sessions/weekly": {
+    "/sessions/monthly": {
       "get": {
-        "summary": "Cost, energy and km of one week, day by day, with the week before",
+        "summary": "Cost, energy and km of one month, day by day, with the month before",
         "tags": ["sessions"],
         "security": [
           {
@@ -6505,22 +6500,22 @@
           {
             "schema": {
               "type": "string",
-              "format": "date",
-              "description": "Any day of the week; defaults to the current week."
+              "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+              "description": "YYYY-MM; defaults to the current month (Colombian time)."
             },
             "required": false,
-            "description": "Any day of the week; defaults to the current week.",
-            "name": "week",
+            "description": "YYYY-MM; defaults to the current month (Colombian time).",
+            "name": "month",
             "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "The week.",
+            "description": "The month.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WeeklySummary"
+                  "$ref": "#/components/schemas/MonthlySummary"
                 }
               }
             }

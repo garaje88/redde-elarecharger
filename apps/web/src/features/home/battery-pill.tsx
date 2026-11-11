@@ -1,11 +1,11 @@
 "use client";
 
-import type { WeeklySummary } from "@elacharger/schemas";
+import type { MonthlySummary } from "@elacharger/schemas";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState, useTransition } from "react";
 import { api } from "@/lib/api";
 
-type Battery = WeeklySummary["battery"];
+type Battery = MonthlySummary["battery"];
 
 /** "hace 5 min", "hoy 14:20", "12 nov": how fresh the level is. */
 function freshness(iso: string) {

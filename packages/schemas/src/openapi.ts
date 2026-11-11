@@ -69,8 +69,8 @@ import {
   SessionTotalsQuerySchema,
   SessionTotalsSchema,
   UpdateSessionSchema,
-  WeeklySummaryQuerySchema,
-  WeeklySummarySchema,
+  MonthlySummaryQuerySchema,
+  MonthlySummarySchema,
 } from "./sessions";
 import {
   TripCalculationListSchema,
@@ -508,12 +508,12 @@ function buildRegistry(): OpenAPIRegistry {
   });
   route({
     method: "get",
-    path: "/sessions/weekly",
-    summary: "Cost, energy and km of one week, day by day, with the week before",
+    path: "/sessions/monthly",
+    summary: "Cost, energy and km of one month, day by day, with the month before",
     tags: ["sessions"],
-    request: { query: WeeklySummaryQuerySchema },
+    request: { query: MonthlySummaryQuerySchema },
     responses: {
-      200: json(WeeklySummarySchema, "The week."),
+      200: json(MonthlySummarySchema, "The month."),
       404: problemResponse("The vehicle does not exist."),
     },
   });

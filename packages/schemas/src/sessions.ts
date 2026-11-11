@@ -158,29 +158,32 @@ export const SessionTotalsSchema = z
   })
   .meta({ id: "SessionTotals" });
 
-export const WeeklySummaryQuerySchema = z.object({
+export const MonthlySummaryQuerySchema = z.object({
   vehicle: z.uuid(),
-  week: day.optional().meta({ description: "Any day of the week; defaults to the current week." }),
+  month: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+    .optional()
+    .meta({ description: "YYYY-MM; defaults to the current month (Colombian time)." }),
 });
 
-const WeekTotalsSchema = z.object({ cost: z.number(), energy_kwh: z.number(), km: z.number() });
+const PeriodTotalsSchema = z.object({ cost: z.number(), energy_kwh: z.number(), km: z.number() });
 
-export const WeeklySummarySchema = z
+export const MonthlySummarySchema = z
   .object({
     vehicle_id: z.uuid(),
-    week_start: z.string().meta({ description: "Monday, Colombian time." }),
-    week_end: z.string().meta({ description: "Sunday, Colombian time." }),
+    month: z.string(),
     currency: z.string(),
-    days: z.array(WeekTotalsSchema.extend({ day: z.string() })).meta({
+    days: z.array(PeriodTotalsSchema.extend({ day: z.string() })).meta({
       description:
-        "Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one.",
+        "Every day of the month. Cost on the day of each charge; km and energy used between two charges on the day of the second one.",
     }),
-    totals: WeekTotalsSchema,
-    previous: WeekTotalsSchema.meta({ description: "The week before, for comparison." }),
+    totals: PeriodTotalsSchema,
+    previous: PeriodTotalsSchema.meta({ description: "The month before, for comparison." }),
     real_consumption_kwh_100km: z.number().nullable(),
     estimated_consumption_kwh_100km: z.number().nullable(),
     cost_per_km: z.number().nullable(),
-    km_per_day: z.number(),
+    km_per_day: z.number().meta({ description: "Over the days elapsed in the month." }),
     battery: z
       .object({
         soc: z.number(),
@@ -194,7 +197,7 @@ export const WeeklySummarySchema = z
           "Latest known battery: the level the owner reported, or the end of the last logged charge if newer.",
       }),
   })
-  .meta({ id: "WeeklySummary" });
+  .meta({ id: "MonthlySummary" });
 
 export type CreateSession = z.infer<typeof CreateSessionSchema>;
 export type UpdateSession = z.infer<typeof UpdateSessionSchema>;
@@ -202,5 +205,5 @@ export type Session = z.infer<typeof SessionSchema>;
 export type SessionStats = z.infer<typeof SessionStatsSchema>;
 export type SessionTotalsQuery = z.infer<typeof SessionTotalsQuerySchema>;
 export type SessionTotals = z.infer<typeof SessionTotalsSchema>;
-export type WeeklySummaryQuery = z.infer<typeof WeeklySummaryQuerySchema>;
-export type WeeklySummary = z.infer<typeof WeeklySummarySchema>;
+export type MonthlySummaryQuery = z.infer<typeof MonthlySummaryQuerySchema>;
+export type MonthlySummary = z.infer<typeof MonthlySummarySchema>;

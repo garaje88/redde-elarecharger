@@ -5,8 +5,7 @@ import {
   monthKey,
   periodTotals,
   sessionStats,
-  weekStart,
-  weeklySummary,
+  monthlySummary,
 } from "@elacharger/calc";
 import type {
   CreateSession,
@@ -16,8 +15,8 @@ import type {
   SessionTotalsQuery,
   UpdateSession,
   Vehicle,
-  WeeklySummary,
-  WeeklySummaryQuery,
+  MonthlySummary,
+  MonthlySummaryQuery,
 } from "@elacharger/schemas";
 import { type Db, unwrap } from "../db";
 import { notFound } from "../http";
@@ -252,15 +251,13 @@ export async function getSessionTotals(
   };
 }
 
-/** One week of a vehicle, day by day, for the home dashboard; the numbers come from packages/calc. */
-export async function getWeeklySummary(
+/** One month of a vehicle, day by day, for the home dashboard; the numbers come from packages/calc. */
+export async function getMonthlySummary(
   db: Db,
   userId: string,
-  query: WeeklySummaryQuery,
-): Promise<WeeklySummary> {
-  const start = query.week
-    ? weekStart(new Date(`${query.week}T12:00:00Z`), 0)
-    : weekStart(new Date());
+  query: MonthlySummaryQuery,
+): Promise<MonthlySummary> {
+  const month = query.month ?? monthKey(new Date());
   const [vehicle, profile, rows] = await Promise.all([
     getVehicle(db, userId, query.vehicle),
     getProfile(db, userId),
@@ -272,7 +269,7 @@ export async function getWeeklySummary(
   ]);
   const sessions = unwrap(rows, "Sessions");
   const usableKwh = usableBattery(vehicle);
-  const week = weeklySummary(
+  const summary = monthlySummary(
     sessions.map((row) => ({
       startedAt: new Date(row.started_at),
       energyKwh: row.energy_kwh,
@@ -281,7 +278,7 @@ export async function getWeeklySummary(
       startSocPct: row.start_soc,
       endSocPct: row.end_soc,
     })),
-    { weekStart: start, usableKwh },
+    { month, usableKwh },
   );
   const estimated = estimatedConsumption(vehicle);
 
@@ -299,7 +296,7 @@ export async function getWeeklySummary(
     reported && (!charged || Date.parse(reported.at) >= Date.parse(charged.at))
       ? reported
       : charged;
-  const consumption = week.realConsumptionKwh100km ?? estimated;
+  const consumption = summary.realConsumptionKwh100km ?? estimated;
   const battery = latest && {
     ...latest,
     range_km:
@@ -310,20 +307,28 @@ export async function getWeeklySummary(
 
   return {
     vehicle_id: vehicle.id,
-    week_start: week.weekStart,
-    week_end: addDays(week.weekStart, 6),
+    month,
     currency: profile.currency,
-    days: week.days.map((d) => ({ day: d.day, cost: d.cost, energy_kwh: d.energyKwh, km: d.km })),
-    totals: { cost: week.totals.cost, energy_kwh: week.totals.energyKwh, km: week.totals.km },
-    previous: {
-      cost: week.previous.cost,
-      energy_kwh: week.previous.energyKwh,
-      km: week.previous.km,
+    days: summary.days.map((d) => ({
+      day: d.day,
+      cost: d.cost,
+      energy_kwh: d.energyKwh,
+      km: d.km,
+    })),
+    totals: {
+      cost: summary.totals.cost,
+      energy_kwh: summary.totals.energyKwh,
+      km: summary.totals.km,
     },
-    real_consumption_kwh_100km: week.realConsumptionKwh100km,
+    previous: {
+      cost: summary.previous.cost,
+      energy_kwh: summary.previous.energyKwh,
+      km: summary.previous.km,
+    },
+    real_consumption_kwh_100km: summary.realConsumptionKwh100km,
     estimated_consumption_kwh_100km: estimated,
-    cost_per_km: week.costPerKm,
-    km_per_day: week.kmPerDay,
+    cost_per_km: summary.costPerKm,
+    km_per_day: summary.kmPerDay,
     battery,
   };
 }

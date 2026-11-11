@@ -2345,20 +2345,20 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/sessions/weekly": {
+  "/sessions/monthly": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Cost, energy and km of one week, day by day, with the week before */
+    /** Cost, energy and km of one month, day by day, with the month before */
     get: {
       parameters: {
         query: {
           vehicle: string;
-          /** @description Any day of the week; defaults to the current week. */
-          week?: string;
+          /** @description YYYY-MM; defaults to the current month (Colombian time). */
+          month?: string;
         };
         header?: never;
         path?: never;
@@ -2366,13 +2366,13 @@ export interface paths {
       };
       requestBody?: never;
       responses: {
-        /** @description The week. */
+        /** @description The month. */
         200: {
           headers: {
             [name: string]: unknown;
           };
           content: {
-            "application/json": components["schemas"]["WeeklySummary"];
+            "application/json": components["schemas"]["MonthlySummary"];
           };
         };
         /** @description Missing or invalid credentials. */
@@ -4164,15 +4164,12 @@ export interface components {
       /** @description Sessions in the period with no cost; the total leaves them out. */
       sessions_without_cost: number;
     };
-    WeeklySummary: {
+    MonthlySummary: {
       /** Format: uuid */
       vehicle_id: string;
-      /** @description Monday, Colombian time. */
-      week_start: string;
-      /** @description Sunday, Colombian time. */
-      week_end: string;
+      month: string;
       currency: string;
-      /** @description Monday to Sunday. Cost on the day of each charge; km and energy used between two charges on the day of the second one. */
+      /** @description Every day of the month. Cost on the day of each charge; km and energy used between two charges on the day of the second one. */
       days: {
         cost: number;
         energy_kwh: number;
@@ -4184,7 +4181,7 @@ export interface components {
         energy_kwh: number;
         km: number;
       };
-      /** @description The week before, for comparison. */
+      /** @description The month before, for comparison. */
       previous: {
         cost: number;
         energy_kwh: number;
@@ -4193,6 +4190,7 @@ export interface components {
       real_consumption_kwh_100km: number | null;
       estimated_consumption_kwh_100km: number | null;
       cost_per_km: number | null;
+      /** @description Over the days elapsed in the month. */
       km_per_day: number;
       /** @description Latest known battery: the level the owner reported, or the end of the last logged charge if newer. */
       battery: {

@@ -201,7 +201,7 @@ export function periodTotals(
   };
 }
 
-export interface WeekDay {
+export interface DayTotals {
   /** Local day "YYYY-MM-DD". */
   day: string;
   cost: number;
@@ -211,56 +211,59 @@ export interface WeekDay {
   km: number;
 }
 
-export interface WeekTotals {
+export interface MonthTotals {
   cost: number;
   energyKwh: number;
   km: number;
 }
 
-export interface WeeklySummary {
-  /** Monday of the week, local time. */
-  weekStart: string;
-  /** Monday to Sunday. */
-  days: WeekDay[];
-  totals: WeekTotals;
-  previous: WeekTotals;
-  /** Measured kWh/100 km this week; null without a km with known energy. */
+export interface MonthlySummary {
+  /** "YYYY-MM". */
+  month: string;
+  /** Every day of the month, first to last. */
+  days: DayTotals[];
+  totals: MonthTotals;
+  /** The month before, for comparison. */
+  previous: MonthTotals;
+  /** Measured kWh/100 km this month; null without a km with known energy. */
   realConsumptionKwh100km: number | null;
   costPerKm: number | null;
+  /** Km over the days elapsed (the whole month once it is over). */
   kmPerDay: number;
 }
 
 const shiftDay = (day: string, days: number) =>
   new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
-/** Monday "YYYY-MM-DD" of the local week that contains `date`. */
-export function weekStart(date: Date, utcOffsetMin = -300): string {
-  const day = dayKey(date, utcOffsetMin);
-  const weekday = (new Date(`${day}T00:00:00Z`).getUTCDay() + 6) % 7;
-  return shiftDay(day, -weekday);
+/** First day and number of days of a "YYYY-MM" month. */
+function monthRange(month: string) {
+  const [year = 0, mon = 1] = month.split("-").map(Number);
+  const days = new Date(Date.UTC(year, mon, 0)).getUTCDate();
+  return { first: `${month}-01`, days };
 }
 
 /**
- * One week of a vehicle's sessions, day by day, and the week before for comparison. Cost is
+ * One month of a vehicle's sessions, day by day, and the month before for comparison. Cost is
  * counted on the day of each charge; km and energy come from the interval between consecutive
  * odometer readings and are counted on the day of the charge that closes it.
  */
-export function weeklySummary(
+export function monthlySummary(
   sessions: readonly SessionRecord[],
-  options: { weekStart: string; usableKwh?: number | null; utcOffsetMin?: number },
-): WeeklySummary {
+  options: { month: string; usableKwh?: number | null; utcOffsetMin?: number; now?: Date },
+): MonthlySummary {
   const offset = options.utcOffsetMin ?? -300;
-  const start = options.weekStart;
-  const previousStart = shiftDay(start, -7);
-  const days = Array.from({ length: 7 }, (_, i) => ({
-    day: shiftDay(start, i),
+  const { first, days: length } = monthRange(options.month);
+  const [year = 0, mon = 1] = options.month.split("-").map(Number);
+  const previousMonth = new Date(Date.UTC(year, mon - 2, 1)).toISOString().slice(0, 7);
+  const days = Array.from({ length }, (_, i) => ({
+    day: shiftDay(first, i),
     cost: 0,
     energyKwh: 0,
     km: 0,
   }));
   const byDay = new Map(days.map((d) => [d.day, d]));
-  const previous: WeekTotals = { cost: 0, energyKwh: 0, km: 0 };
-  const inPrevious = (day: string) => day >= previousStart && day < start;
+  const previous: MonthTotals = { cost: 0, energyKwh: 0, km: 0 };
+  const inPrevious = (day: string) => day.startsWith(previousMonth);
 
   for (const [i, s] of sessions.entries()) {
     if (s.cost == null) continue;
@@ -303,17 +306,18 @@ export function weeklySummary(
     }
   }
 
-  const rounded = days.map((d) => ({
-    day: d.day,
-    cost: round(d.cost, 0),
-    energyKwh: round(d.energyKwh, 1),
-    km: round(d.km, 0),
-  }));
-  const sum = (key: keyof WeekTotals) => days.reduce((total, d) => total + d[key], 0);
+  const sum = (key: keyof MonthTotals) => days.reduce((total, d) => total + d[key], 0);
   const totalKm = sum("km");
+  const today = dayKey(options.now ?? new Date(), offset);
+  const elapsed = today < first ? 0 : Math.min(length, days.filter((d) => d.day <= today).length);
   return {
-    weekStart: start,
-    days: rounded,
+    month: options.month,
+    days: days.map((d) => ({
+      day: d.day,
+      cost: round(d.cost, 0),
+      energyKwh: round(d.energyKwh, 1),
+      km: round(d.km, 0),
+    })),
     totals: {
       cost: round(sum("cost"), 0),
       energyKwh: round(sum("energyKwh"), 1),
@@ -326,6 +330,6 @@ export function weeklySummary(
     },
     realConsumptionKwh100km: energyKm > 0 ? round((energy / energyKm) * 100, 1) : null,
     costPerKm: costKm > 0 ? round(costOfKm / costKm, 1) : null,
-    kmPerDay: round(totalKm / 7, 0),
+    kmPerDay: elapsed > 0 ? round(totalKm / elapsed, 0) : 0,
   };
 }
