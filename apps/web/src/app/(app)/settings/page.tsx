@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ThemePicker } from "@/features/settings/theme-picker";
+import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 import { getProfile } from "@/server/services/profile";
 import { getCurrentUser, getSession } from "@/server/session";
 import { signOut } from "../actions";
@@ -14,6 +17,7 @@ export default function SettingsPage() {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-4 pt-6 pb-4">
       <h1 className="font-heading text-[22px] font-semibold">Tu cuenta</h1>
       <AccountCard />
+      <Appearance />
       <Content />
 
       <section aria-labelledby="account" className="flex flex-col gap-3 rounded-[20px] bg-card p-4">
@@ -77,4 +81,19 @@ async function AccountCard() {
 async function Content() {
   const { userId, supabase } = await getSession();
   return <SettingsForm profile={await getProfile(supabase, userId)} />;
+}
+
+async function Appearance() {
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  return (
+    <section
+      aria-labelledby="appearance"
+      className="flex flex-col gap-3 rounded-[20px] bg-card p-4"
+    >
+      <h2 id="appearance" className="font-heading text-[17px] font-semibold">
+        Apariencia
+      </h2>
+      <ThemePicker initial={theme} />
+    </section>
+  );
 }

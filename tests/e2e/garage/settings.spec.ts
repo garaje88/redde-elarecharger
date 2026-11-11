@@ -70,3 +70,24 @@ test("a user deletes their account from settings", async ({ browser, baseURL }) 
   await expect(page).toHaveURL(/\/login/);
   await context.close();
 });
+
+test("the theme can be forced to dark or light and back to the system", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/settings");
+  await page.waitForLoadState("load");
+  const html = page.locator("html");
+  const appearance = page.getByRole("region", { name: "Apariencia" });
+  await expect(appearance.getByRole("radio", { name: "Sistema" })).toBeChecked();
+
+  await appearance.locator("label").filter({ hasText: "Oscuro" }).click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  // The choice survives a full load: the server renders it from the cookie.
+  await page.goto("/");
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(14, 17, 22)");
+
+  await page.goto("/settings");
+  await appearance.locator("label").filter({ hasText: "Sistema" }).click();
+  await expect(html).not.toHaveAttribute("data-theme", /.+/);
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(245, 246, 241)");
+});
