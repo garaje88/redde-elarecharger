@@ -69,6 +69,8 @@ import {
   SessionTotalsQuerySchema,
   SessionTotalsSchema,
   UpdateSessionSchema,
+  MonthlySummaryQuerySchema,
+  MonthlySummarySchema,
 } from "./sessions";
 import {
   TripCalculationListSchema,
@@ -501,6 +503,17 @@ function buildRegistry(): OpenAPIRegistry {
     request: { query: SessionTotalsQuerySchema },
     responses: {
       200: json(SessionTotalsSchema, "Totals."),
+      404: problemResponse("The vehicle does not exist."),
+    },
+  });
+  route({
+    method: "get",
+    path: "/sessions/monthly",
+    summary: "Cost, energy and km of one month, day by day, with the month before",
+    tags: ["sessions"],
+    request: { query: MonthlySummaryQuerySchema },
+    responses: {
+      200: json(MonthlySummarySchema, "The month."),
       404: problemResponse("The vehicle does not exist."),
     },
   });

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getProfile } from "@/server/services/profile";
+import { userInitials } from "@/lib/initials";
 import { getCurrentUser, getSession } from "@/server/session";
 import { signOut } from "../actions";
 import { AccountActions } from "./account-actions";
@@ -48,13 +49,7 @@ export default function SettingsPage() {
 /** Who is signed in. Initials instead of the Google photo: the CSP only allows our own images. */
 async function AccountCard() {
   const user = await getCurrentUser();
-  const initials =
-    (user.name ?? user.email ?? "?")
-      .split(/[\s@.]+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("") || "?";
+  const initials = userInitials(user.name, user.email);
   return (
     <section aria-label="Tus datos" className="flex items-center gap-4 rounded-[20px] bg-card p-4">
       <span

@@ -5,6 +5,7 @@ import {
   monthKey,
   periodTotals,
   sessionStats,
+  monthlySummary,
 } from "@elacharger/calc";
 import type {
   CreateSession,
@@ -13,6 +14,9 @@ import type {
   SessionTotals,
   SessionTotalsQuery,
   UpdateSession,
+  Vehicle,
+  MonthlySummary,
+  MonthlySummaryQuery,
 } from "@elacharger/schemas";
 import { type Db, unwrap } from "../db";
 import { notFound } from "../http";
@@ -126,6 +130,33 @@ export async function deleteSession(db: Db, id: string): Promise<void> {
   if (deleted.length === 0) throw notFound("The session does not exist.");
 }
 
+/** Usable kWh today: the sheet's usable capacity scaled by the battery health. */
+function usableBattery(vehicle: Vehicle): number | null {
+  const usable = vehicle.spec.battery_usable_kwh;
+  return usable === null ? null : usable * (vehicle.battery_health_pct / 100);
+}
+
+/** kWh/100 km the sheet implies, rounded to one decimal; null when it cannot be derived. */
+function estimatedConsumption(vehicle: Vehicle): number | null {
+  const { spec } = vehicle;
+  if (spec.battery_usable_kwh === null) return null;
+  try {
+    return (
+      Math.round(
+        baseConsumptionKwh100km({
+          usableKwh: spec.battery_usable_kwh,
+          consumptionKwh100km: spec.consumption_kwh_100km,
+          rangeKm: spec.range_km,
+          rangeCycle: spec.range_cycle,
+        }) * 10,
+      ) / 10
+    );
+  } catch (error) {
+    if (!(error instanceof CalcInputError)) throw error;
+    return null;
+  }
+}
+
 export async function getSessionStats(
   db: Db,
   userId: string,
@@ -141,28 +172,8 @@ export async function getSessionStats(
       .eq("vehicle_id", vehicleId)
       .order("started_at"),
   ]);
-  const { spec } = vehicle;
-  const usableKwh =
-    spec.battery_usable_kwh === null
-      ? null
-      : spec.battery_usable_kwh * (vehicle.battery_health_pct / 100);
-
-  let estimated: number | null = null;
-  if (spec.battery_usable_kwh !== null) {
-    try {
-      estimated =
-        Math.round(
-          baseConsumptionKwh100km({
-            usableKwh: spec.battery_usable_kwh,
-            consumptionKwh100km: spec.consumption_kwh_100km,
-            rangeKm: spec.range_km,
-            rangeCycle: spec.range_cycle,
-          }) * 10,
-        ) / 10;
-    } catch (error) {
-      if (!(error instanceof CalcInputError)) throw error;
-    }
-  }
+  const usableKwh = usableBattery(vehicle);
+  const estimated = estimatedConsumption(vehicle);
 
   const stats = sessionStats(
     unwrap(rows, "Sessions").map((row) => ({
@@ -237,5 +248,87 @@ export async function getSessionTotals(
     energy_kwh: totals.energyKwh,
     cost: totals.cost,
     sessions_without_cost: totals.sessionsWithoutCost,
+  };
+}
+
+/** One month of a vehicle, day by day, for the home dashboard; the numbers come from packages/calc. */
+export async function getMonthlySummary(
+  db: Db,
+  userId: string,
+  query: MonthlySummaryQuery,
+): Promise<MonthlySummary> {
+  const month = query.month ?? monthKey(new Date());
+  const [vehicle, profile, rows] = await Promise.all([
+    getVehicle(db, userId, query.vehicle),
+    getProfile(db, userId),
+    db
+      .from("charging_sessions")
+      .select("started_at, energy_kwh, cost, odometer_km, start_soc, end_soc")
+      .eq("vehicle_id", query.vehicle)
+      .order("started_at"),
+  ]);
+  const sessions = unwrap(rows, "Sessions");
+  const usableKwh = usableBattery(vehicle);
+  const summary = monthlySummary(
+    sessions.map((row) => ({
+      startedAt: new Date(row.started_at),
+      energyKwh: row.energy_kwh,
+      cost: row.cost,
+      odometerKm: row.odometer_km,
+      startSocPct: row.start_soc,
+      endSocPct: row.end_soc,
+    })),
+    { month, usableKwh },
+  );
+  const estimated = estimatedConsumption(vehicle);
+
+  // The freshest battery level: what the owner reported, unless a charge ended after it.
+  const last = sessions.findLast((row) => row.end_soc !== null);
+  const reported =
+    vehicle.current_soc !== null && vehicle.current_soc_at !== null
+      ? { soc: vehicle.current_soc, at: vehicle.current_soc_at, source: "reported" as const }
+      : null;
+  const charged =
+    last && last.end_soc !== null
+      ? { soc: last.end_soc, at: last.started_at, source: "last_charge" as const }
+      : null;
+  const latest =
+    reported && (!charged || Date.parse(reported.at) >= Date.parse(charged.at))
+      ? reported
+      : charged;
+  const consumption = summary.realConsumptionKwh100km ?? estimated;
+  const battery = latest && {
+    ...latest,
+    range_km:
+      usableKwh && consumption
+        ? Math.round(((latest.soc / 100) * usableKwh * 100) / consumption)
+        : null,
+  };
+
+  return {
+    vehicle_id: vehicle.id,
+    month,
+    currency: profile.currency,
+    days: summary.days.map((d) => ({
+      day: d.day,
+      cost: d.cost,
+      energy_kwh: d.energyKwh,
+      km: d.km,
+    })),
+    totals: {
+      cost: summary.totals.cost,
+      energy_kwh: summary.totals.energyKwh,
+      km: summary.totals.km,
+    },
+    previous: {
+      cost: summary.previous.cost,
+      energy_kwh: summary.previous.energyKwh,
+      km: summary.previous.km,
+    },
+    real_consumption_kwh_100km: summary.realConsumptionKwh100km,
+    estimated_consumption_kwh_100km: estimated,
+    cost_per_km: summary.costPerKm,
+    km_per_day: summary.kmPerDay,
+    battery,
   };
 }

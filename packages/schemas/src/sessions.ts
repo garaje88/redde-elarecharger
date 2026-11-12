@@ -158,9 +158,52 @@ export const SessionTotalsSchema = z
   })
   .meta({ id: "SessionTotals" });
 
+export const MonthlySummaryQuerySchema = z.object({
+  vehicle: z.uuid(),
+  month: z
+    .string()
+    .regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+    .optional()
+    .meta({ description: "YYYY-MM; defaults to the current month (Colombian time)." }),
+});
+
+const PeriodTotalsSchema = z.object({ cost: z.number(), energy_kwh: z.number(), km: z.number() });
+
+export const MonthlySummarySchema = z
+  .object({
+    vehicle_id: z.uuid(),
+    month: z.string(),
+    currency: z.string(),
+    days: z.array(PeriodTotalsSchema.extend({ day: z.string() })).meta({
+      description:
+        "Every day of the month. Cost on the day of each charge; km and energy used between two charges on the day of the second one.",
+    }),
+    totals: PeriodTotalsSchema,
+    previous: PeriodTotalsSchema.meta({ description: "The month before, for comparison." }),
+    real_consumption_kwh_100km: z.number().nullable(),
+    estimated_consumption_kwh_100km: z.number().nullable(),
+    cost_per_km: z.number().nullable(),
+    km_per_day: z.number().meta({ description: "Over the days elapsed in the month." }),
+    battery: z
+      .object({
+        soc: z.number(),
+        at: z.iso.datetime({ offset: true }),
+        source: z.enum(["reported", "last_charge"]),
+        range_km: z.number().nullable(),
+      })
+      .nullable()
+      .meta({
+        description:
+          "Latest known battery: the level the owner reported, or the end of the last logged charge if newer.",
+      }),
+  })
+  .meta({ id: "MonthlySummary" });
+
 export type CreateSession = z.infer<typeof CreateSessionSchema>;
 export type UpdateSession = z.infer<typeof UpdateSessionSchema>;
 export type Session = z.infer<typeof SessionSchema>;
 export type SessionStats = z.infer<typeof SessionStatsSchema>;
 export type SessionTotalsQuery = z.infer<typeof SessionTotalsQuerySchema>;
 export type SessionTotals = z.infer<typeof SessionTotalsSchema>;
+export type MonthlySummaryQuery = z.infer<typeof MonthlySummaryQuerySchema>;
+export type MonthlySummary = z.infer<typeof MonthlySummarySchema>;

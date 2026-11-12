@@ -4,8 +4,9 @@ import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Only on overview screens: on forms and the map it would cover their own bottom actions.
-const SHOWN_ON = ["/", "/garage", "/sessions", "/history"];
+// Only on overview screens: on forms and the map it would cover their own bottom actions. The home
+// dashboard has its own "Preguntar a la IA" button.
+const SHOWN_ON = ["/garage", "/sessions", "/history"];
 
 /** Floating button to the assistant (IA3). */
 export function AssistantFab() {
