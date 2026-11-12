@@ -2345,6 +2345,73 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/sessions/monthly": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Cost, energy and km of one month, day by day, with the month before */
+    get: {
+      parameters: {
+        query: {
+          vehicle: string;
+          /** @description YYYY-MM; defaults to the current month (Colombian time). */
+          month?: string;
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description The month. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["MonthlySummary"];
+          };
+        };
+        /** @description Missing or invalid credentials. */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The vehicle does not exist. */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** @description The request did not pass validation. */
+        422: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/problem+json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/sessions/{id}": {
     parameters: {
       query?: never;
@@ -3527,6 +3594,10 @@ export interface components {
       nickname: string;
       is_default: boolean;
       battery_health_pct: number;
+      /** @description Battery % the owner last reported; null if never. */
+      current_soc: number | null;
+      /** Format: date-time */
+      current_soc_at: string | null;
       variant: {
         /** Format: uuid */
         id: string;
@@ -3596,6 +3667,8 @@ export interface components {
     UpdateVehicle: {
       nickname?: string;
       battery_health_pct?: number;
+      /** @description Current battery %, reported by the owner; null clears it. */
+      current_soc?: number | null;
       overrides?: components["schemas"]["VehicleOverrides"];
       /**
        * @description Make this the default vehicle.
@@ -4090,6 +4163,44 @@ export interface components {
       cost: number;
       /** @description Sessions in the period with no cost; the total leaves them out. */
       sessions_without_cost: number;
+    };
+    MonthlySummary: {
+      /** Format: uuid */
+      vehicle_id: string;
+      month: string;
+      currency: string;
+      /** @description Every day of the month. Cost on the day of each charge; km and energy used between two charges on the day of the second one. */
+      days: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+        day: string;
+      }[];
+      totals: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+      };
+      /** @description The month before, for comparison. */
+      previous: {
+        cost: number;
+        energy_kwh: number;
+        km: number;
+      };
+      real_consumption_kwh_100km: number | null;
+      estimated_consumption_kwh_100km: number | null;
+      cost_per_km: number | null;
+      /** @description Over the days elapsed in the month. */
+      km_per_day: number;
+      /** @description Latest known battery: the level the owner reported, or the end of the last logged charge if newer. */
+      battery: {
+        soc: number;
+        /** Format: date-time */
+        at: string;
+        /** @enum {string} */
+        source: "reported" | "last_charge";
+        range_km: number | null;
+      } | null;
     };
     UpdateSession: {
       /** Format: uuid */

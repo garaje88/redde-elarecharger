@@ -119,6 +119,37 @@ test("real consumption, cost per km and km between charges from seed sessions", 
   ).json();
   expect(totals).toMatchObject({ sessions: 4, energy_kwh: 142, cost: 127800 });
 
+  // Home dashboard: October day by day against September. The 1 Nov 03:00 UTC charge is 31 Oct.
+  const month = await (
+    await request.get(`/api/v1/sessions/monthly?vehicle=${vehicleId}&month=2026-10`, {
+      headers: headers(),
+    })
+  ).json();
+  expect(month).toMatchObject({
+    month: "2026-10",
+    totals: { cost: 127800, km: 845 },
+    previous: { cost: 27000, km: 0 },
+    km_per_day: 27,
+  });
+  expect(month.days).toHaveLength(31);
+  expect(month.days[4]).toMatchObject({ day: "2026-10-05", cost: 33660, km: 210 });
+  expect(month.days[30]).toMatchObject({ day: "2026-10-31", cost: 28260, km: 205 });
+
+  // The last charge ended at 80 %; a level reported afterwards takes its place.
+  expect(month.battery).toMatchObject({ soc: 80, source: "last_charge" });
+  const reported = await request.patch(`/api/v1/vehicles/${vehicleId}`, {
+    headers: headers(),
+    data: { current_soc: 64 },
+  });
+  expect(reported.status()).toBe(200);
+  expect(await reported.json()).toMatchObject({ current_soc: 64 });
+  const after = await (
+    await request.get(`/api/v1/sessions/monthly?vehicle=${vehicleId}&month=2026-10`, {
+      headers: headers(),
+    })
+  ).json();
+  expect(after.battery).toMatchObject({ soc: 64, source: "reported" });
+
   const period = page.getByRole("region", { name: "Gasto en recargas por fechas" });
   await period.getByLabel("Desde").fill("2026-10-15");
   await period.getByLabel("Hasta").fill("2026-10-31");

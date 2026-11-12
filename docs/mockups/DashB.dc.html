@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Elacharger · Dashboard B</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#3F5A00}a:hover{color:#2E4200}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFFFF; font-family: Inter, system-ui, sans-serif; color: #0E1116; box-sizing: border-box; padding: 52px 20px 0 20px; display: flex; flex-direction: column; gap: 16px">
+  <header style="display: flex; justify-content: space-between; align-items: center">
+    <span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 600">Esta semana</span>
+    <span style="font-size: 13px; color: #5B6470">4 – 10 nov</span>
+  </header>
+
+  <div role="tablist" aria-label="Métrica" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: #F0F2EC; border-radius: 12px; padding: 4px; gap: 4px">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+      <button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.pick }}" style="min-height: 40px; border: 0; border-radius: 9px; background: {{ t.bg }}; color: #0E1116; font: inherit; font-size: 14px; font-weight: {{ t.weight }}">{{ t.label }}</button>
+    </sc-for>
+  </div>
+
+  <section aria-live="polite" style="display: flex; flex-direction: column; gap: 6px">
+    <span style="font-size: 14px; color: #5B6470">{{ m.caption }}</span>
+    <span style="font-family: 'Space Grotesk', sans-serif; font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -1.5px">{{ m.value }}</span>
+    <span style="font-size: 14px; font-weight: 600; color: #3F5A00">{{ m.delta }}</span>
+  </section>
+
+  <svg width="350" height="168" viewBox="0 0 350 168" role="img" aria-label="{{ m.aria }}">
+    <line x1="0" y1="140" x2="350" y2="140" stroke="#E3E6E1" stroke-width="1"/>
+    <sc-for list="{{ m.bars }}" as="b" hint-placeholder-count="7">
+      <rect x="{{ b.x }}" y="{{ b.y }}" width="36" height="{{ b.h }}" rx="8" fill="{{ b.fill }}"/>
+      <text x="{{ b.cx }}" y="{{ b.ly }}" text-anchor="middle" font-size="11" font-weight="600" fill="#0E1116" font-family="Inter, sans-serif">{{ b.label }}</text>
+      <text x="{{ b.cx }}" y="160" text-anchor="middle" font-size="12" fill="#5B6470" font-family="Inter, sans-serif">{{ b.day }}</text>
+    </sc-for>
+  </svg>
+
+  <dl style="margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #E3E6E1; border-bottom: 1px solid #E3E6E1; padding: 12px 0">
+    <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #5B6470">Por km</dt><dd style="margin: 0; font-weight: 700; font-size: 17px">$191</dd></div>
+    <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #5B6470">Consumo</dt><dd style="margin: 0; font-weight: 700; font-size: 17px">16,8 <span style="font-size: 11px; font-weight: 500; color: #5B6470">kWh/100</span></dd></div>
+    <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: #5B6470">Batería</dt><dd style="margin: 0; font-weight: 700; font-size: 17px">64 % <span style="font-size: 11px; font-weight: 500; color: #5B6470">226 km</span></dd></div>
+  </dl>
+
+  <a href="Sessions.dc.html" style="font-size: 14px; font-weight: 600; text-decoration: none; min-height: 44px; display: flex; align-items: center">Ver historial completo →</a>
+
+  <sc-if value="{{ sheet }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(14,17,22,0.45)"></div>
+    <section role="dialog" aria-label="Acciones" style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 24px 24px 0 0; padding: 12px 16px 120px 16px; display: flex; flex-direction: column; gap: 8px">
+      <span aria-hidden="true" style="align-self: center; width: 40px; height: 5px; border-radius: 3px; background: #D3D8D0"></span>
+      <h2 style="margin: 4px 0; font-size: 15px; font-weight: 600; color: #5B6470">¿Qué quieres hacer?</h2>
+      <a href="Sessions.dc.html" style="min-height: 56px; border-radius: 14px; background: #F1F8D9; color: #0E1116; text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3F5A00" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span style="display: flex; flex-direction: column"><span>Registrar recarga</span><span style="font-size: 12px; font-weight: 400; color: #5B6470">con una foto del cargador o recibo</span></span></a>
+      <a href="Trip.dc.html" style="min-height: 52px; border-radius: 14px; background: #F5F6F1; color: #0E1116; text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Planear viaje</a>
+      <a href="Charge.dc.html" style="min-height: 52px; border-radius: 14px; background: #F5F6F1; color: #0E1116; text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Calcular tiempo de carga</a>
+      <a href="Assistant.dc.html" style="min-height: 52px; border-radius: 14px; background: #F5F6F1; color: #0E1116; text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1116" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>Preguntar a la IA</a>
+    </section>
+  </sc-if>
+
+  <nav aria-label="Principal" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; background: #FFFFFF; border-top: 1px solid #E3E6E1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: start; padding: 8px 4px 0 4px; box-sizing: border-box">
+    <a href="DashB.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; font-weight: 600; color: #3F5A00; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</a>
+    <a href="Trip.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>Viajes</a>
+    <div style="display: flex; justify-content: center">
+      <button type="button" onClick="{{ toggle }}" aria-label="{{ toggleLabel }}" aria-expanded="{{ sheetAria }}" style="width: 56px; height: 56px; margin-top: -22px; border-radius: 28px; border: 4px solid #FFFFFF; background: #0E1116; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(14,17,22,0.25)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8F031" stroke-width="2.25" stroke-linecap="round" aria-hidden="true" style="{{ plusStyle }}"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <a href="Sessions.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-7M2 20h20"/></svg>Historial</a>
+    <a href="Garage.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 44px; font-size: 11px; color: #5B6470; text-decoration: none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l2.5-6h13L21 13v5h-3v-2H6v2H3z"/><circle cx="7.5" cy="13.5" r="1"/><circle cx="16.5" cy="13.5" r="1"/></svg>Garaje</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { metric: 'cost', sheet: false };
+  }
+  renderVals() {
+    var self = this;
+    var days = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    var sets = {
+      cost: { label: 'Costo', caption: 'Gastaste en recargas', value: '$59.470', delta: '6 % menos que la semana pasada',
+        data: [21280, 0, 0, 17670, 0, 20520, 0], fmt: function (v) { return '$' + Math.round(v / 1000) + 'k'; },
+        aria: 'Costo por día: tres recargas, lunes 21 mil, jueves 18 mil y sábado 21 mil pesos' },
+      energy: { label: 'Energía', caption: 'Energía consumida', value: '52,4 kWh', delta: '16,8 kWh/100 km · 6 % sobre lo estimado',
+        data: [6.4, 8.7, 6.9, 0, 10.8, 14.6, 5.0], fmt: function (v) { return String(v).replace('.', ','); },
+        aria: 'kWh consumidos por día; el sábado fue el mayor con 14,6' },
+      km: { label: 'Km', caption: 'Recorriste', value: '312 km', delta: '8 % más que la semana pasada',
+        data: [38, 52, 41, 0, 64, 87, 30], fmt: function (v) { return String(v); },
+        aria: 'Kilómetros por día; el sábado fue el mayor con 87' }
+    };
+    var cur = sets[this.state.metric];
+    var max = Math.max.apply(null, cur.data);
+    var bars = cur.data.map(function (v, i) {
+      var h = v === 0 ? 3 : Math.round(v / max * 112);
+      var isMax = v === max;
+      return { x: 4 + i * 50, cx: 22 + i * 50, y: 140 - h, h: h, ly: 140 - h - 6, day: days[i],
+        label: v === 0 ? '' : cur.fmt(v), fill: isMax ? '#3F5A00' : (v === 0 ? '#E3E6E1' : '#C9DB9A') };
+    });
+    var tabs = ['cost', 'energy', 'km'].map(function (k) {
+      var on = self.state.metric === k;
+      return { label: sets[k].label, sel: on ? 'true' : 'false', bg: on ? '#FFFFFF' : 'transparent', weight: on ? 600 : 500,
+        pick: function () { self.setState({ metric: k }); } };
+    });
+    var open = this.state.sheet;
+    return {
+      tabs: tabs,
+      m: { caption: cur.caption, value: cur.value, delta: cur.delta, bars: bars, aria: cur.aria },
+      sheet: open,
+      sheetAria: open ? 'true' : 'false',
+      toggleLabel: open ? 'Cerrar acciones' : 'Abrir acciones',
+      plusStyle: open ? 'transform: rotate(45deg)' : '',
+      toggle: function () { self.setState({ sheet: !self.state.sheet }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

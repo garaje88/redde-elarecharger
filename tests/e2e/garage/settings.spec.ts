@@ -21,10 +21,7 @@ test("settings save the tariff and the route privacy option", async ({ page }) =
 test("the account is one tap away and the tariff takes comma decimals only", async ({ page }) => {
   await page.goto("/");
   await page.waitForLoadState("load");
-  await page
-    .getByRole("navigation", { name: "Principal" })
-    .getByRole("link", { name: "Cuenta" })
-    .click();
+  await page.getByRole("link", { name: "Tu cuenta" }).click();
   await expect(page).toHaveURL(/\/settings$/, { timeout: 10_000 });
   await expect(page.getByRole("heading", { level: 1, name: "Tu cuenta" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Tus datos", exact: true })).toContainText(

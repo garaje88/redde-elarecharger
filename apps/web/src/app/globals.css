@@ -105,14 +105,14 @@
   --inverse-muted: #a9b1ba;
   --brand-bright: #c8f031;
   /* Soft volt surface: chart bars and notes on the page background. */
-  --brand-soft: light-dark(#e3f2b5, #3f5a00);
+  --brand-soft: light-dark(#c9db9a, #3f5a00);
   --inverse-subtle: #cdd3d9;
   --inverse-danger: #fca5a5;
   --border: light-dark(#e3e6e1, #2a3038);
   --input: light-dark(#d3d8d0, #353c45);
   --ring: light-dark(#3f5a00, #c8f031);
   --chart-1: light-dark(#3f5a00, #c8f031);
-  --chart-2: light-dark(#e3f2b5, #3f5a00);
+  --chart-2: light-dark(#c9db9a, #3f5a00);
   --chart-3: light-dark(#b45309, #f5a524);
   --chart-4: light-dark(#5b6470, #a9b1ba);
   --chart-5: light-dark(#a9b1ba, #5b6470);

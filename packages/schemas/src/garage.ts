@@ -60,6 +60,11 @@ export const VehicleSchema = z
     nickname: z.string(),
     is_default: z.boolean(),
     battery_health_pct: z.number(),
+    current_soc: z
+      .number()
+      .nullable()
+      .meta({ description: "Battery % the owner last reported; null if never." }),
+    current_soc_at: z.iso.datetime({ offset: true }).nullable(),
     variant: z
       .object({
         id: z.uuid(),
@@ -94,6 +99,12 @@ export const UpdateVehicleSchema = z
   .object({
     nickname: z.string().trim().min(1).max(60),
     battery_health_pct: z.number().min(50).max(100),
+    current_soc: z
+      .number()
+      .min(0)
+      .max(100)
+      .nullable()
+      .meta({ description: "Current battery %, reported by the owner; null clears it." }),
     overrides: VehicleOverridesSchema,
     is_default: z.literal(true).meta({ description: "Make this the default vehicle." }),
   })

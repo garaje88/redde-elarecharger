@@ -8,6 +8,8 @@ const vehicle = {
   nickname: "Deepal S05",
   is_default: true,
   battery_health_pct: 100,
+  current_soc: null,
+  current_soc_at: null,
   variant: null,
   spec: {
     battery_gross_kwh: 56.12,

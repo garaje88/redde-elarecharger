@@ -74,13 +74,11 @@ export function ChargeCalculator({
   const startId = useId();
   const targetId = useId();
   const [profile, setProfile] = useState(initialProfile);
-  const [vehicleId, setVehicleId] = useState(
-    (
-      vehicles.find((v) => v.id === initial.vehicleId) ??
-      vehicles.find((v) => v.is_default) ??
-      vehicles[0]
-    )?.id ?? "",
-  );
+  const firstVehicle =
+    vehicles.find((v) => v.id === initial.vehicleId) ??
+    vehicles.find((v) => v.is_default) ??
+    vehicles[0];
+  const [vehicleId, setVehicleId] = useState(firstVehicle?.id ?? "");
   const [chargerId, setChargerId] = useState(
     (
       chargers.find((c) => c.id === initial.chargerId) ??
@@ -88,8 +86,12 @@ export function ChargeCalculator({
       chargers[0]
     )?.id ?? "",
   );
-  const [start, setStart] = useState(initial.start ?? 20);
   const [target, setTarget] = useState(initial.target ?? 80);
+  // Start from the battery the owner reported, when there is one below the target.
+  const reported = firstVehicle?.current_soc == null ? null : Math.round(firstVehicle.current_soc);
+  const [start, setStart] = useState(
+    initial.start ?? (reported !== null && reported < target ? reported : 20),
+  );
   const [tariffDraft, setTariffDraft] = useState("");
   const [editingTariff, setEditingTariff] = useState(false);
   const [status, setStatus] = useState<{ kind: "saved" | "error"; text: string } | null>(null);

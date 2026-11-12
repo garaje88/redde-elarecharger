@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CalcInputError } from "./errors";
-import { type SessionRecord, monthKey, periodTotals, sessionStats } from "./stats";
+import { type SessionRecord, monthKey, monthlySummary, periodTotals, sessionStats } from "./stats";
 
 // Seed data: four home charges of a 56.12 kWh car in October 2026 and one in September.
 // Odometer: 10 000 → 10 210 → 10 420 → 10 640 → 10 845 km.
@@ -173,5 +173,84 @@ describe("periodTotals", () => {
       cost: 0,
       sessionsWithoutCost: 0,
     });
+  });
+});
+
+describe("monthlySummary", () => {
+  // Colombia is UTC−5. November 2026; usable battery 50 kWh.
+  const sessions = [
+    { startedAt: at("2026-10-28T15:00:00Z"), odometerKm: 9700, cost: 7000, endSocPct: 85 },
+    { startedAt: at("2026-11-01T15:00:00Z"), odometerKm: 9800, cost: 5000, endSocPct: 90 },
+    {
+      startedAt: at("2026-11-03T23:00:00Z"),
+      odometerKm: 10000,
+      cost: 20000,
+      startSocPct: 30,
+      endSocPct: 80,
+    },
+    {
+      startedAt: at("2026-11-09T23:00:00Z"),
+      odometerKm: 10200,
+      cost: 21000,
+      startSocPct: 30,
+      endSocPct: 80,
+    },
+    // 22:00 on the 11th in Colombia, already the 12th in UTC.
+    {
+      startedAt: at("2026-11-12T03:00:00Z"),
+      odometerKm: 10350,
+      cost: 18000,
+      startSocPct: 40,
+      endSocPct: 90,
+    },
+    { startedAt: at("2026-11-16T03:00:00Z"), odometerKm: 10500, startSocPct: 50 },
+    { startedAt: at("2026-11-16T15:00:00Z"), odometerKm: 10600, cost: 9000 },
+    { startedAt: at("2026-12-01T15:00:00Z"), odometerKm: 10700, cost: 4000 },
+  ];
+  const summary = monthlySummary(sessions, {
+    month: "2026-11",
+    usableKwh: 50,
+    now: at("2026-12-05T12:00:00Z"),
+  });
+
+  it("has every day of the month", () => {
+    expect(summary.days).toHaveLength(30);
+    expect(summary.days[0]?.day).toBe("2026-11-01");
+    expect(summary.days[29]?.day).toBe("2026-11-30");
+  });
+
+  it("counts cost on the charge day and km and energy on the day that closes each interval", () => {
+    expect(summary.days[0]).toEqual({ day: "2026-11-01", cost: 5000, energyKwh: 0, km: 100 });
+    expect(summary.days[2]).toEqual({ day: "2026-11-03", cost: 20000, energyKwh: 30, km: 200 });
+    expect(summary.days[10]).toEqual({ day: "2026-11-11", cost: 18000, energyKwh: 20, km: 150 });
+    expect(summary.days[14]).toEqual({ day: "2026-11-15", cost: 0, energyKwh: 20, km: 150 });
+    expect(summary.totals).toEqual({ cost: 73000, energyKwh: 95, km: 900 });
+  });
+
+  it("compares with the month before and leaves other months out", () => {
+    expect(summary.previous).toEqual({ cost: 7000, energyKwh: 0, km: 0 });
+  });
+
+  it("derives consumption and cost per km from the intervals that have them", () => {
+    expect(summary.realConsumptionKwh100km).toBe(13.6);
+    expect(summary.costPerKm).toBe(97.3);
+  });
+
+  it("averages km over the days elapsed", () => {
+    expect(summary.kmPerDay).toBe(30);
+    const ongoing = monthlySummary(sessions, {
+      month: "2026-11",
+      usableKwh: 50,
+      now: at("2026-11-16T20:00:00Z"),
+    });
+    expect(ongoing.kmPerDay).toBe(56);
+  });
+
+  it("returns an empty month without sessions", () => {
+    const empty = monthlySummary([], { month: "2026-02", now: at("2026-03-01T12:00:00Z") });
+    expect(empty.days).toHaveLength(28);
+    expect(empty.totals).toEqual({ cost: 0, energyKwh: 0, km: 0 });
+    expect(empty.realConsumptionKwh100km).toBeNull();
+    expect(empty.costPerKm).toBeNull();
   });
 });

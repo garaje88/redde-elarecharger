@@ -82,13 +82,11 @@ export function TripPlanner({
     options: Partial<TripOptions>;
   };
 }) {
-  const [vehicleId, setVehicleId] = useState(
-    (
-      vehicles.find((v) => v.id === initial?.vehicleId) ??
-      vehicles.find((v) => v.is_default) ??
-      vehicles[0]
-    )?.id ?? "",
-  );
+  const firstVehicle =
+    vehicles.find((v) => v.id === initial?.vehicleId) ??
+    vehicles.find((v) => v.is_default) ??
+    vehicles[0];
+  const [vehicleId, setVehicleId] = useState(firstVehicle?.id ?? "");
   const [origin, setOrigin] = useState<Place | null>(initial?.origin ?? null);
   const [destination, setDestination] = useState<Place | null>(initial?.destination ?? null);
   const [active, setActive] = useState<Field>(initial?.origin ? "destination" : "origin");
@@ -96,7 +94,8 @@ export function TripPlanner({
   const [routeError, setRouteError] = useState<string | null>(null);
   const [loadingRoute, setLoadingRoute] = useState(Boolean(initial?.origin && initial.destination));
   const [options, setOptions] = useState<TripOptions>({
-    start_soc: 80,
+    // The battery the owner reported, when there is one.
+    start_soc: Math.round(firstVehicle?.current_soc ?? 80),
     passengers: 1,
     cargo_kg: 0,
     air_conditioning: false,
