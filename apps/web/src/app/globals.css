@@ -2,7 +2,17 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* dark: follows the theme chosen in Ajustes, or the system when none is chosen. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -67,90 +77,62 @@
   --color-graphite: #5b6470;
 }
 
-/* Design tokens taken from docs/mockups (light) and derived for dark mode. */
+/* Design tokens taken from docs/mockups (light) and derived for dark mode. Each colour holds both
+   values; `color-scheme` picks one: the system's by default, or the one chosen in Ajustes
+   (data-theme on <html>, from the "theme" cookie). */
 :root {
-  --background: #f5f6f1;
-  --foreground: #0e1116;
-  --card: #ffffff;
-  --card-foreground: #0e1116;
-  --popover: #ffffff;
-  --popover-foreground: #0e1116;
-  --primary: #3f5a00;
-  --primary-foreground: #ffffff;
-  --secondary: #e9ede6;
-  --secondary-foreground: #0e1116;
-  --muted: #e9ede6;
-  --muted-foreground: #5b6470;
-  --accent: #f1f8d9;
-  --accent-foreground: #2e4200;
-  --destructive: #b42318;
-  --warning: #b45309;
-  --success: #3f5a00;
+  color-scheme: light dark;
+  --background: light-dark(#f5f6f1, #0e1116);
+  --foreground: light-dark(#0e1116, #f5f6f1);
+  --card: light-dark(#ffffff, #161a1f);
+  --card-foreground: light-dark(#0e1116, #f5f6f1);
+  --popover: light-dark(#ffffff, #161a1f);
+  --popover-foreground: light-dark(#0e1116, #f5f6f1);
+  --primary: light-dark(#3f5a00, #c8f031);
+  --primary-foreground: light-dark(#ffffff, #0e1116);
+  --secondary: light-dark(#e9ede6, #1e242b);
+  --secondary-foreground: light-dark(#0e1116, #f5f6f1);
+  --muted: light-dark(#e9ede6, #1e242b);
+  --muted-foreground: light-dark(#5b6470, #a9b1ba);
+  --accent: light-dark(#f1f8d9, #232a12);
+  --accent-foreground: light-dark(#2e4200, #c8f031);
+  --destructive: light-dark(#b42318, #f97066);
+  --warning: light-dark(#b45309, #f5a524);
+  --success: light-dark(#3f5a00, #c8f031);
   /* Dark brand surface (login, active vehicle card); identical in both themes. */
   --inverse: #0e1116;
   --inverse-foreground: #ffffff;
   --inverse-muted: #a9b1ba;
   --brand-bright: #c8f031;
   /* Soft volt surface: chart bars and notes on the page background. */
-  --brand-soft: #c9db9a;
+  --brand-soft: light-dark(#c9db9a, #3f5a00);
   --inverse-subtle: #cdd3d9;
   --inverse-danger: #fca5a5;
-  --border: #e3e6e1;
-  --input: #d3d8d0;
-  --ring: #3f5a00;
-  --chart-1: #3f5a00;
-  --chart-2: #c9db9a;
-  --chart-3: #b45309;
-  --chart-4: #5b6470;
-  --chart-5: #a9b1ba;
+  --border: light-dark(#e3e6e1, #2a3038);
+  --input: light-dark(#d3d8d0, #353c45);
+  --ring: light-dark(#3f5a00, #c8f031);
+  --chart-1: light-dark(#3f5a00, #c8f031);
+  --chart-2: light-dark(#c9db9a, #3f5a00);
+  --chart-3: light-dark(#b45309, #f5a524);
+  --chart-4: light-dark(#5b6470, #a9b1ba);
+  --chart-5: light-dark(#a9b1ba, #5b6470);
   --radius: 1rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0e1116;
-  --sidebar-primary: #3f5a00;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f8d9;
-  --sidebar-accent-foreground: #2e4200;
-  --sidebar-border: #e3e6e1;
-  --sidebar-ring: #3f5a00;
+  --sidebar: light-dark(#ffffff, #161a1f);
+  --sidebar-foreground: light-dark(#0e1116, #f5f6f1);
+  --sidebar-primary: light-dark(#3f5a00, #c8f031);
+  --sidebar-primary-foreground: light-dark(#ffffff, #0e1116);
+  --sidebar-accent: light-dark(#f1f8d9, #232a12);
+  --sidebar-accent-foreground: light-dark(#2e4200, #c8f031);
+  --sidebar-border: light-dark(#e3e6e1, #2a3038);
+  --sidebar-ring: light-dark(#3f5a00, #c8f031);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0e1116;
-    --foreground: #f5f6f1;
-    --card: #161a1f;
-    --card-foreground: #f5f6f1;
-    --popover: #161a1f;
-    --popover-foreground: #f5f6f1;
-    --primary: #c8f031;
-    --primary-foreground: #0e1116;
-    --secondary: #1e242b;
-    --secondary-foreground: #f5f6f1;
-    --muted: #1e242b;
-    --muted-foreground: #a9b1ba;
-    --accent: #232a12;
-    --accent-foreground: #c8f031;
-    --destructive: #f97066;
-    --warning: #f5a524;
-    --success: #c8f031;
-    --brand-soft: #3f5a00;
-    --border: #2a3038;
-    --input: #353c45;
-    --ring: #c8f031;
-    --chart-1: #c8f031;
-    --chart-2: #3f5a00;
-    --chart-3: #f5a524;
-    --chart-4: #a9b1ba;
-    --chart-5: #5b6470;
-    --sidebar: #161a1f;
-    --sidebar-foreground: #f5f6f1;
-    --sidebar-primary: #c8f031;
-    --sidebar-primary-foreground: #0e1116;
-    --sidebar-accent: #232a12;
-    --sidebar-accent-foreground: #c8f031;
-    --sidebar-border: #2a3038;
-    --sidebar-ring: #c8f031;
-  }
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @layer base {

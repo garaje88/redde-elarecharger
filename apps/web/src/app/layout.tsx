@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { ServiceWorkerRegistration } from "@/components/service-worker";
+import { THEME_COLORS, THEME_COOKIE, parseTheme } from "@/lib/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,19 +31,30 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f6f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1116" },
-  ],
-};
+export async function generateViewport(): Promise<Viewport> {
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  return {
+    themeColor:
+      theme === "system"
+        ? [
+            { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+            { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+          ]
+        : THEME_COLORS[theme],
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // Every page renders per request: the CSP nonce set in proxy.ts must reach Next's scripts,
   // and a prerendered page would carry none.
   await connection();
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
   return (
-    <html lang="es-CO" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
+    <html
+      lang="es-CO"
+      data-theme={theme === "system" ? undefined : theme}
+      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col">
         {children}
         <ServiceWorkerRegistration />
