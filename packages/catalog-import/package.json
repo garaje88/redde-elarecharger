@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@elacharger/types": "workspace:*",
-    "@supabase/supabase-js": "^2.118.0"
+    "@supabase/supabase-js": "^2.119.0"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.1.0",
